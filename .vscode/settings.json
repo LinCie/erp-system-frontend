@@ -1,0 +1,8 @@
+{
+  "editor.tabSize": 2,
+  "css.validate": false,
+  "files.associations": {
+    ".css": "tailwindcss"
+  },
+  "tailwindCSS.classFunctions": ["cva", "cx", "cn", "tv"]
+}
