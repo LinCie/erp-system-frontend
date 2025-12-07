@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier .",
+    "format": "prettier . --write",
     "prepare": "husky"
   },
   "dependencies": {
