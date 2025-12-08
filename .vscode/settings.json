@@ -4,5 +4,10 @@
   "files.associations": {
     ".css": "tailwindcss"
   },
-  "tailwindCSS.classFunctions": ["cva", "cx", "cn", "tv"]
+  "tailwindCSS.classFunctions": [
+    "cva",
+    "cx",
+    "cn",
+    "tv"
+  ]
 }

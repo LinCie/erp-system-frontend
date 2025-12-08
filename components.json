@@ -13,15 +13,16 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils",
+    "utils": "@/shared/lib/utils",
     "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
+    "lib": "@/shared/lib",
+    "hooks": "@/shared/hooks"
   },
   "registries": {
     "@shadcn-studio": "https://shadcnstudio.com/r/{name}.json",
     "@ss-components": "https://shadcnstudio.com/r/components/{name}.json",
     "@ss-blocks": "https://shadcnstudio.com/r/blocks/{name}.json",
-    "@ss-themes": "https://shadcnstudio.com/r/themes/{name}.json"
+    "@ss-themes": "https://shadcnstudio.com/r/themes/{name}.json",
+    "@shadcn-io": "https://www.shadcn.io/registry/{name}.json"
   }
 }
