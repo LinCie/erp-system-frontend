@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "success": "Berhasil",
+    "submit": "Kirim",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "delete": "Hapus",
+    "edit": "Ubah",
+    "back": "Kembali"
+  },
+  "auth": {
+    "signin": {
+      "title": "Selamat datang kembali",
+      "description": "Masukkan kredensial Anda untuk mengakses akun",
+      "email": "Email",
+      "emailPlaceholder": "Masukkan email Anda",
+      "password": "Kata sandi",
+      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "submit": "Masuk",
+      "submitting": "Sedang masuk...",
+      "noAccount": "Belum punya akun?",
+      "signupLink": "Daftar"
+    },
+    "signup": {
+      "title": "Buat akun",
+      "description": "Masukkan detail Anda di bawah untuk membuat akun",
+      "name": "Nama",
+      "namePlaceholder": "Masukkan nama Anda",
+      "email": "Email",
+      "emailPlaceholder": "Masukkan email Anda",
+      "password": "Kata sandi",
+      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "submit": "Daftar",
+      "submitting": "Membuat akun...",
+      "hasAccount": "Sudah punya akun?",
+      "signinLink": "Masuk"
+    },
+    "signout": "Keluar"
+  },
+  "navigation": {
+    "home": "Beranda",
+    "dashboard": "Dasbor"
+  },
+  "errors": {
+    "notFound": "Halaman tidak ditemukan",
+    "notFoundDescription": "Halaman yang Anda cari tidak ada.",
+    "backToHome": "Kembali ke Beranda",
+    "unauthorized": "Tidak diizinkan",
+    "serverError": "Terjadi kesalahan pada server",
+    "validationFailed": "Validasi gagal",
+    "unexpectedError": "Terjadi kesalahan yang tidak terduga"
+  },
+  "dashboard": {
+    "title": "Selamat datang di Dasbor",
+    "description": "Anda telah berhasil masuk ke sistem ERP."
+  },
+  "metadata": {
+    "auth": {
+      "title": "Autentikasi",
+      "description": "Masuk atau buat akun"
+    },
+    "signin": {
+      "title": "Masuk",
+      "description": "Masuk ke akun Anda"
+    },
+    "signup": {
+      "title": "Daftar",
+      "description": "Buat akun baru"
+    }
+  }
+}

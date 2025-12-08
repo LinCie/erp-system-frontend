@@ -3,6 +3,7 @@
 import { useEffect, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { signupAction } from "../actions/signup-action";
 import {
   signupSchema,
@@ -32,6 +33,7 @@ const initialState: ActionResult = {
  * Mobile-first responsive design with full keyboard accessibility.
  */
 export function SignupForm() {
+  const t = useTranslations("auth.signup");
   const [state, formAction, isPending] = useActionState(
     signupAction,
     initialState
@@ -79,14 +81,14 @@ export function SignupForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("name")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="text"
-                  placeholder="Enter your name"
+                  placeholder={t("namePlaceholder")}
                   autoComplete="name"
-                  aria-label="Name"
+                  aria-label={t("name")}
                   disabled={isPending}
                 />
               </FormControl>
@@ -100,14 +102,14 @@ export function SignupForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("emailPlaceholder")}
                   autoComplete="email"
-                  aria-label="Email address"
+                  aria-label={t("email")}
                   disabled={isPending}
                 />
               </FormControl>
@@ -121,14 +123,14 @@ export function SignupForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("passwordPlaceholder")}
                   autoComplete="new-password"
-                  aria-label="Password"
+                  aria-label={t("password")}
                   disabled={isPending}
                 />
               </FormControl>
@@ -141,9 +143,9 @@ export function SignupForm() {
           type="submit"
           className="mt-2 w-full"
           disabled={isPending}
-          aria-label="Create account"
+          aria-label={t("submit")}
         >
-          {isPending ? "Creating account..." : "Sign up"}
+          {isPending ? t("submitting") : t("submit")}
         </Button>
       </form>
     </Form>

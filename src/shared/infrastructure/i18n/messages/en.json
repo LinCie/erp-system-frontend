@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back"
+  },
+  "auth": {
+    "signin": {
+      "title": "Welcome back",
+      "description": "Enter your credentials to access your account",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up"
+    },
+    "signup": {
+      "title": "Create an account",
+      "description": "Enter your details below to create your account",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign up",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "signinLink": "Sign in"
+    },
+    "signout": "Sign out"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "notFoundDescription": "The page you are looking for does not exist.",
+    "backToHome": "Back to Home",
+    "unauthorized": "Unauthorized",
+    "serverError": "A server error occurred",
+    "validationFailed": "Validation failed",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "dashboard": {
+    "title": "Welcome to Dashboard",
+    "description": "You have successfully signed in to the ERP system."
+  },
+  "metadata": {
+    "auth": {
+      "title": "Authentication",
+      "description": "Sign in or create an account"
+    },
+    "signin": {
+      "title": "Sign In",
+      "description": "Sign in to your account"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "description": "Create a new account"
+    }
+  }
+}

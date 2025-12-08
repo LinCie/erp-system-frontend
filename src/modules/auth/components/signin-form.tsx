@@ -3,6 +3,7 @@
 import { useEffect, useRef, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { signinAction } from "../actions/signin-action";
 import {
   signinSchema,
@@ -33,6 +34,7 @@ const initialState: ActionResult = {
  * Mobile-first responsive design with full keyboard accessibility.
  */
 export function SigninForm() {
+  const t = useTranslations("auth.signin");
   const [state, formAction, isPending] = useActionState(
     signinAction,
     initialState
@@ -85,7 +87,7 @@ export function SigninForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -96,9 +98,9 @@ export function SigninForm() {
                     ).current = e;
                   }}
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("emailPlaceholder")}
                   autoComplete="email"
-                  aria-label="Email address"
+                  aria-label={t("email")}
                   disabled={isPending}
                 />
               </FormControl>
@@ -112,14 +114,14 @@ export function SigninForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("passwordPlaceholder")}
                   autoComplete="current-password"
-                  aria-label="Password"
+                  aria-label={t("password")}
                   disabled={isPending}
                 />
               </FormControl>
@@ -132,9 +134,9 @@ export function SigninForm() {
           type="submit"
           className="mt-2 w-full"
           disabled={isPending}
-          aria-label="Sign in to your account"
+          aria-label={t("submit")}
         >
-          {isPending ? "Signing in..." : "Sign in"}
+          {isPending ? t("submitting") : t("submit")}
         </Button>
       </form>
     </Form>
