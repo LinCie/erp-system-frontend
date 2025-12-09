@@ -1,10 +1,19 @@
-import { http } from "@/shared/infrastructure/http";
+import {
+  http,
+  type createAuthenticatedHttp,
+} from "@/shared/infrastructure/http";
 import {
   type SignupInput,
   type SigninInput,
   type TokensResponse,
   tokensResponseSchema,
 } from "../types/schemas";
+
+/**
+ * Type representing a Ky HTTP client instance.
+ * Can be either the base http client or an authenticated instance.
+ */
+type HttpClient = typeof http | ReturnType<typeof createAuthenticatedHttp>;
 
 /**
  * Authentication service for handling user signup, signin, signout, and token refresh.
@@ -36,10 +45,12 @@ export const authService = {
   /**
    * Signs out the user by invalidating the refresh token.
    * @param refreshToken - The refresh token to invalidate
+   * @param httpClient - Optional authenticated HTTP client instance for Bearer token auth
    * @throws HTTPError if the request fails
    */
-  async signout(refreshToken: string): Promise<void> {
-    await http.post("auth/signout", { json: { refreshToken } });
+  async signout(refreshToken: string, httpClient?: HttpClient): Promise<void> {
+    const client = httpClient ?? http;
+    await client.post("auth/signout", { json: { refreshToken } });
   },
 
   /**

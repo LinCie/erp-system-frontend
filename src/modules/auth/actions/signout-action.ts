@@ -2,23 +2,27 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createAuthenticatedHttp } from "@/shared/infrastructure/http";
 import { authService } from "../services/auth-service";
 
 /**
  * Server action for user signout.
- * Gets refresh token from cookies, calls auth service to invalidate it,
+ * Gets tokens from cookies, creates authenticated HTTP client,
+ * calls auth service to invalidate the refresh token,
  * deletes JWT cookies, and redirects to signin page.
  */
 export async function signoutAction(): Promise<void> {
   const cookieStore = await cookies();
 
-  // Get refresh token from cookies
+  // Get tokens from cookies
+  const accessToken = cookieStore.get("access_token")?.value;
   const refreshToken = cookieStore.get("refresh_token")?.value;
 
-  // Call auth service to invalidate the refresh token
+  // Call auth service to invalidate the refresh token with authenticated HTTP client
   if (refreshToken) {
     try {
-      await authService.signout(refreshToken);
+      const authHttp = createAuthenticatedHttp(accessToken);
+      await authService.signout(refreshToken, authHttp);
     } catch {
       // Silently handle errors - we still want to clear cookies and redirect
       // even if the API call fails (e.g., token already expired)

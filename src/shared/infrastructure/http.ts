@@ -103,3 +103,36 @@ export function getErrorMessage(error: unknown): string {
   }
   return "An unexpected error occurred";
 }
+
+/**
+ * Creates an authenticated Ky HTTP client instance with Bearer token.
+ * Uses Ky's beforeRequest hook to attach the Authorization header.
+ *
+ * @param token - The access token to use for authentication (optional)
+ * @returns A Ky instance configured with Bearer token authentication
+ *
+ * @example
+ * ```typescript
+ * // In a Server Action
+ * import { cookies } from 'next/headers';
+ * import { createAuthenticatedHttp } from '@/shared/infrastructure/http';
+ *
+ * const cookieStore = await cookies();
+ * const token = cookieStore.get('access_token')?.value;
+ * const authHttp = createAuthenticatedHttp(token);
+ * const data = await authHttp.get('protected-endpoint').json();
+ * ```
+ */
+export function createAuthenticatedHttp(token?: string | null) {
+  return http.extend({
+    hooks: {
+      beforeRequest: [
+        (request) => {
+          if (token) {
+            request.headers.set("Authorization", `Bearer ${token}`);
+          }
+        },
+      ],
+    },
+  });
+}
