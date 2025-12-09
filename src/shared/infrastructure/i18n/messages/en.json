@@ -54,7 +54,32 @@
   },
   "dashboard": {
     "title": "Welcome to Dashboard",
-    "description": "You have successfully signed in to the ERP system."
+    "description": "You have successfully signed in to the ERP system.",
+    "sidebar": {
+      "appName": "ERP System",
+      "appDescription": "Enterprise",
+      "groups": {
+        "platform": "Platform",
+        "support": "Support"
+      },
+      "nav": {
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "allUsers": "All Users",
+        "roles": "Roles",
+        "settings": "Settings",
+        "general": "General",
+        "security": "Security",
+        "help": "Help"
+      },
+      "user": {
+        "upgradeToPro": "Upgrade to Pro",
+        "account": "Account",
+        "billing": "Billing",
+        "notifications": "Notifications",
+        "signOut": "Sign out"
+      }
+    }
   },
   "metadata": {
     "auth": {

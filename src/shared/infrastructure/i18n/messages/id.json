@@ -54,7 +54,32 @@
   },
   "dashboard": {
     "title": "Selamat datang di Dasbor",
-    "description": "Anda telah berhasil masuk ke sistem ERP."
+    "description": "Anda telah berhasil masuk ke sistem ERP.",
+    "sidebar": {
+      "appName": "Sistem ERP",
+      "appDescription": "Perusahaan",
+      "groups": {
+        "platform": "Platform",
+        "support": "Dukungan"
+      },
+      "nav": {
+        "dashboard": "Dasbor",
+        "users": "Pengguna",
+        "allUsers": "Semua Pengguna",
+        "roles": "Peran",
+        "settings": "Pengaturan",
+        "general": "Umum",
+        "security": "Keamanan",
+        "help": "Bantuan"
+      },
+      "user": {
+        "upgradeToPro": "Tingkatkan ke Pro",
+        "account": "Akun",
+        "billing": "Tagihan",
+        "notifications": "Notifikasi",
+        "signOut": "Keluar"
+      }
+    }
   },
   "metadata": {
     "auth": {
