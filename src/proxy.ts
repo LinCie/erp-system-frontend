@@ -5,6 +5,7 @@ import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/modules/auth/constants/token-config";
+import { http } from "@/shared/infrastructure/http";
 import { routing } from "@/shared/infrastructure/i18n";
 
 /**
@@ -65,15 +66,10 @@ async function refreshAccessToken(
   refreshToken: string
 ): Promise<RefreshTokenResponse | null> {
   try {
-    const response = await fetch(
-      `${process.env.BACKEND_URL ?? ""}/auth/refresh`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-        cache: "no-store",
-      }
-    );
+    const response = await http.post("auth/refresh", {
+      json: { refreshToken },
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       return null;
@@ -93,14 +89,10 @@ async function refreshAccessToken(
  */
 async function validateAccessToken(accessToken: string): Promise<boolean> {
   try {
-    const response = await fetch(
-      `${process.env.BACKEND_URL ?? ""}/auth/validate`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${accessToken}` },
-        cache: "no-store",
-      }
-    );
+    const response = await http.get("auth/validate", {
+      cache: "no-store",
+      context: { token: accessToken },
+    });
 
     return response.ok;
   } catch {

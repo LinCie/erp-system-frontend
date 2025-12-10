@@ -55,9 +55,17 @@ async function extractErrorMessage(
  * ```
  */
 export const http = ky.create({
-  prefixUrl: process.env.BACKEND_URL ?? "",
+  prefixUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api`,
   timeout: 30000,
   hooks: {
+    beforeRequest: [
+      (request, options) => {
+        const { token } = options.context;
+        if (token) {
+          request.headers.set("Authorization", `Bearer ${token}`);
+        }
+      },
+    ],
     beforeError: [
       async (error: HTTPError): Promise<HTTPError> => {
         const { response } = error;
@@ -102,37 +110,4 @@ export function getErrorMessage(error: unknown): string {
     return error.message;
   }
   return "An unexpected error occurred";
-}
-
-/**
- * Creates an authenticated Ky HTTP client instance with Bearer token.
- * Uses Ky's beforeRequest hook to attach the Authorization header.
- *
- * @param token - The access token to use for authentication (optional)
- * @returns A Ky instance configured with Bearer token authentication
- *
- * @example
- * ```typescript
- * // In a Server Action
- * import { cookies } from 'next/headers';
- * import { createAuthenticatedHttp } from '@/shared/infrastructure/http';
- *
- * const cookieStore = await cookies();
- * const token = cookieStore.get('access_token')?.value;
- * const authHttp = createAuthenticatedHttp(token);
- * const data = await authHttp.get('protected-endpoint').json();
- * ```
- */
-export function createAuthenticatedHttp(token?: string | null) {
-  return http.extend({
-    hooks: {
-      beforeRequest: [
-        (request) => {
-          if (token) {
-            request.headers.set("Authorization", `Bearer ${token}`);
-          }
-        },
-      ],
-    },
-  });
 }

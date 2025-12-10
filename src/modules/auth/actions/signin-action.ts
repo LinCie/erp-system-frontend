@@ -76,6 +76,8 @@ export async function signinAction(
       maxAge: REFRESH_TOKEN_MAX_AGE,
     });
   } catch (error) {
+    console.log(error);
+
     // Handle API errors
     if (isHttpError(error)) {
       const apiError = error as ApiError;
