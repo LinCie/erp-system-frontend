@@ -38,7 +38,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
  */
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const params = useParams<{ spaceId?: string }>();
-  const isInSpace = Boolean(params.spaceId);
+  const spaceId = params.spaceId;
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -62,12 +62,8 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={mainNavItems} label="Platform" isInSpace={isInSpace} />
-        <NavMain
-          items={secondaryNavItems}
-          label="Support"
-          isInSpace={isInSpace}
-        />
+        <NavMain items={mainNavItems} label="Platform" spaceId={spaceId} />
+        <NavMain items={secondaryNavItems} label="Support" spaceId={spaceId} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

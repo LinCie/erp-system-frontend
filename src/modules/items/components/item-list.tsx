@@ -2,14 +2,13 @@
 "use no memo";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import Link from "next/link";
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
   type ColumnDef,
 } from "@tanstack/react-table";
-import { AlertCircle, Eye } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useDebounce } from "@/shared/hooks/use-debounce";
@@ -19,12 +18,9 @@ import {
   LIMIT_OPTIONS,
 } from "@/shared/constants/pagination";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
-import { getSpacesAction } from "../actions/get-spaces-action";
-import {
-  type Space,
-  type SpaceListResponse,
-  type PaginationMeta,
-} from "../types/schemas";
+import { getItemsAction } from "../actions/get-items-action";
+import { type Item, type ItemPaginatedResponse } from "../types/schemas";
+import { type PaginationMeta } from "@/shared/types/pagination";
 import {
   Table,
   TableBody,
@@ -41,7 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -56,33 +51,32 @@ import {
 } from "@/components/ui/pagination";
 
 /**
- * Props for the SpaceList component.
+ * Props for the ItemList component.
  */
-interface SpaceListProps {
-  /** Initial paginated spaces data fetched server-side */
-  initialData: SpaceListResponse;
-  /** Current locale for routing */
-  locale: string;
+interface ItemListProps {
+  /** Initial paginated items data fetched server-side */
+  initialData: ItemPaginatedResponse;
+  /** Space ID for filtering items */
+  spaceId?: number;
 }
 
 /**
- * SpaceList component displays a data table of spaces with search and pagination controls.
+ * ItemList component displays a data table of items with search and pagination controls.
  * Implements debounced search input and limit selector for customizing the view.
- * Provides View action for navigating to individual space detail pages.
  *
  * @param props - Component props
- * @param props.initialData - Initial paginated spaces data fetched server-side
- * @param props.locale - Current locale for routing
- * @returns SpaceList component with data table, search, and pagination controls
+ * @param props.initialData - Initial paginated items data fetched server-side
+ * @param props.spaceId - Optional space ID for filtering items
+ * @returns ItemList component with data table, search, and pagination controls
  *
  * @example
  * ```tsx
- * <SpaceList initialData={spacesResponse} locale="en" />
+ * <ItemList initialData={itemsResponse} spaceId={123} />
  * ```
  */
-export function SpaceList({ initialData, locale }: SpaceListProps) {
-  const t = useTranslations("spaces");
-  const [spaces, setSpaces] = useState<Space[]>(initialData.data);
+export function ItemList({ initialData, spaceId }: ItemListProps) {
+  const t = useTranslations("items");
+  const [items, setItems] = useState<Item[]>(initialData.data);
   const [meta, setMeta] = useState<PaginationMeta>(
     initialData.metadata ?? DEFAULT_PAGINATION_META
   );
@@ -98,82 +92,94 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
   const isInitialRender = useRef(true);
 
   // Define table columns with stable reference
-  const columns = useMemo<ColumnDef<Space>[]>(
+  const columns = useMemo<ColumnDef<Item>[]>(
     () => [
+      { accessorKey: "sku", header: "SKU" },
       {
         accessorKey: "name",
         header: t("columns.name"),
       },
       {
-        accessorKey: "code",
-        header: "Code",
+        accessorKey: "price",
+        header: t("columns.price"),
+        cell: ({ row }) => {
+          const price = row.getValue("price") as number;
+          return new Intl.NumberFormat(undefined, {
+            style: "currency",
+            currency: "IDR",
+          }).format(price);
+        },
+      },
+      {
+        accessorKey: "notes",
+        header: t("columns.notes"),
+        cell: ({ row }) => {
+          const notes = row.getValue("notes") as string | null;
+          return notes ? (
+            <span className="text-muted-foreground line-clamp-2 text-sm">
+              {notes}
+            </span>
+          ) : (
+            <span className="text-muted-foreground text-sm">—</span>
+          );
+        },
       },
       {
         accessorKey: "status",
         header: t("columns.status"),
         cell: ({ row }) => {
-          const status = row.getValue("status") as Space["status"];
+          const status = row.getValue("status") as Item["status"];
           const variant =
             status === "active"
               ? "default"
-              : status === "inactive"
+              : status === "inactie"
                 ? "secondary"
                 : "outline";
           return <Badge variant={variant}>{t(`status.${status}`)}</Badge>;
         },
       },
-      {
-        id: "actions",
-        header: t("columns.actions"),
-        cell: ({ row }) => (
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/${locale}/space/${row.original.id}`}>
-              <Eye className="mr-1 size-4" />
-              {t("actions.view")}
-            </Link>
-          </Button>
-        ),
-      },
     ],
-    [locale, t]
+    [t]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library -- React Compiler automatically skips memoization for TanStack Table
   const table = useReactTable({
-    data: spaces,
+    data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // Fetch spaces when search, limit, or page changes (skip initial render)
+  // Fetch items when search, limit, or page changes (skip initial render)
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
       return;
     }
 
-    const fetchSpaces = async () => {
+    const fetchItems = async () => {
       setIsLoading(true);
       setError(null);
 
-      const result = await getSpacesAction({
+      const result = await getItemsAction({
         search: debouncedSearch || undefined,
         limit,
         page,
+        spaceId,
+        type: "full",
       });
 
       if (result.success && result.data) {
-        setSpaces(result.data.data);
+        setItems(result.data.data);
         setMeta(result.data.metadata);
       } else {
-        setError(result.message ?? "Failed to fetch spaces");
+        setError(result.message ?? "Failed to fetch items");
       }
 
       setIsLoading(false);
     };
 
-    fetchSpaces();
-  }, [debouncedSearch, limit, page]);
+    fetchItems();
+  }, [debouncedSearch, limit, page, spaceId]);
 
   // Reset page when search or limit changes
   const handleLimitChange = (value: string) => {
@@ -253,19 +259,13 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
           <TableBody>
             {isLoading ? (
               // Loading State
-              Array.from({ length: 5 }).map((_, index) => (
+              Array.from({ length: limit }).map((_, index) => (
                 <TableRow key={`skeleton-${index}`}>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-4 w-12" />
-                  </TableCell>
                   <TableCell className="px-4 py-3">
                     <Skeleton className="h-4 w-32" />
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <Skeleton className="h-6 w-16 rounded-full" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-8 w-16" />
                   </TableCell>
                 </TableRow>
               ))
@@ -300,14 +300,7 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
 
       {/* Pagination */}
       {meta.totalPages > 1 && (
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <p className="text-muted-foreground text-sm">
-            {t("pagination.showing", {
-              from: (page - 1) * limit + 1,
-              to: Math.min(page * limit, meta.totalItems),
-              total: meta.totalItems,
-            })}
-          </p>
+        <div className="flex items-center gap-4">
           <Pagination>
             <PaginationContent>
               <PaginationItem>

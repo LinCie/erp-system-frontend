@@ -8,6 +8,8 @@ export interface NavSubItem {
   title: string;
   /** URL path for navigation */
   url: string;
+  /** Whether this item requires a space context (URL will be prefixed with spaceId) */
+  spaceOnly?: boolean;
 }
 
 /**

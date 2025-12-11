@@ -97,7 +97,28 @@
     "empty": "No spaces found.",
     "status": {
       "active": "Active",
-      "inactive": "Inactive",
+      "inactie": "Inactive",
+      "archived": "Archived"
+    },
+    "pagination": {
+      "showing": "Showing {from} to {to} of {total} results"
+    }
+  },
+  "items": {
+    "title": "Items",
+    "description": "Manage and view all items in your inventory",
+    "searchPlaceholder": "Search items...",
+    "show": "Show:",
+    "columns": {
+      "name": "Name",
+      "price": "Price",
+      "notes": "Notes",
+      "status": "Status"
+    },
+    "empty": "No items found.",
+    "status": {
+      "active": "Active",
+      "inactie": "Inactive",
       "archived": "Archived"
     },
     "pagination": {

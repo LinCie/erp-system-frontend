@@ -38,9 +38,5 @@ export default async function DashboardPage({ params }: Props) {
     // If fetch fails, pass empty data - SpaceList will handle refetching
   }
 
-  return (
-    <div className="flex flex-1 flex-col gap-4 p-4">
-      <SpaceList initialData={initialData} locale={locale} />
-    </div>
-  );
+  return <SpaceList initialData={initialData} locale={locale} />;
 }

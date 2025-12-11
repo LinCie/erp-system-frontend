@@ -27,8 +27,8 @@ interface NavMainProps {
   items: NavItem[];
   /** Optional label for the navigation group */
   label?: string;
-  /** Whether the user is currently in a space context */
-  isInSpace?: boolean;
+  /** Current space ID for space-scoped navigation */
+  spaceId?: string;
 }
 
 /**
@@ -42,11 +42,17 @@ interface NavMainProps {
 export function NavMain({
   items,
   label = "Navigation",
-  isInSpace = false,
+  spaceId,
 }: NavMainProps) {
   const filteredItems = items.filter(
-    (item) => !item.spaceOnly || (item.spaceOnly && isInSpace)
+    (item) => !item.spaceOnly || (item.spaceOnly && spaceId)
   );
+
+  /**
+   * Returns the URL with spaceId prefix if the item is space-scoped.
+   */
+  const getUrl = (url: string, spaceOnly?: boolean) =>
+    spaceOnly && spaceId ? `/space/${spaceId}${url}` : url;
 
   return (
     <SidebarGroup>
@@ -73,7 +79,7 @@ export function NavMain({
                     {item.items.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton asChild>
-                          <Link href={subItem.url}>
+                          <Link href={getUrl(subItem.url, subItem.spaceOnly)}>
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -90,7 +96,7 @@ export function NavMain({
                 tooltip={item.title}
                 isActive={item.isActive}
               >
-                <Link href={item.url}>
+                <Link href={getUrl(item.url, item.spaceOnly)}>
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

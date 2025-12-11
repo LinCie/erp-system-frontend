@@ -31,7 +31,7 @@ export default async function AppLayout({
       <AppSidebar user={user} />
       <SidebarInset>
         <SiteHeader />
-        {children}
+        <div className="flex flex-1 flex-col gap-4 p-2 md:p-8">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

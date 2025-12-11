@@ -1,4 +1,10 @@
-import { LayoutDashboard, Users, Settings, HelpCircle } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Settings,
+  HelpCircle,
+  Boxes,
+} from "lucide-react";
 import type { NavItem } from "@/shared/types/navigation";
 
 /**
@@ -18,6 +24,19 @@ export const mainNavItems: NavItem[] = [
     items: [
       { title: "All Users", url: "/users" },
       { title: "Roles", url: "/users/roles" },
+    ],
+  },
+  {
+    title: "Stocks",
+    url: "",
+    icon: Boxes,
+    spaceOnly: true,
+    items: [
+      {
+        title: "Items",
+        url: "/items",
+        spaceOnly: true,
+      },
     ],
   },
   {

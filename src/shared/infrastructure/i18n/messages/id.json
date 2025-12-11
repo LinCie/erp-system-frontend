@@ -97,7 +97,28 @@
     "empty": "Tidak ada ruang ditemukan.",
     "status": {
       "active": "Aktif",
-      "inactive": "Tidak Aktif",
+      "inactie": "Tidak Aktif",
+      "archived": "Diarsipkan"
+    },
+    "pagination": {
+      "showing": "Menampilkan {from} sampai {to} dari {total} hasil"
+    }
+  },
+  "items": {
+    "title": "Item",
+    "description": "Kelola dan lihat semua item dalam inventaris Anda",
+    "searchPlaceholder": "Cari item...",
+    "show": "Tampilkan:",
+    "columns": {
+      "name": "Nama",
+      "price": "Harga",
+      "notes": "Catatan",
+      "status": "Status"
+    },
+    "empty": "Tidak ada item ditemukan.",
+    "status": {
+      "active": "Aktif",
+      "inactie": "Tidak Aktif",
       "archived": "Diarsipkan"
     },
     "pagination": {
