@@ -27,21 +27,32 @@ interface NavMainProps {
   items: NavItem[];
   /** Optional label for the navigation group */
   label?: string;
+  /** Whether the user is currently in a space context */
+  isInSpace?: boolean;
 }
 
 /**
  * Primary navigation menu component for the sidebar.
  * Renders collapsible menu items with icons and labels.
  * Supports nested sub-items using Collapsible component.
+ * Filters out spaceOnly items when not in a space context.
  * @param props - Component props containing navigation items
  * @returns Navigation menu with collapsible sections
  */
-export function NavMain({ items, label = "Navigation" }: NavMainProps) {
+export function NavMain({
+  items,
+  label = "Navigation",
+  isInSpace = false,
+}: NavMainProps) {
+  const filteredItems = items.filter(
+    (item) => !item.spaceOnly || (item.spaceOnly && isInSpace)
+  );
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) =>
+        {filteredItems.map((item) =>
           item.items && item.items.length > 0 ? (
             <Collapsible
               key={item.title}

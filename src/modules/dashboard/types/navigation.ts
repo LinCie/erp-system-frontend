@@ -24,6 +24,8 @@ export interface NavItem {
   isActive?: boolean;
   /** Optional nested sub-items for collapsible menus */
   items?: NavSubItem[];
+  /** Whether this item should only be visible when user is in a space */
+  spaceOnly?: boolean;
 }
 
 /**

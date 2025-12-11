@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useParams } from "next/navigation";
 import { Command } from "lucide-react";
 import { Link } from "@/shared/infrastructure/i18n/navigation";
 import {
@@ -36,6 +37,9 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
  * @returns Complete sidebar with navigation and user profile
  */
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const params = useParams<{ spaceId?: string }>();
+  const isInSpace = Boolean(params.spaceId);
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -58,8 +62,12 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={mainNavItems} label="Platform" />
-        <NavMain items={secondaryNavItems} label="Support" />
+        <NavMain items={mainNavItems} label="Platform" isInSpace={isInSpace} />
+        <NavMain
+          items={secondaryNavItems}
+          label="Support"
+          isInSpace={isInSpace}
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
