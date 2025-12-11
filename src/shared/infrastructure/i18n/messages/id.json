@@ -81,6 +81,29 @@
       }
     }
   },
+  "spaces": {
+    "title": "Ruang",
+    "searchPlaceholder": "Cari ruang...",
+    "show": "Tampilkan:",
+    "columns": {
+      "name": "Nama",
+      "status": "Status",
+      "created": "Dibuat",
+      "actions": "Aksi"
+    },
+    "actions": {
+      "view": "Lihat"
+    },
+    "empty": "Tidak ada ruang ditemukan.",
+    "status": {
+      "active": "Aktif",
+      "inactive": "Tidak Aktif",
+      "archived": "Diarsipkan"
+    },
+    "pagination": {
+      "showing": "Menampilkan {from} sampai {to} dari {total} hasil"
+    }
+  },
   "metadata": {
     "auth": {
       "title": "Autentikasi",

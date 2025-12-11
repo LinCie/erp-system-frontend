@@ -81,6 +81,29 @@
       }
     }
   },
+  "spaces": {
+    "title": "Spaces",
+    "searchPlaceholder": "Search spaces...",
+    "show": "Show:",
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View"
+    },
+    "empty": "No spaces found.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "archived": "Archived"
+    },
+    "pagination": {
+      "showing": "Showing {from} to {to} of {total} results"
+    }
+  },
   "metadata": {
     "auth": {
       "title": "Authentication",
