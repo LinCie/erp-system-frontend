@@ -29,7 +29,7 @@ export interface NavItem {
 }
 
 /**
- * Represents user information displayed in the sidebar footer.
+ * Represents user information displayed in navigation components.
  */
 export interface UserInfo {
   /** User's display name */
@@ -38,4 +38,14 @@ export interface UserInfo {
   email: string;
   /** Optional URL to user's avatar image */
   avatar?: string;
+}
+
+/**
+ * Breadcrumb item configuration for site headers.
+ */
+export interface BreadcrumbItemConfig {
+  /** Display label for the breadcrumb */
+  label: string;
+  /** Optional href for navigation (if not provided, renders as current page) */
+  href?: string;
 }

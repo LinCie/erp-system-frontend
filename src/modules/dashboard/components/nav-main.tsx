@@ -17,7 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import type { NavItem } from "../types/navigation";
+import type { NavItem } from "@/shared/types/navigation";
 
 /**
  * Props for the NavMain component.

@@ -1,4 +1,5 @@
 "use client";
+"use no memo";
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
@@ -12,6 +13,12 @@ import { AlertCircle, Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useDebounce } from "@/shared/hooks/use-debounce";
+import { getPageNumbers } from "@/shared/lib/pagination";
+import {
+  DEFAULT_PAGINATION_META,
+  LIMIT_OPTIONS,
+} from "@/shared/constants/pagination";
+import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
 import { getSpacesAction } from "../actions/get-spaces-action";
 import {
   type Space,
@@ -58,64 +65,6 @@ interface SpaceListProps {
   locale: string;
 }
 
-/** Available limit options for pagination */
-const LIMIT_OPTIONS = [10, 20, 50] as const;
-
-/** Debounce delay for search input in milliseconds */
-const SEARCH_DEBOUNCE_DELAY = 300;
-
-/** Default pagination metadata */
-const DEFAULT_META: PaginationMeta = {
-  currentPage: 1,
-  totalPages: 1,
-  totalItems: 0,
-  itemsPerPage: 10,
-};
-
-/**
- * Generates an array of page numbers to display in pagination.
- * Shows first page, last page, current page, and surrounding pages with ellipsis.
- * @param currentPage - Current active page
- * @param totalPages - Total number of pages
- * @returns Array of page numbers and ellipsis markers
- */
-function getPageNumbers(
-  currentPage: number,
-  totalPages: number
-): (number | "ellipsis")[] {
-  if (totalPages <= 5) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
-
-  const pages: (number | "ellipsis")[] = [];
-
-  // Always show first page
-  pages.push(1);
-
-  if (currentPage > 3) {
-    pages.push("ellipsis");
-  }
-
-  // Show pages around current
-  const start = Math.max(2, currentPage - 1);
-  const end = Math.min(totalPages - 1, currentPage + 1);
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-
-  if (currentPage < totalPages - 2) {
-    pages.push("ellipsis");
-  }
-
-  // Always show last page
-  if (totalPages > 1) {
-    pages.push(totalPages);
-  }
-
-  return pages;
-}
-
 /**
  * SpaceList component displays a data table of spaces with search and pagination controls.
  * Implements debounced search input and limit selector for customizing the view.
@@ -135,7 +84,7 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
   const t = useTranslations("spaces");
   const [spaces, setSpaces] = useState<Space[]>(initialData.data);
   const [meta, setMeta] = useState<PaginationMeta>(
-    initialData.metadata ?? DEFAULT_META
+    initialData.metadata ?? DEFAULT_PAGINATION_META
   );
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState<number>(LIMIT_OPTIONS[0]);
@@ -189,6 +138,7 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
     [locale, t]
   );
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- React Compiler automatically skips memoization for TanStack Table
   const table = useReactTable({
     data: spaces,
     columns,

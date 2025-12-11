@@ -8,16 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-
-/**
- * Breadcrumb item configuration.
- */
-export interface BreadcrumbItemConfig {
-  /** Display label for the breadcrumb */
-  label: string;
-  /** Optional href for navigation (if not provided, renders as current page) */
-  href?: string;
-}
+import type { BreadcrumbItemConfig } from "@/shared/types/navigation";
 
 /**
  * Props for the SiteHeader component.

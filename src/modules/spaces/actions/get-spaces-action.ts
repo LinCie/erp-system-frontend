@@ -3,16 +3,8 @@
 import { cookies } from "next/headers";
 import { spacesService } from "../services/spaces-service";
 import { type GetSpacesParams, type SpaceListResponse } from "../types/schemas";
+import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
-
-/**
- * Result type for getSpacesAction.
- */
-export interface GetSpacesResult {
-  success: boolean;
-  data?: SpaceListResponse;
-  message?: string;
-}
 
 /**
  * Server Action to fetch spaces with authentication.
@@ -29,7 +21,7 @@ export interface GetSpacesResult {
  */
 export async function getSpacesAction(
   params?: GetSpacesParams
-): Promise<GetSpacesResult> {
+): Promise<ActionResult<SpaceListResponse>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 

@@ -2,9 +2,10 @@ import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  ACCESS_TOKEN_MAX_AGE,
-  REFRESH_TOKEN_MAX_AGE,
-} from "@/modules/auth/constants/token-config";
+  setAuthCookies,
+  clearAuthCookies,
+  type AuthTokens,
+} from "@/shared/lib/auth-cookies";
 import { http } from "@/shared/infrastructure/http";
 import { routing } from "@/shared/infrastructure/i18n";
 
@@ -15,13 +16,11 @@ const handleI18nRouting = createMiddleware(routing);
 
 /**
  * Auth routes that should redirect to home if user is authenticated.
- * Uses locale-aware patterns (e.g., '/id/signin', '/en/signin').
  */
 const AUTH_ROUTES = ["/signin", "/signup"];
 
 /**
  * Public routes that don't require authentication.
- * Uses locale-aware patterns (e.g., '/id/signin', '/en/signin').
  */
 const PUBLIC_ROUTES = ["/signin", "/signup"];
 
@@ -50,11 +49,15 @@ function getPathnameWithoutLocale(pathname: string): string {
 }
 
 /**
- * Response structure from the refresh token endpoint.
+ * Extracts locale from pathname or returns default.
+ * @param pathname - The full pathname
+ * @returns The locale string
  */
-interface RefreshTokenResponse {
-  access: string;
-  refresh: string;
+function getLocaleFromPathname(pathname: string): string {
+  const localeMatch = pathname.match(
+    new RegExp(`^/(${routing.locales.join("|")})`)
+  );
+  return localeMatch ? localeMatch[1] : routing.defaultLocale;
 }
 
 /**
@@ -64,7 +67,7 @@ interface RefreshTokenResponse {
  */
 async function refreshAccessToken(
   refreshToken: string
-): Promise<RefreshTokenResponse | null> {
+): Promise<AuthTokens | null> {
   try {
     const response = await http.post("auth/refresh", {
       json: { refreshToken },
@@ -75,8 +78,7 @@ async function refreshAccessToken(
       return null;
     }
 
-    const data = (await response.json()) as RefreshTokenResponse;
-    return data;
+    return (await response.json()) as AuthTokens;
   } catch {
     return null;
   }
@@ -101,41 +103,6 @@ async function validateAccessToken(accessToken: string): Promise<boolean> {
 }
 
 /**
- * Creates a response with updated auth cookies.
- * @param response - The base response to add cookies to
- * @param tokens - The new tokens to set
- * @returns Response with updated cookies
- */
-function setAuthCookies(
-  response: NextResponse,
-  tokens: RefreshTokenResponse
-): NextResponse {
-  const isProduction = process.env.NODE_ENV === "production";
-
-  response.cookies.set({
-    name: "access_token",
-    value: tokens.access,
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    path: "/",
-    maxAge: ACCESS_TOKEN_MAX_AGE,
-  });
-
-  response.cookies.set({
-    name: "refresh_token",
-    value: tokens.refresh,
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    path: "/",
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  });
-
-  return response;
-}
-
-/**
  * Clears auth cookies and redirects to signin with locale prefix.
  * @param request - The incoming request
  * @param callbackUrl - Optional callback URL after signin
@@ -145,29 +112,22 @@ function clearAuthAndRedirect(
   request: NextRequest,
   callbackUrl?: string
 ): NextResponse {
-  // Extract current locale from pathname or use default
-  const pathname = request.nextUrl.pathname;
-  const localeMatch = pathname.match(
-    new RegExp(`^/(${routing.locales.join("|")})`)
-  );
-  const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
-
+  const locale = getLocaleFromPathname(request.nextUrl.pathname);
   const signinUrl = new URL(`/${locale}/signin`, request.url);
+
   if (callbackUrl) {
     signinUrl.searchParams.set("callbackUrl", callbackUrl);
   }
 
   const response = NextResponse.redirect(signinUrl);
-
-  response.cookies.delete("access_token");
-  response.cookies.delete("refresh_token");
+  clearAuthCookies(response.cookies);
 
   return response;
 }
 
 /**
  * Proxy for route protection with i18n routing and automatic token refresh.
- * - Handles locale routing before authentication checks (Requirement 6.1)
+ * - Handles locale routing before authentication checks
  * - Validates access token on protected routes
  * - Refreshes expired access tokens using refresh token
  * - Clears tokens and redirects to signin if refresh fails
@@ -180,20 +140,16 @@ export default async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
   const refreshToken = request.cookies.get("refresh_token")?.value;
 
-  // Check if route matches locale-aware patterns (Requirement 6.2)
   const isAuthRoute = matchesLocalizedRoute(path, AUTH_ROUTES);
   const isPublicRoute = matchesLocalizedRoute(path, PUBLIC_ROUTES);
 
   // Handle authenticated users on auth routes - redirect to home with locale
   if (accessToken && isAuthRoute) {
-    const localeMatch = path.match(
-      new RegExp(`^/(${routing.locales.join("|")})`)
-    );
-    const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
+    const locale = getLocaleFromPathname(path);
     return NextResponse.redirect(new URL(`/${locale}`, request.url));
   }
 
-  // Public routes - apply i18n routing only (Requirement 6.1)
+  // Public routes - apply i18n routing only
   if (isPublicRoute) {
     return handleI18nRouting(request);
   }
@@ -209,7 +165,6 @@ export default async function proxy(request: NextRequest) {
     const isValid = await validateAccessToken(accessToken);
 
     if (isValid) {
-      // Apply i18n routing for valid authenticated requests
       return handleI18nRouting(request);
     }
   }
@@ -219,9 +174,9 @@ export default async function proxy(request: NextRequest) {
     const newTokens = await refreshAccessToken(refreshToken);
 
     if (newTokens) {
-      // Refresh successful - apply i18n routing and set new cookies
       const response = handleI18nRouting(request);
-      return setAuthCookies(response, newTokens);
+      setAuthCookies(response.cookies, newTokens);
+      return response;
     }
   }
 
@@ -232,7 +187,7 @@ export default async function proxy(request: NextRequest) {
 
 /**
  * Configure which routes the proxy should run on.
- * Excludes API routes, static files, and Next.js internals (Requirement 6.3).
+ * Excludes API routes, static files, and Next.js internals.
  */
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|.*\\.png$|.*\\.ico$).*)"],

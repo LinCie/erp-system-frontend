@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
+import { useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -8,8 +8,10 @@ import { signupAction } from "../actions/signup-action";
 import {
   signupSchema,
   type SignupInput,
-  type ActionResult,
+  initialActionState,
 } from "../types/schemas";
+import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
+import { FormErrorAlert } from "@/components/form-error-alert";
 import {
   Form,
   FormControl,
@@ -21,12 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-const initialState: ActionResult = {
-  success: false,
-  message: undefined,
-  errors: undefined,
-};
-
 /**
  * Signup form component with Zod validation and server action integration.
  * Displays inline validation errors and API error messages.
@@ -36,7 +32,7 @@ export function SignupForm() {
   const t = useTranslations("auth.signup");
   const [state, formAction, isPending] = useActionState(
     signupAction,
-    initialState
+    initialActionState
   );
 
   const form = useForm<SignupInput>({
@@ -49,32 +45,13 @@ export function SignupForm() {
   });
 
   // Sync server-side errors with form state
-  useEffect(() => {
-    if (state.errors) {
-      Object.entries(state.errors).forEach(([field, messages]) => {
-        if (messages && messages.length > 0) {
-          form.setError(field as keyof SignupInput, {
-            type: "server",
-            message: messages[0],
-          });
-        }
-      });
-    }
-  }, [state.errors, form]);
+  useSyncFormErrors(form, state.errors);
 
   return (
     <Form {...form}>
       <form action={formAction} className="grid gap-4">
         {/* Display API-level error message */}
-        {state.message && !state.success && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="bg-destructive/10 text-destructive rounded-md p-3 text-sm"
-          >
-            {state.message}
-          </div>
-        )}
+        {!state.success && <FormErrorAlert message={state.message} />}
 
         <FormField
           control={form.control}

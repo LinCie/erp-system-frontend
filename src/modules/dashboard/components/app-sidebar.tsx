@@ -17,7 +17,7 @@ import {
   mainNavItems,
   secondaryNavItems,
 } from "../constants/navigation-config";
-import type { UserInfo } from "../types/navigation";
+import type { UserInfo } from "@/shared/types/navigation";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 

@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { authService } from "../services/auth-service";
+import { clearAuthCookies } from "@/shared/lib/auth-cookies";
 
 /**
  * Server action for user signout.
@@ -27,8 +28,7 @@ export async function signoutAction(): Promise<void> {
   }
 
   // Delete JWT cookies
-  cookieStore.delete("access_token");
-  cookieStore.delete("refresh_token");
+  clearAuthCookies(cookieStore);
 
   // Redirect to signin page
   redirect("/signin");

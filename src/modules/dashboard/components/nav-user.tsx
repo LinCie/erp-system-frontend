@@ -25,7 +25,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signoutAction } from "@/modules/auth/actions/signout-action";
-import type { UserInfo } from "../types/navigation";
+import { getInitials } from "@/shared/lib/string-utils";
+import type { UserInfo } from "@/shared/types/navigation";
 
 /**
  * Props for the NavUser component.
@@ -33,20 +34,6 @@ import type { UserInfo } from "../types/navigation";
 interface NavUserProps {
   /** User information to display */
   user: UserInfo;
-}
-
-/**
- * Generates initials from a user's name.
- * @param name - The user's full name
- * @returns Two-character initials or "??" if name is empty
- */
-function getInitials(name: string): string {
-  if (!name) return "??";
-  const parts = name.trim().split(" ");
-  if (parts.length === 1) {
-    return parts[0].substring(0, 2).toUpperCase();
-  }
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 /**

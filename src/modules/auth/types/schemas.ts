@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+// Re-export shared types for convenience
+export {
+  type ActionResult,
+  initialActionState,
+} from "@/shared/types/action-result";
+export {
+  type ErrorResponse,
+  errorResponseSchema,
+} from "@/shared/types/api-schemas";
+
 /**
  * Schema for user signup form validation.
  * Validates name (required), email (valid format), and password (min 6 chars).
@@ -28,23 +38,6 @@ export const tokensResponseSchema = z.object({
   refresh: z.string(),
 });
 
-/**
- * Schema for API error response validation.
- * Validates error message and optional issues array.
- */
-export const errorResponseSchema = z.object({
-  message: z.string(),
-  issues: z
-    .array(
-      z.object({
-        code: z.string(),
-        message: z.string(),
-        path: z.array(z.union([z.string(), z.number()])),
-      })
-    )
-    .optional(),
-});
-
 /** Inferred type for signup form input */
 export type SignupInput = z.infer<typeof signupSchema>;
 
@@ -53,16 +46,3 @@ export type SigninInput = z.infer<typeof signinSchema>;
 
 /** Inferred type for API token response */
 export type TokensResponse = z.infer<typeof tokensResponseSchema>;
-
-/** Inferred type for API error response */
-export type ErrorResponse = z.infer<typeof errorResponseSchema>;
-
-/**
- * Action result type for server actions.
- * Contains success status, optional message, and field-specific errors.
- */
-export interface ActionResult {
-  success: boolean;
-  message?: string;
-  errors?: Record<string, string[]>;
-}

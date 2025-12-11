@@ -1,5 +1,5 @@
 import { LayoutDashboard, Users, Settings, HelpCircle } from "lucide-react";
-import type { NavItem } from "../types/navigation";
+import type { NavItem } from "@/shared/types/navigation";
 
 /**
  * Primary navigation items displayed in the main sidebar content.

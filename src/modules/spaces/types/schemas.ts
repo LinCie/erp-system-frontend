@@ -1,8 +1,17 @@
 import { z } from "zod";
 
+// Re-export shared pagination types for convenience
+export {
+  type PaginationMeta,
+  type PaginationParams,
+  type PaginatedResponse,
+  paginationMetaSchema,
+  paginationParamsSchema,
+} from "@/shared/types/pagination";
+
 /**
  * Schema for space entity validation.
- * Validates id, name, status, created_at, and updated_at fields.
+ * Validates id, name, status, and code fields.
  */
 export const spaceSchema = z.object({
   id: z.number(),
@@ -12,22 +21,17 @@ export const spaceSchema = z.object({
 });
 
 /**
- * Schema for pagination metadata validation.
- */
-export const paginationMetaSchema = z.object({
-  currentPage: z.number(),
-  totalPages: z.number(),
-  totalItems: z.number(),
-  itemsPerPage: z.number(),
-});
-
-/**
  * Schema for paginated space list API response validation.
  * Validates data array and pagination metadata.
  */
 export const spaceListResponseSchema = z.object({
   data: z.array(spaceSchema),
-  metadata: paginationMetaSchema,
+  metadata: z.object({
+    currentPage: z.number(),
+    totalPages: z.number(),
+    totalItems: z.number(),
+    itemsPerPage: z.number(),
+  }),
 });
 
 /**
@@ -42,9 +46,6 @@ export const getSpacesParamsSchema = z.object({
 
 /** Inferred type for a single space entity */
 export type Space = z.infer<typeof spaceSchema>;
-
-/** Inferred type for pagination metadata */
-export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
 
 /** Inferred type for space list API response */
 export type SpaceListResponse = z.infer<typeof spaceListResponseSchema>;

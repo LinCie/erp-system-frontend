@@ -3,12 +3,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { authService } from "../services/auth-service";
-import {
-  ACCESS_TOKEN_MAX_AGE,
-  REFRESH_TOKEN_MAX_AGE,
-} from "../constants/token-config";
 import { signinSchema, type ActionResult } from "../types/schemas";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
+import { setAuthCookies } from "@/shared/lib/auth-cookies";
+import { mapZodErrors } from "@/shared/lib/validation";
 
 /**
  * Server action for user signin.
@@ -31,20 +29,10 @@ export async function signinAction(
   const validationResult = signinSchema.safeParse(rawData);
 
   if (!validationResult.success) {
-    // Map Zod errors to field-specific errors
-    const errors: Record<string, string[]> = {};
-    for (const issue of validationResult.error.issues) {
-      const field = issue.path[0]?.toString() ?? "form";
-      if (!errors[field]) {
-        errors[field] = [];
-      }
-      errors[field].push(issue.message);
-    }
-
     return {
       success: false,
       message: "Validation failed",
-      errors,
+      errors: mapZodErrors(validationResult.error),
     };
   }
 
@@ -54,30 +42,8 @@ export async function signinAction(
 
     // Set JWT cookies
     const cookieStore = await cookies();
-    const isProduction = process.env.NODE_ENV === "production";
-
-    cookieStore.set({
-      name: "access_token",
-      value: tokens.access,
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
-      path: "/",
-      maxAge: ACCESS_TOKEN_MAX_AGE,
-    });
-
-    cookieStore.set({
-      name: "refresh_token",
-      value: tokens.refresh,
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
-      path: "/",
-      maxAge: REFRESH_TOKEN_MAX_AGE,
-    });
+    setAuthCookies(cookieStore, tokens);
   } catch (error) {
-    console.log(error);
-
     // Handle API errors
     if (isHttpError(error)) {
       const apiError = error as ApiError;

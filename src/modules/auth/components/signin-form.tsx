@@ -8,8 +8,10 @@ import { signinAction } from "../actions/signin-action";
 import {
   signinSchema,
   type SigninInput,
-  type ActionResult,
+  initialActionState,
 } from "../types/schemas";
+import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
+import { FormErrorAlert } from "@/components/form-error-alert";
 import {
   Form,
   FormControl,
@@ -21,12 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-const initialState: ActionResult = {
-  success: false,
-  message: undefined,
-  errors: undefined,
-};
-
 /**
  * Signin form component with Zod validation and server action integration.
  * Auto-focuses email input on mount for immediate entry.
@@ -37,7 +33,7 @@ export function SigninForm() {
   const t = useTranslations("auth.signin");
   const [state, formAction, isPending] = useActionState(
     signinAction,
-    initialState
+    initialActionState
   );
   const emailInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,38 +45,19 @@ export function SigninForm() {
     },
   });
 
-  // Auto-focus email input on mount (Requirement 2.4)
+  // Auto-focus email input on mount
   useEffect(() => {
     emailInputRef.current?.focus();
   }, []);
 
   // Sync server-side errors with form state
-  useEffect(() => {
-    if (state.errors) {
-      Object.entries(state.errors).forEach(([field, messages]) => {
-        if (messages && messages.length > 0) {
-          form.setError(field as keyof SigninInput, {
-            type: "server",
-            message: messages[0],
-          });
-        }
-      });
-    }
-  }, [state.errors, form]);
+  useSyncFormErrors(form, state.errors);
 
   return (
     <Form {...form}>
       <form action={formAction} className="grid gap-4">
         {/* Display API-level error message */}
-        {state.message && !state.success && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="bg-destructive/10 text-destructive rounded-md p-3 text-sm"
-          >
-            {state.message}
-          </div>
-        )}
+        {!state.success && <FormErrorAlert message={state.message} />}
 
         <FormField
           control={form.control}
