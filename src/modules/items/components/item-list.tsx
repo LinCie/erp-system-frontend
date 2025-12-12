@@ -132,7 +132,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
           const variant =
             status === "active"
               ? "default"
-              : status === "inactie"
+              : status === "inactive"
                 ? "secondary"
                 : "outline";
           return <Badge variant={variant}>{t(`status.${status}`)}</Badge>;

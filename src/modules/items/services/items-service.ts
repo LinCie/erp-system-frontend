@@ -60,7 +60,7 @@ export const itemsService = {
     const response = await http
       .post("items", {
         context: { token },
-        json: { ...data, spaceId: data.spaceId },
+        json: data,
       })
       .json();
     return itemSchema.parse(response);

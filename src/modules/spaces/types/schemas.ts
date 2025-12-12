@@ -1,54 +1,76 @@
 import { z } from "zod";
+import { entitySchema, paginationMetaSchema } from "@/shared/types";
 
-// Re-export shared pagination types for convenience
+// Re-export shared types for convenience
 export {
+  type ActionResult,
+  initialActionState,
   type PaginationMeta,
-  type PaginationParams,
-  type PaginatedResponse,
   paginationMetaSchema,
-  paginationParamsSchema,
-} from "@/shared/types/pagination";
+  type PaginatedResponse,
+  type ErrorResponse,
+  errorResponseSchema,
+  type Entity,
+  entitySchema,
+  type Status,
+  statusSchema,
+} from "@/shared/types";
 
 /**
- * Schema for space entity validation.
- * Validates id, name, status, and code fields.
+ * Space schemas
  */
-export const spaceSchema = z.object({
-  id: z.number(),
+
+export const addressSchema = z
+  .object({
+    detail: z.string().nullable().optional(),
+  })
+  .nullable();
+
+export const spaceSchema = entitySchema.extend({
   name: z.string(),
-  status: z.enum(["active", "inactive", "archived"]),
   code: z.string(),
 });
 
-/**
- * Schema for paginated space list API response validation.
- * Validates data array and pagination metadata.
- */
+export const createSpaceSchema = z.object({
+  name: z.string(),
+  code: z.string(),
+  address: addressSchema,
+  status: z.enum(["active", "inactive"]),
+  notes: z.string().nullable().optional(),
+});
+
+export const updateSpaceSchema = z.object({
+  name: z.string().optional(),
+  code: z.string().optional(),
+  address: addressSchema.optional(),
+  status: z.enum(["active", "inactive"]).optional(),
+  notes: z.string().nullable().optional(),
+});
+
 export const spaceListResponseSchema = z.object({
   data: z.array(spaceSchema),
-  metadata: z.object({
-    currentPage: z.number(),
-    totalPages: z.number(),
-    totalItems: z.number(),
-    itemsPerPage: z.number(),
-  }),
+  metadata: paginationMetaSchema,
 });
 
 /**
- * Schema for getSpaces query parameters validation.
- * Validates optional search, limit, and page parameters.
+ * Query parameters
  */
-export const getSpacesParamsSchema = z.object({
+
+export const getSpacesQuerySchema = z.object({
   search: z.string().optional(),
-  limit: z.number().positive().optional(),
-  page: z.number().positive().optional(),
+  status: z.enum(["active", "inactive", "archived"]).optional(),
+  limit: z.number().int().positive().optional(),
+  page: z.number().int().positive().optional(),
 });
 
-/** Inferred type for a single space entity */
+/**
+ * Inferred types
+ */
+
+export type Address = z.infer<typeof addressSchema>;
 export type Space = z.infer<typeof spaceSchema>;
-
-/** Inferred type for space list API response */
+export type CreateSpaceInput = z.infer<typeof createSpaceSchema>;
+export type UpdateSpaceInput = z.infer<typeof updateSpaceSchema>;
 export type SpaceListResponse = z.infer<typeof spaceListResponseSchema>;
-
-/** Inferred type for getSpaces query parameters */
-export type GetSpacesParams = z.infer<typeof getSpacesParamsSchema>;
+export type GetSpacesQuery = z.infer<typeof getSpacesQuerySchema>;
+export type GetSpacesParams = z.infer<typeof getSpacesQuerySchema>;

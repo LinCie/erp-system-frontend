@@ -1,70 +1,81 @@
 import { z } from "zod";
-import { paginationMetaSchema, paginationParamsSchema } from "@/shared/types";
-import { entitySchema, statusSchema } from "@/shared/types/entity-schema";
+import { entitySchema, paginationMetaSchema } from "@/shared/types";
+
+// Re-export shared types for convenience
+export {
+  type ActionResult,
+  initialActionState,
+  type PaginationMeta,
+  paginationMetaSchema,
+  type PaginatedResponse,
+  type ErrorResponse,
+  errorResponseSchema,
+  type Entity,
+  entitySchema,
+  type Status,
+  statusSchema,
+} from "@/shared/types";
 
 /**
- * Item response schema
+ * Item schemas
  */
+
 export const itemSchema = entitySchema.extend({
-  sku: z.string(),
   name: z.string(),
-  price: z.coerce.number(),
+  price: z.coerce.number().nullable().optional(),
+  sku: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
 });
-export type Item = z.infer<typeof itemSchema>;
 
-/**
- * Item paginated response schema
- */
-export const itemPaginatedResponseSchema = z.object({
+export const createItemSchema = z.object({
+  name: z.string(),
+  status: z.enum(["active", "inactive"]),
+});
+
+export const updateItemSchema = z.object({
+  name: z.string().optional(),
+  status: z.enum(["active", "inactive"]).optional(),
+});
+
+export const itemListResponseSchema = z.object({
   data: z.array(itemSchema),
   metadata: paginationMetaSchema,
 });
-export type ItemPaginatedResponse = z.infer<typeof itemPaginatedResponseSchema>;
 
-/**
- * Create item request schema
- */
-export const createItemSchema = z.object({
-  spaceId: z.number(),
-  sku: z.string(),
-  name: z.string().min(1, "Name is required"),
-  price: z.coerce.number(),
-  notes: z.string().nullable().optional(),
-  status: statusSchema,
-});
-export type CreateItemInput = z.infer<typeof createItemSchema>;
+export const itemPaginatedResponseSchema = itemListResponseSchema;
 
-/**
- * Update item request schema
- */
-export const updateItemSchema = z.object({
-  name: z.string().min(1, "Name is required").optional(),
-  status: statusSchema.optional(),
-});
-export type UpdateItemInput = z.infer<typeof updateItemSchema>;
-
-/**
- * Get items query parameters schema
- */
-export const getItemsParamsSchema = paginationParamsSchema.extend({
-  spaceId: z.number().optional(),
-  type: z.enum(["full", "partial"]),
-});
-export type GetItemsParams = z.infer<typeof getItemsParamsSchema>;
-
-/**
- * Item chat request schema
- */
 export const itemChatSchema = z.object({
-  prompt: z.string().min(1, "Prompt is required"),
+  prompt: z.string(),
 });
-export type ItemChatInput = z.infer<typeof itemChatSchema>;
 
-/**
- * Item chat response schema
- */
 export const itemChatResponseSchema = z.object({
   response: z.string(),
 });
+
+/**
+ * Query parameters
+ */
+
+export const getItemsQuerySchema = z.object({
+  spaceId: z.number().optional(),
+  type: z.enum(["full", "partial"]),
+  search: z.string().optional(),
+  limit: z.number().int().positive().optional(),
+  page: z.number().int().positive().optional(),
+});
+
+export const getItemsParamsSchema = getItemsQuerySchema;
+
+/**
+ * Inferred types
+ */
+
+export type Item = z.infer<typeof itemSchema>;
+export type CreateItemInput = z.infer<typeof createItemSchema>;
+export type UpdateItemInput = z.infer<typeof updateItemSchema>;
+export type ItemListResponse = z.infer<typeof itemListResponseSchema>;
+export type ItemPaginatedResponse = z.infer<typeof itemPaginatedResponseSchema>;
+export type ItemChatInput = z.infer<typeof itemChatSchema>;
 export type ItemChatResponse = z.infer<typeof itemChatResponseSchema>;
+export type GetItemsQuery = z.infer<typeof getItemsQuerySchema>;
+export type GetItemsParams = z.infer<typeof getItemsQuerySchema>;

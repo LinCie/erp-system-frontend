@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const statusSchema = z.enum(["active", "inactie", "archived"]);
+const statusSchema = z.enum(["active", "inactive", "archived"]);
 
 type Status = z.infer<typeof statusSchema>;
 
