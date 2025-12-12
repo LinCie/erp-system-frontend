@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { Link } from "@/shared/infrastructure/i18n/navigation";
+import { Link, usePathname } from "@/shared/infrastructure/i18n/navigation";
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,7 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import type { NavItem } from "@/shared/types/navigation";
+import type { NavItem, NavSubItem } from "@/shared/types/navigation";
 
 /**
  * Props for the NavMain component.
@@ -36,6 +36,7 @@ interface NavMainProps {
  * Renders collapsible menu items with icons and labels.
  * Supports nested sub-items using Collapsible component.
  * Filters out spaceOnly items when not in a space context.
+ * Dynamically determines active state based on current pathname.
  * @param props - Component props containing navigation items
  * @returns Navigation menu with collapsible sections
  */
@@ -44,6 +45,7 @@ export function NavMain({
   label = "Navigation",
   spaceId,
 }: NavMainProps) {
+  const pathname = usePathname();
   const filteredItems = items.filter(
     (item) => !item.spaceOnly || (item.spaceOnly && spaceId)
   );
@@ -54,6 +56,38 @@ export function NavMain({
   const getUrl = (url: string, spaceOnly?: boolean) =>
     spaceOnly && spaceId ? `/space/${spaceId}${url}` : url;
 
+  /**
+   * Checks if a URL matches the current pathname.
+   * For root URL ("/"), requires exact match.
+   * For other URLs, checks if pathname starts with the URL.
+   */
+  const isUrlActive = (url: string, spaceOnly?: boolean): boolean => {
+    const fullUrl = getUrl(url, spaceOnly);
+    if (fullUrl === "/") {
+      return pathname === "/";
+    }
+    return pathname === fullUrl || pathname.startsWith(`${fullUrl}/`);
+  };
+
+  /**
+   * Checks if a nav item or any of its sub-items is active.
+   */
+  const isItemActive = (item: NavItem): boolean => {
+    if (item.items && item.items.length > 0) {
+      return item.items.some((subItem) =>
+        isUrlActive(subItem.url, subItem.spaceOnly)
+      );
+    }
+    return isUrlActive(item.url, item.spaceOnly);
+  };
+
+  /**
+   * Checks if a sub-item is active.
+   */
+  const isSubItemActive = (subItem: NavSubItem): boolean => {
+    return isUrlActive(subItem.url, subItem.spaceOnly);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -63,7 +97,7 @@ export function NavMain({
             <Collapsible
               key={item.title}
               asChild
-              defaultOpen={item.isActive}
+              defaultOpen={isItemActive(item)}
               className="group/collapsible"
             >
               <SidebarMenuItem>
@@ -78,7 +112,10 @@ export function NavMain({
                   <SidebarMenuSub>
                     {item.items.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={isSubItemActive(subItem)}
+                        >
                           <Link href={getUrl(subItem.url, subItem.spaceOnly)}>
                             <span>{subItem.title}</span>
                           </Link>
@@ -94,7 +131,7 @@ export function NavMain({
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                isActive={item.isActive}
+                isActive={isItemActive(item)}
               >
                 <Link href={getUrl(item.url, item.spaceOnly)}>
                   <item.icon />

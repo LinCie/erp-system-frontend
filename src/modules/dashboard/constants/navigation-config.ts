@@ -15,7 +15,6 @@ export const mainNavItems: NavItem[] = [
     title: "Dashboard",
     url: "/",
     icon: LayoutDashboard,
-    isActive: true,
   },
   {
     title: "Users",
