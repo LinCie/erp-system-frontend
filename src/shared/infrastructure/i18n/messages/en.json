@@ -41,7 +41,9 @@
   },
   "navigation": {
     "home": "Home",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "spaces": "Spaces",
+    "items": "Items"
   },
   "errors": {
     "notFound": "Page not found",

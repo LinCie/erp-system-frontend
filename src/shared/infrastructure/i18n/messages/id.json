@@ -41,7 +41,9 @@
   },
   "navigation": {
     "home": "Beranda",
-    "dashboard": "Dasbor"
+    "dashboard": "Dasbor",
+    "spaces": "Ruang",
+    "items": "Item"
   },
   "errors": {
     "notFound": "Halaman tidak ditemukan",

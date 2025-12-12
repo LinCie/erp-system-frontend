@@ -52,6 +52,10 @@ export const spaceListResponseSchema = z.object({
   metadata: paginationMetaSchema,
 });
 
+export const spaceResponseSchema = z.object({
+  data: spaceSchema,
+});
+
 /**
  * Query parameters
  */
@@ -72,5 +76,6 @@ export type Space = z.infer<typeof spaceSchema>;
 export type CreateSpaceInput = z.infer<typeof createSpaceSchema>;
 export type UpdateSpaceInput = z.infer<typeof updateSpaceSchema>;
 export type SpaceListResponse = z.infer<typeof spaceListResponseSchema>;
+export type SpaceResponse = z.infer<typeof spaceResponseSchema>;
 export type GetSpacesQuery = z.infer<typeof getSpacesQuerySchema>;
 export type GetSpacesParams = z.infer<typeof getSpacesQuerySchema>;

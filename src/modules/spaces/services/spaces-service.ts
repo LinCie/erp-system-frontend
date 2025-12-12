@@ -1,8 +1,10 @@
 import { http } from "@/shared/infrastructure/http";
 import {
   type GetSpacesParams,
+  type Space,
   type SpaceListResponse,
   spaceListResponseSchema,
+  spaceResponseSchema,
 } from "../types/schemas";
 
 /**
@@ -32,5 +34,22 @@ export const spacesService = {
       .json();
 
     return spaceListResponseSchema.parse(response);
+  },
+
+  /**
+   * Fetches a single space by ID.
+   * @param token - Access token for authentication
+   * @param spaceId - The space ID to fetch
+   * @returns Promise resolving to validated space data
+   * @throws HTTPError if the request fails
+   */
+  async getSpace(token: string, spaceId: number): Promise<Space> {
+    const response = await http
+      .get(`spaces/${spaceId}`, {
+        context: { token },
+      })
+      .json();
+
+    return spaceResponseSchema.parse(response).data;
   },
 };
