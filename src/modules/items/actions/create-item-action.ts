@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { z } from "zod";
 import { itemsService } from "../services/items-service";
 import { createItemSchema, type Item } from "../types/schemas";
 import { type ActionResult } from "@/shared/types/action-result";
@@ -26,12 +27,16 @@ export async function createItemAction(
 
   // Extract form data
   const rawData = {
-    spaceId: formData.get("spaceId"),
-    sku: formData.get("sku"),
+    space_id: formData.get("space_id")
+      ? Number(formData.get("space_id"))
+      : undefined,
+    sku: formData.get("sku") || undefined,
     name: formData.get("name"),
     price: formData.get("price"),
+    cost: formData.get("cost"),
+    weight: formData.get("weight"),
     status: formData.get("status"),
-    notes: formData.get("notes"),
+    notes: formData.get("notes") || undefined,
   };
 
   // Validate with Zod
@@ -54,6 +59,13 @@ export async function createItemAction(
       return {
         success: false,
         message: apiError.apiMessage ?? "Failed to create item",
+      };
+    }
+    if (error instanceof z.ZodError) {
+      console.error("Response validation error:", error.issues);
+      return {
+        success: false,
+        message: "Invalid response from server",
       };
     }
     return { success: false, message: "An unexpected error occurred" };

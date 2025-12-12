@@ -109,11 +109,29 @@
     "description": "Kelola dan lihat semua item dalam inventaris Anda",
     "searchPlaceholder": "Cari item...",
     "show": "Tampilkan:",
+    "create": "Buat Item",
+    "creating": "Membuat item...",
+    "createTitle": "Buat Item Baru",
+    "createDescription": "Tambahkan item baru ke inventaris Anda",
     "columns": {
       "name": "Nama",
       "price": "Harga",
       "notes": "Catatan",
       "status": "Status"
+    },
+    "fields": {
+      "name": "Nama",
+      "namePlaceholder": "Masukkan nama item",
+      "sku": "SKU",
+      "skuPlaceholder": "Masukkan SKU",
+      "price": "Harga",
+      "pricePlaceholder": "Masukkan harga",
+      "cost": "Biaya",
+      "costPlaceholder": "Masukkan biaya",
+      "weight": "Berat",
+      "weightPlaceholder": "Masukkan berat",
+      "notes": "Catatan",
+      "notesPlaceholder": "Masukkan catatan (opsional)"
     },
     "empty": "Tidak ada item ditemukan.",
     "status": {

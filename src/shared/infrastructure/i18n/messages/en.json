@@ -109,11 +109,29 @@
     "description": "Manage and view all items in your inventory",
     "searchPlaceholder": "Search items...",
     "show": "Show:",
+    "create": "Create Item",
+    "creating": "Creating item...",
+    "createTitle": "Create New Item",
+    "createDescription": "Add a new item to your inventory",
     "columns": {
       "name": "Name",
       "price": "Price",
       "notes": "Notes",
       "status": "Status"
+    },
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "Enter item name",
+      "sku": "SKU",
+      "skuPlaceholder": "Enter SKU",
+      "price": "Price",
+      "pricePlaceholder": "Enter price",
+      "cost": "Cost",
+      "costPlaceholder": "Enter cost",
+      "weight": "Weight",
+      "weightPlaceholder": "Enter weight",
+      "notes": "Notes",
+      "notesPlaceholder": "Enter notes (optional)"
     },
     "empty": "No items found.",
     "status": {
