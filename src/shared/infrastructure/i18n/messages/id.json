@@ -150,6 +150,7 @@
       "namePlaceholder": "Masukkan nama item",
       "sku": "SKU",
       "skuPlaceholder": "Masukkan SKU",
+      "code": "Kode",
       "price": "Harga",
       "pricePlaceholder": "Masukkan harga",
       "cost": "Biaya",
@@ -160,6 +161,13 @@
       "descriptionPlaceholder": "Masukkan deskripsi item...",
       "notes": "Catatan",
       "notesPlaceholder": "Masukkan catatan (opsional)"
+    },
+    "view": {
+      "back": "Kembali ke daftar item",
+      "basicInfo": "Informasi Dasar",
+      "basicInfoDescription": "Detail dasar tentang item ini",
+      "pricing": "Harga",
+      "pricingDescription": "Informasi harga dan biaya"
     },
     "empty": "Tidak ada item ditemukan.",
     "status": {
@@ -183,6 +191,10 @@
     "signup": {
       "title": "Daftar",
       "description": "Buat akun baru"
+    },
+    "itemView": {
+      "title": "{name} - Detail Item",
+      "description": "Lihat detail lengkap item"
     }
   }
 }

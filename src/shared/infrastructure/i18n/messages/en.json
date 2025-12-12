@@ -150,6 +150,7 @@
       "namePlaceholder": "Enter item name",
       "sku": "SKU",
       "skuPlaceholder": "Enter SKU",
+      "code": "Code",
       "price": "Price",
       "pricePlaceholder": "Enter price",
       "cost": "Cost",
@@ -160,6 +161,13 @@
       "descriptionPlaceholder": "Enter item description...",
       "notes": "Notes",
       "notesPlaceholder": "Enter notes (optional)"
+    },
+    "view": {
+      "back": "Back to items list",
+      "basicInfo": "Basic Information",
+      "basicInfoDescription": "Basic details about this item",
+      "pricing": "Pricing",
+      "pricingDescription": "Price and cost information"
     },
     "empty": "No items found.",
     "status": {
@@ -183,6 +191,10 @@
     "signup": {
       "title": "Sign Up",
       "description": "Create a new account"
+    },
+    "itemView": {
+      "title": "{name} - Item Details",
+      "description": "View complete item details"
     }
   }
 }

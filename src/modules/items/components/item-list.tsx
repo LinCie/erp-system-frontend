@@ -70,6 +70,7 @@ import {
 import { CreateItemModal } from "./create-item-modal";
 import { UpdateItemModal } from "./update-item-modal";
 import { DeleteItemDialog } from "./delete-item-dialog";
+import { Link } from "@/shared/infrastructure/i18n";
 
 /**
  * Props for the ItemList component.
@@ -246,8 +247,10 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{t("actions.title")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => console.log("View", item.id)}>
-                  {t("actions.view")}
+                <DropdownMenuItem asChild>
+                  <Link href={`/space/${spaceId}/items/${item.id}`}>
+                    {t("actions.view")}
+                  </Link>
                 </DropdownMenuItem>
                 <UpdateItemModal
                   item={item}
@@ -277,7 +280,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         },
       },
     ],
-    [t, handleItemUpdated, handleItemDeleted]
+    [t, handleItemUpdated, handleItemDeleted, spaceId]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
