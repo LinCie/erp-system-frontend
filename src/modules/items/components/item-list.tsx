@@ -68,6 +68,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { CreateItemModal } from "./create-item-modal";
+import { UpdateItemModal } from "./update-item-modal";
 
 /**
  * Props for the ItemList component.
@@ -177,9 +178,15 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                 <DropdownMenuItem onClick={() => console.log("View", item.id)}>
                   {t("actions.view")}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log("Edit", item.id)}>
-                  {t("actions.edit")}
-                </DropdownMenuItem>
+                <UpdateItemModal
+                  item={item}
+                  onSuccess={handleItemUpdated}
+                  trigger={
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      {t("actions.edit")}
+                    </DropdownMenuItem>
+                  }
+                />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => console.log("Delete", item.id)}
@@ -280,6 +287,16 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       totalItems: prev.totalItems + 1,
       totalPages: Math.ceil((prev.totalItems + 1) / limit),
     }));
+  };
+
+  /**
+   * Handles updated item by replacing it in the list.
+   * @param updatedItem - The updated item
+   */
+  const handleItemUpdated = (updatedItem: Item) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
   };
 
   return (

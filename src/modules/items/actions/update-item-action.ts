@@ -29,7 +29,16 @@ export async function updateItemAction(
   // Extract form data
   const rawData = {
     name: formData.get("name") || undefined,
+    sku: formData.get("sku") || undefined,
+    price: formData.get("price") || undefined,
+    cost: formData.get("cost") || undefined,
+    weight: formData.get("weight") || undefined,
     status: formData.get("status") || undefined,
+    description: formData.get("description") || undefined,
+    notes: formData.get("notes") || undefined,
+    space_id: formData.get("space_id")
+      ? Number(formData.get("space_id"))
+      : undefined,
   };
 
   // Validate with Zod

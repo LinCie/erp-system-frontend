@@ -113,6 +113,10 @@
     "creating": "Membuat item...",
     "createTitle": "Buat Item Baru",
     "createDescription": "Tambahkan item baru ke inventaris Anda",
+    "update": "Perbarui Item",
+    "updating": "Memperbarui item...",
+    "updateTitle": "Perbarui Item",
+    "updateDescription": "Perbarui detail item",
     "columns": {
       "name": "Nama",
       "price": "Harga",

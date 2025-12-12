@@ -113,6 +113,10 @@
     "creating": "Creating item...",
     "createTitle": "Create New Item",
     "createDescription": "Add a new item to your inventory",
+    "update": "Update Item",
+    "updating": "Updating item...",
+    "updateTitle": "Update Item",
+    "updateDescription": "Update the item details",
     "columns": {
       "name": "Name",
       "price": "Price",
