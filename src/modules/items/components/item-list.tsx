@@ -114,6 +114,28 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
   const isInitialRender = useRef(true);
 
   /**
+   * Handles newly created item by prepending it to the list
+   * and removing the last item to maintain the limit.
+   * @param item - The newly created item
+   */
+  const handleItemCreated = (item: Item) => {
+    setItems((prev) => {
+      const updated = [item, ...prev];
+      // Remove last item if exceeds limit
+      if (updated.length > limit) {
+        return updated.slice(0, limit);
+      }
+      return updated;
+    });
+    // Update total items count
+    setMeta((prev) => ({
+      ...prev,
+      totalItems: prev.totalItems + 1,
+      totalPages: Math.ceil((prev.totalItems + 1) / limit),
+    }));
+  };
+
+  /**
    * Handles updated item by replacing it in the list.
    * @param updatedItem - The updated item
    */
@@ -143,14 +165,26 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
   // Define table columns with stable reference
   const columns = useMemo<ColumnDef<Item>[]>(
     () => [
-      { accessorKey: "sku", header: "SKU" },
+      {
+        accessorKey: "sku",
+        header: "SKU",
+        size: 120,
+        minSize: 80,
+        maxSize: 150,
+      },
       {
         accessorKey: "name",
         header: t("columns.name"),
+        size: 200,
+        minSize: 120,
+        maxSize: 300,
       },
       {
         accessorKey: "price",
         header: t("columns.price"),
+        size: 150,
+        minSize: 100,
+        maxSize: 180,
         cell: ({ row }) => {
           const price = row.getValue("price") as number;
           return new Intl.NumberFormat(undefined, {
@@ -162,6 +196,9 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       {
         accessorKey: "notes",
         header: t("columns.notes"),
+        size: 250,
+        minSize: 150,
+        maxSize: 400,
         cell: ({ row }) => {
           const notes = row.getValue("notes") as string | null;
           return notes ? (
@@ -176,6 +213,9 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       {
         accessorKey: "status",
         header: t("columns.status"),
+        size: 100,
+        minSize: 80,
+        maxSize: 120,
         cell: ({ row }) => {
           const status = row.getValue("status") as Item["status"];
           const variant =
@@ -190,6 +230,9 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       {
         id: "actions",
         header: t("columns.actions"),
+        size: 80,
+        minSize: 60,
+        maxSize: 100,
         cell: ({ row }) => {
           const item = row.original;
           return (
@@ -301,28 +344,6 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
 
   const pageNumbers = getPageNumbers(page, meta.totalPages);
 
-  /**
-   * Handles newly created item by prepending it to the list
-   * and removing the last item to maintain the limit.
-   * @param item - The newly created item
-   */
-  const handleItemCreated = (item: Item) => {
-    setItems((prev) => {
-      const updated = [item, ...prev];
-      // Remove last item if exceeds limit
-      if (updated.length > limit) {
-        return updated.slice(0, limit);
-      }
-      return updated;
-    });
-    // Update total items count
-    setMeta((prev) => ({
-      ...prev,
-      totalItems: prev.totalItems + 1,
-      totalPages: Math.ceil((prev.totalItems + 1) / limit),
-    }));
-  };
-
   return (
     <div className="flex flex-col gap-4">
       {/* Search and Filters */}
@@ -403,7 +424,14 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-muted/50">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="h-12 px-4">
+                  <TableHead
+                    key={header.id}
+                    className="h-12 px-4"
+                    style={{
+                      width: header.getSize(),
+                      maxWidth: header.column.columnDef.maxSize,
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -443,7 +471,14 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-4 py-3">
+                    <TableCell
+                      key={cell.id}
+                      className="px-4 py-3 wrap-break-word"
+                      style={{
+                        width: cell.column.getSize(),
+                        maxWidth: cell.column.columnDef.maxSize,
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
