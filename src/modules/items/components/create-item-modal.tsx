@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import { createItemAction } from "../actions/create-item-action";
 import {
   createItemSchema,
@@ -112,13 +113,16 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
   useEffect(() => {
     if (state.success && state.data && !hasHandledSuccess.current) {
       hasHandledSuccess.current = true;
+      toast.success(state.message ?? t("createSuccess"));
       startTransition(() => {
         setOpen(false);
         form.reset();
         onSuccess?.(state.data as Item);
       });
+    } else if (!state.success && state.message && !hasHandledSuccess.current) {
+      toast.error(state.message ?? t("createError"));
     }
-  }, [state.success, state.data, form, onSuccess]);
+  }, [state.success, state.data, state.message, form, onSuccess, t]);
 
   // Reset success handler when modal opens
   useEffect(() => {

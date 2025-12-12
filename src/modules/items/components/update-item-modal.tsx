@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 import { updateItemAction } from "../actions/update-item-action";
 import {
   updateItemSchema,
@@ -122,12 +123,15 @@ export function UpdateItemModal({
   useEffect(() => {
     if (state.success && state.data && !hasHandledSuccess.current) {
       hasHandledSuccess.current = true;
+      toast.success(state.message ?? t("updateSuccess"));
       startTransition(() => {
         setOpen(false);
         onSuccess?.(state.data as Item);
       });
+    } else if (!state.success && state.message && !hasHandledSuccess.current) {
+      toast.error(state.message ?? t("updateError"));
     }
-  }, [state.success, state.data, onSuccess]);
+  }, [state.success, state.data, state.message, onSuccess, t]);
 
   // Reset success handler when modal opens
   useEffect(() => {
