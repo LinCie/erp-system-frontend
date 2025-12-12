@@ -97,7 +97,7 @@
     "empty": "Tidak ada ruang ditemukan.",
     "status": {
       "active": "Aktif",
-      "inactie": "Tidak Aktif",
+      "inactive": "Tidak Aktif",
       "archived": "Diarsipkan"
     },
     "pagination": {
@@ -118,7 +118,7 @@
     "empty": "Tidak ada item ditemukan.",
     "status": {
       "active": "Aktif",
-      "inactie": "Tidak Aktif",
+      "inactive": "Tidak Aktif",
       "archived": "Diarsipkan"
     },
     "pagination": {

@@ -30,6 +30,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -40,6 +46,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Settings2 } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -81,6 +88,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
     initialData.metadata ?? DEFAULT_PAGINATION_META
   );
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"active" | "inactive">("active");
   const [limit, setLimit] = useState<number>(LIMIT_OPTIONS[0]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -149,7 +157,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // Fetch items when search, limit, or page changes (skip initial render)
+  // Fetch items when search, status, limit, or page changes (skip initial render)
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
@@ -162,6 +170,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
 
       const result = await getItemsAction({
         search: debouncedSearch || undefined,
+        status,
         limit,
         page,
         spaceId,
@@ -179,11 +188,16 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
     };
 
     fetchItems();
-  }, [debouncedSearch, limit, page, spaceId]);
+  }, [debouncedSearch, status, limit, page, spaceId]);
 
-  // Reset page when search or limit changes
+  // Reset page when search, status, or limit changes
   const handleLimitChange = (value: string) => {
     setLimit(Number(value));
+    setPage(1);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatus(value as "active" | "inactive");
     setPage(1);
   };
 
@@ -202,31 +216,64 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Search and Limit Controls */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Search and Filters */}
+      <div className="flex items-center gap-3">
         <Input
           type="search"
           placeholder={t("searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:max-w-xs"
+          className="flex-1"
           aria-label={t("searchPlaceholder")}
         />
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-sm">{t("show")}</span>
-          <Select value={String(limit)} onValueChange={handleLimitChange}>
-            <SelectTrigger className="w-20" aria-label="Items per page">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LIMIT_OPTIONS.map((option) => (
-                <SelectItem key={option} value={String(option)}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="shrink-0 gap-2">
+              <Settings2 className="size-4" />
+              <span className="hidden sm:inline">
+                {t("show")} {limit}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56" align="end">
+            <div className="space-y-4">
+              {/* Status Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  {t("columns.status")}
+                </label>
+                <Select value={status} onValueChange={handleStatusChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">{t("status.active")}</SelectItem>
+                    <SelectItem value="inactive">
+                      {t("status.inactive")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Limit Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("show")}</label>
+                <Select value={String(limit)} onValueChange={handleLimitChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LIMIT_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={String(option)}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Error State */}

@@ -97,7 +97,7 @@
     "empty": "No spaces found.",
     "status": {
       "active": "Active",
-      "inactie": "Inactive",
+      "inactive": "Inactive",
       "archived": "Archived"
     },
     "pagination": {
@@ -118,7 +118,7 @@
     "empty": "No items found.",
     "status": {
       "active": "Active",
-      "inactie": "Inactive",
+      "inactive": "Inactive",
       "archived": "Archived"
     },
     "pagination": {

@@ -60,6 +60,7 @@ export const getItemsQuerySchema = z.object({
   spaceId: z.number().optional(),
   type: z.enum(["full", "partial"]),
   search: z.string().optional(),
+  status: z.enum(["active", "inactive"]).optional(),
   limit: z.number().int().positive().optional(),
   page: z.number().int().positive().optional(),
 });

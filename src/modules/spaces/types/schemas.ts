@@ -58,7 +58,7 @@ export const spaceListResponseSchema = z.object({
 
 export const getSpacesQuerySchema = z.object({
   search: z.string().optional(),
-  status: z.enum(["active", "inactive", "archived"]).optional(),
+  status: z.enum(["active", "inactive"]).optional(),
   limit: z.number().int().positive().optional(),
   page: z.number().int().positive().optional(),
 });
