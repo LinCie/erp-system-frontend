@@ -18,8 +18,11 @@ import {
   LIMIT_OPTIONS,
 } from "@/shared/constants/pagination";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
-import { getItemsAction } from "../actions/get-items-action";
-import { type Item, type ItemPaginatedResponse } from "../types/schemas";
+import { getManyItemsAction } from "../actions/get-items-action";
+import {
+  type Item,
+  type GetManyItemsPaginatedResponse,
+} from "../types/schemas";
 import { type PaginationMeta } from "@/shared/types/pagination";
 import {
   Table,
@@ -62,7 +65,7 @@ import {
  */
 interface ItemListProps {
   /** Initial paginated items data fetched server-side */
-  initialData: ItemPaginatedResponse;
+  initialData: GetManyItemsPaginatedResponse;
   /** Space ID for filtering items */
   spaceId?: number;
 }
@@ -168,7 +171,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       setIsLoading(true);
       setError(null);
 
-      const result = await getItemsAction({
+      const result = await getManyItemsAction({
         search: debouncedSearch || undefined,
         status,
         limit,

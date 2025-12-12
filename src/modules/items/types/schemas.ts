@@ -22,27 +22,71 @@ export {
 
 export const itemSchema = entitySchema.extend({
   name: z.string(),
-  price: z.coerce.number().nullable().optional(),
-  sku: z.string().nullable().optional(),
-  notes: z.string().nullable().optional(),
+  code: z.string().nullish().optional(),
+  description: z.string().nullish().optional(),
+  sku: z.string().nullish().optional(),
+  cost: z.string(),
+  price: z.string(),
+  weight: z.string(),
+  attributes: z.record(z.string(), z.unknown()).nullish().optional(),
+  dimension: z.record(z.string(), z.unknown()).nullish().optional(),
+  images: z.record(z.string(), z.unknown()).nullish().optional(),
+  files: z.record(z.string(), z.unknown()).nullish().optional(),
+  links: z.record(z.string(), z.unknown()).nullish().optional(),
+  options: z.record(z.string(), z.unknown()).nullish().optional(),
+  tags: z.record(z.string(), z.unknown()).nullish().optional(),
+  variants: z.record(z.string(), z.unknown()).nullish().optional(),
+  notes: z.string().nullish().optional(),
+  model_id: z.number().nullish().optional(),
+  model_type: z.string().nullish().optional(),
+  parent_id: z.number().nullish().optional(),
+  parent_type: z.string().nullish().optional(),
+  space_id: z.number().nullish().optional(),
+  space_type: z.string().nullish().optional(),
+  type_id: z.number().nullish().optional(),
+  type_type: z.string().nullish().optional(),
+  primary_code: z.string().nullish().optional(),
+  created_at: z.string().datetime().optional(),
+  updated_at: z.string().datetime().optional(),
 });
 
 export const createItemSchema = z.object({
   name: z.string(),
+  code: z.string().nullish().optional(),
+  description: z.string().nullish().optional(),
+  sku: z.string().nullish().optional(),
+  cost: z.string(),
+  price: z.string(),
+  weight: z.string(),
+  attributes: z.record(z.string(), z.unknown()).nullish().optional(),
+  dimension: z.record(z.string(), z.unknown()).nullish().optional(),
+  images: z.record(z.string(), z.unknown()).nullish().optional(),
+  files: z.record(z.string(), z.unknown()).nullish().optional(),
+  links: z.record(z.string(), z.unknown()).nullish().optional(),
+  options: z.record(z.string(), z.unknown()).nullish().optional(),
+  tags: z.record(z.string(), z.unknown()).nullish().optional(),
+  variants: z.record(z.string(), z.unknown()).nullish().optional(),
+  notes: z.string().nullish().optional(),
+  model_id: z.number().nullish().optional(),
+  model_type: z.string().nullish().optional(),
+  parent_id: z.number().nullish().optional(),
+  parent_type: z.string().nullish().optional(),
+  space_id: z.number().nullish().optional(),
+  space_type: z.string().nullish().optional(),
+  type_id: z.number().nullish().optional(),
+  type_type: z.string().nullish().optional(),
+  primary_code: z.string().nullish().optional(),
   status: z.enum(["active", "inactive"]),
 });
 
-export const updateItemSchema = z.object({
-  name: z.string().optional(),
-  status: z.enum(["active", "inactive"]).optional(),
-});
+export const updateItemSchema = createItemSchema.partial();
 
-export const itemListResponseSchema = z.object({
+export const getManyItemsResponseSchema = z.object({
   data: z.array(itemSchema),
   metadata: paginationMetaSchema,
 });
 
-export const itemPaginatedResponseSchema = itemListResponseSchema;
+export const getManyItemsPaginatedResponseSchema = getManyItemsResponseSchema;
 
 export const itemChatSchema = z.object({
   prompt: z.string(),
@@ -56,7 +100,7 @@ export const itemChatResponseSchema = z.object({
  * Query parameters
  */
 
-export const getItemsQuerySchema = z.object({
+export const getManyItemsQuerySchema = z.object({
   spaceId: z.number().optional(),
   type: z.enum(["full", "partial"]),
   search: z.string().optional(),
@@ -65,7 +109,7 @@ export const getItemsQuerySchema = z.object({
   page: z.number().int().positive().optional(),
 });
 
-export const getItemsParamsSchema = getItemsQuerySchema;
+export const getManyItemsParamsSchema = getManyItemsQuerySchema;
 
 /**
  * Inferred types
@@ -74,9 +118,11 @@ export const getItemsParamsSchema = getItemsQuerySchema;
 export type Item = z.infer<typeof itemSchema>;
 export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
-export type ItemListResponse = z.infer<typeof itemListResponseSchema>;
-export type ItemPaginatedResponse = z.infer<typeof itemPaginatedResponseSchema>;
+export type GetManyItemsResponse = z.infer<typeof getManyItemsResponseSchema>;
+export type GetManyItemsPaginatedResponse = z.infer<
+  typeof getManyItemsPaginatedResponseSchema
+>;
 export type ItemChatInput = z.infer<typeof itemChatSchema>;
 export type ItemChatResponse = z.infer<typeof itemChatResponseSchema>;
-export type GetItemsQuery = z.infer<typeof getItemsQuerySchema>;
-export type GetItemsParams = z.infer<typeof getItemsQuerySchema>;
+export type GetManyItemsQuery = z.infer<typeof getManyItemsQuerySchema>;
+export type GetManyItemsParams = z.infer<typeof getManyItemsParamsSchema>;

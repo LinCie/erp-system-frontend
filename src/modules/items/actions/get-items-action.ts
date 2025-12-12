@@ -3,21 +3,20 @@
 import { cookies } from "next/headers";
 import { itemsService } from "../services/items-service";
 import {
-  GetItemsParams,
-  getItemsParamsSchema,
-  type ItemPaginatedResponse,
+  GetManyItemsParams,
+  type GetManyItemsPaginatedResponse,
 } from "../types/schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 
 /**
- * Server Action to fetch items with authentication.
+ * Server Action to fetch many items with authentication.
  * @param params - Query parameters (spaceId, type, search, limit, page)
  * @returns ActionResult with items data or error message
  */
-export async function getItemsAction(
-  params: GetItemsParams
-): Promise<ActionResult<ItemPaginatedResponse>> {
+export async function getManyItemsAction(
+  params: GetManyItemsParams
+): Promise<ActionResult<GetManyItemsPaginatedResponse>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
@@ -26,7 +25,7 @@ export async function getItemsAction(
   }
 
   try {
-    const data = await itemsService.getItems(accessToken, params);
+    const data = await itemsService.getManyItems(accessToken, params);
     return { success: true, data };
   } catch (error) {
     if (isHttpError(error)) {

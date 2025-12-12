@@ -1,14 +1,14 @@
 import { http } from "@/shared/infrastructure/http";
 import {
   itemSchema,
-  itemPaginatedResponseSchema,
+  getManyItemsPaginatedResponseSchema,
   itemChatResponseSchema,
   type Item,
-  type ItemPaginatedResponse,
+  type GetManyItemsPaginatedResponse,
   type ItemChatResponse,
   type CreateItemInput,
   type UpdateItemInput,
-  type GetItemsParams,
+  type GetManyItemsParams,
 } from "../types/schemas";
 
 /**
@@ -17,22 +17,22 @@ import {
  */
 export const itemsService = {
   /**
-   * Fetches a list of items with optional filtering and pagination.
+   * Fetches many items with optional filtering and pagination.
    * @param token - Access token for authenticated requests
    * @param params - Query parameters (spaceId, type, search, limit, page)
    * @returns Validated list of items
    */
-  async getItems(
+  async getManyItems(
     token: string,
-    params: GetItemsParams
-  ): Promise<ItemPaginatedResponse> {
+    params: GetManyItemsParams
+  ): Promise<GetManyItemsPaginatedResponse> {
     const response = await http
       .get("items", {
         context: { token },
         searchParams: params,
       })
       .json();
-    return itemPaginatedResponseSchema.parse(response);
+    return getManyItemsPaginatedResponseSchema.parse(response);
   },
 
   /**

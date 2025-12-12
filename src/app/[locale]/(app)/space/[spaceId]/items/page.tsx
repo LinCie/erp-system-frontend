@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { getItemsAction } from "@/modules/items/actions/get-items-action";
+import { getManyItemsAction } from "@/modules/items/actions/get-items-action";
 import { ItemList } from "@/modules/items/components/item-list";
 import { DEFAULT_PAGINATION_META } from "@/shared/constants/pagination";
 import {
@@ -18,7 +18,7 @@ export default async function ItemsPage({ params }: Props) {
   const { spaceId } = await params;
   const t = await getTranslations("items");
 
-  const result = await getItemsAction({
+  const result = await getManyItemsAction({
     spaceId: +spaceId,
     type: "full",
     limit: 10,
