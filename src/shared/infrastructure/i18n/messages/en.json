@@ -117,7 +117,15 @@
       "name": "Name",
       "price": "Price",
       "notes": "Notes",
-      "status": "Status"
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "title": "Actions",
+      "openMenu": "Open menu",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
     },
     "fields": {
       "name": "Name",

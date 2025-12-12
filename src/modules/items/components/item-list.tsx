@@ -8,7 +8,7 @@ import {
   flexRender,
   type ColumnDef,
 } from "@tanstack/react-table";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useDebounce } from "@/shared/hooks/use-debounce";
@@ -50,6 +50,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Settings2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Pagination,
   PaginationContent,
@@ -148,6 +156,40 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                 ? "secondary"
                 : "outline";
           return <Badge variant={variant}>{t(`status.${status}`)}</Badge>;
+        },
+      },
+      {
+        id: "actions",
+        header: t("columns.actions"),
+        cell: ({ row }) => {
+          const item = row.original;
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-8">
+                  <MoreHorizontal className="size-4" />
+                  <span className="sr-only">{t("actions.openMenu")}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{t("actions.title")}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => console.log("View", item.id)}>
+                  {t("actions.view")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => console.log("Edit", item.id)}>
+                  {t("actions.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => console.log("Delete", item.id)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  {t("actions.delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
         },
       },
     ],

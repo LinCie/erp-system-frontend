@@ -117,7 +117,15 @@
       "name": "Nama",
       "price": "Harga",
       "notes": "Catatan",
-      "status": "Status"
+      "status": "Status",
+      "actions": "Aksi"
+    },
+    "actions": {
+      "title": "Aksi",
+      "openMenu": "Buka menu",
+      "view": "Lihat",
+      "edit": "Ubah",
+      "delete": "Hapus"
     },
     "fields": {
       "name": "Nama",
