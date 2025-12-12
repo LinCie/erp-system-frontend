@@ -37,6 +37,7 @@ export async function createItemAction(
     weight: formData.get("weight"),
     status: formData.get("status"),
     notes: formData.get("notes") || undefined,
+    description: formData.get("description") || undefined,
   };
 
   // Validate with Zod

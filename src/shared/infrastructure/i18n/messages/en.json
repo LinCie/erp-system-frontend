@@ -130,6 +130,8 @@
       "costPlaceholder": "Enter cost",
       "weight": "Weight",
       "weightPlaceholder": "Enter weight",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter item description...",
       "notes": "Notes",
       "notesPlaceholder": "Enter notes (optional)"
     },

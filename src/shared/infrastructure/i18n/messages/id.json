@@ -130,6 +130,8 @@
       "costPlaceholder": "Masukkan biaya",
       "weight": "Berat",
       "weightPlaceholder": "Masukkan berat",
+      "description": "Deskripsi",
+      "descriptionPlaceholder": "Masukkan deskripsi item...",
       "notes": "Catatan",
       "notesPlaceholder": "Masukkan catatan (opsional)"
     },

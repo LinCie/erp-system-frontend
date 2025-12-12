@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 /**
  * Props for the CreateItemModal component.
@@ -92,6 +93,7 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       weight: "",
       status: "active",
       notes: null,
+      description: null,
       space_id: spaceId,
     },
   });
@@ -278,6 +280,33 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
                   <FormMessage />
                   {/* Hidden input to ensure status is submitted with FormData */}
                   <input type="hidden" name={field.name} value={field.value} />
+                </FormItem>
+              )}
+            />
+
+            {/* Description */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.description")}</FormLabel>
+                  <FormControl>
+                    <RichTextEditor
+                      initialValue={field.value ?? undefined}
+                      onChange={field.onChange}
+                      placeholder={t("fields.descriptionPlaceholder")}
+                      disabled={isPending}
+                      ariaLabel={t("fields.description")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  {/* Hidden input to submit description with FormData */}
+                  <input
+                    type="hidden"
+                    name={field.name}
+                    value={field.value ?? ""}
+                  />
                 </FormItem>
               )}
             />
