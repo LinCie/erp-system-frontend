@@ -1,7 +1,7 @@
 "use client";
 "use no memo";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -69,6 +69,7 @@ import {
 } from "@/components/ui/pagination";
 import { CreateItemModal } from "./create-item-modal";
 import { UpdateItemModal } from "./update-item-modal";
+import { DeleteItemDialog } from "./delete-item-dialog";
 
 /**
  * Props for the ItemList component.
@@ -111,6 +112,33 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
 
   // Track initial render to skip first fetch (data already provided via initialData)
   const isInitialRender = useRef(true);
+
+  /**
+   * Handles updated item by replacing it in the list.
+   * @param updatedItem - The updated item
+   */
+  const handleItemUpdated = useCallback((updatedItem: Item) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
+  }, []);
+
+  /**
+   * Handles deleted item by removing it from the list.
+   * @param itemId - The ID of the deleted item
+   */
+  const handleItemDeleted = useCallback(
+    (itemId: number) => {
+      setItems((prev) => prev.filter((item) => item.id !== itemId));
+      // Update total items count
+      setMeta((prev) => ({
+        ...prev,
+        totalItems: prev.totalItems - 1,
+        totalPages: Math.ceil((prev.totalItems - 1) / limit),
+      }));
+    },
+    [limit]
+  );
 
   // Define table columns with stable reference
   const columns = useMemo<ColumnDef<Item>[]>(
@@ -188,22 +216,28 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                   }
                 />
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => console.log("Delete", item.id)}
-                  className="text-destructive focus:text-destructive"
-                >
-                  {t("actions.delete")}
-                </DropdownMenuItem>
+                <DeleteItemDialog
+                  item={item}
+                  onSuccess={handleItemDeleted}
+                  trigger={
+                    <DropdownMenuItem
+                      onSelect={(e) => e.preventDefault()}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      {t("actions.delete")}
+                    </DropdownMenuItem>
+                  }
+                />
               </DropdownMenuContent>
             </DropdownMenu>
           );
         },
       },
     ],
-    [t]
+    [t, handleItemUpdated, handleItemDeleted]
   );
 
-  // eslint-disable-next-line react-hooks/incompatible-library -- React Compiler automatically skips memoization for TanStack Table
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: items,
     columns,
@@ -287,16 +321,6 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       totalItems: prev.totalItems + 1,
       totalPages: Math.ceil((prev.totalItems + 1) / limit),
     }));
-  };
-
-  /**
-   * Handles updated item by replacing it in the list.
-   * @param updatedItem - The updated item
-   */
-  const handleItemUpdated = (updatedItem: Item) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
   };
 
   return (

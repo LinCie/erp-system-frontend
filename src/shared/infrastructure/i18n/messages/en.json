@@ -117,6 +117,16 @@
     "updating": "Updating item...",
     "updateTitle": "Update Item",
     "updateDescription": "Update the item details",
+    "delete": {
+      "trigger": "Delete",
+      "title": "Are you sure?",
+      "description": "This will permanently delete \"{name}\". This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "success": "Item deleted successfully",
+      "error": "Failed to delete item"
+    },
     "columns": {
       "name": "Name",
       "price": "Price",

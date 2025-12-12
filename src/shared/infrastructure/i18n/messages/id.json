@@ -117,6 +117,16 @@
     "updating": "Memperbarui item...",
     "updateTitle": "Perbarui Item",
     "updateDescription": "Perbarui detail item",
+    "delete": {
+      "trigger": "Hapus",
+      "title": "Apakah Anda yakin?",
+      "description": "Ini akan menghapus \"{name}\" secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "confirm": "Hapus",
+      "deleting": "Menghapus...",
+      "success": "Item berhasil dihapus",
+      "error": "Gagal menghapus item"
+    },
     "columns": {
       "name": "Nama",
       "price": "Harga",
