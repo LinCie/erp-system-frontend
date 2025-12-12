@@ -20,7 +20,7 @@ import {
 } from "@lexical/list";
 import { Bold, Italic, Underline, List, ListOrdered } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import { Button } from "./button";
+import { Button } from "./ui/button";
 
 /**
  * Editor theme configuration for Tailwind CSS styling.
