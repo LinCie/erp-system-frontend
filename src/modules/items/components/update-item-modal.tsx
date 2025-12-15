@@ -98,14 +98,14 @@ export function UpdateItemModal({
     resolver: zodResolver(updateItemSchema),
     defaultValues: {
       name: item.name,
-      sku: item.sku ?? null,
+      sku: item.sku,
       price: item.price,
       cost: item.cost,
       weight: item.weight,
       status: item.status === "archived" ? "inactive" : item.status,
-      notes: item.notes ?? null,
-      description: item.description ?? null,
-      space_id: item.space_id ?? undefined,
+      notes: item.notes,
+      description: item.description,
+      space_id: item.space_id,
     },
   });
 

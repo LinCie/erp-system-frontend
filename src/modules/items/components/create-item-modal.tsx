@@ -88,13 +88,13 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
     resolver: zodResolver(createItemSchema),
     defaultValues: {
       name: "",
-      sku: null,
+      sku: undefined,
       price: "",
       cost: "",
       weight: "",
       status: "active",
-      notes: null,
-      description: null,
+      notes: undefined,
+      description: undefined,
       space_id: spaceId,
     },
   });
