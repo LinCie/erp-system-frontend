@@ -162,14 +162,20 @@
       "description": "Description",
       "descriptionPlaceholder": "Enter item description...",
       "notes": "Notes",
-      "notesPlaceholder": "Enter notes (optional)"
+      "notesPlaceholder": "Enter notes (optional)",
+      "images": "Images",
+      "imagesPlaceholder": "Click to select",
+      "imagesHelperText": "or drag and drop files here"
     },
     "view": {
       "back": "Back to items list",
       "basicInfo": "Basic Information",
       "basicInfoDescription": "Basic details about this item",
       "pricing": "Pricing",
-      "pricingDescription": "Price and cost information"
+      "pricingDescription": "Price and cost information",
+      "images": "Images",
+      "imagesDescription": "Product images for this item",
+      "noImages": "No images"
     },
     "empty": "No items found.",
     "status": {

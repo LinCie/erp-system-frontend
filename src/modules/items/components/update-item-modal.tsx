@@ -17,6 +17,7 @@ import {
   updateItemSchema,
   type UpdateItemInput,
   type Item,
+  type ItemImage,
 } from "../types/schemas";
 import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
 import { FormErrorAlert } from "@/components/form-error-alert";
@@ -47,6 +48,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { ItemImageUpload } from "./item-image-upload";
 
 /**
  * Props for the UpdateItemModal component.
@@ -106,8 +108,16 @@ export function UpdateItemModal({
       notes: item.notes,
       description: item.description,
       space_id: item.space_id,
+      images: undefined,
     },
   });
+
+  // Track kept existing images for image upload
+  const [keptExistingImages, setKeptExistingImages] = useState<ItemImage[]>(
+    item.images ?? []
+  );
+  // Key to reset image upload component
+  const [imageUploadKey, setImageUploadKey] = useState(0);
 
   // Auto-focus first input when modal opens
   useEffect(() => {
@@ -124,9 +134,12 @@ export function UpdateItemModal({
     if (state.success && state.data && !hasHandledSuccess.current) {
       hasHandledSuccess.current = true;
       toast.success(state.message ?? t("updateSuccess"));
+      const updatedItem = state.data as Item;
       startTransition(() => {
         setOpen(false);
-        onSuccess?.(state.data as Item);
+        setKeptExistingImages(updatedItem.images ?? []);
+        setImageUploadKey((prev) => prev + 1);
+        onSuccess?.(updatedItem);
       });
     } else if (!state.success && state.message && !hasHandledSuccess.current) {
       toast.error(state.message ?? t("updateError"));
@@ -140,8 +153,30 @@ export function UpdateItemModal({
     }
   }, [open]);
 
+  // Reset image state when modal opens/closes
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      setKeptExistingImages(item.images ?? []);
+      setImageUploadKey((prev) => prev + 1);
+    }
+  };
+
+  // Handle new image file changes
+  const handleImagesChange = (files: File[]) => {
+    form.setValue(
+      "images",
+      files.length === 1 ? files[0] : files.length > 0 ? files : undefined
+    );
+  };
+
+  // Handle existing images removal
+  const handleExistingImagesChange = (images: ItemImage[]) => {
+    setKeptExistingImages(images);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button variant="ghost" size="icon" className="size-8">
@@ -347,6 +382,38 @@ export function UpdateItemModal({
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+            {/* Images */}
+            <FormField
+              control={form.control}
+              name="images"
+              render={() => (
+                <FormItem>
+                  <FormLabel>{t("fields.images")}</FormLabel>
+                  <FormControl>
+                    <ItemImageUpload
+                      key={imageUploadKey}
+                      name="images"
+                      existingImages={keptExistingImages}
+                      onChange={handleImagesChange}
+                      onExistingImagesChange={handleExistingImagesChange}
+                      disabled={isPending}
+                      multiple
+                      placeholder={t("fields.imagesPlaceholder")}
+                      helperText={t("fields.imagesHelperText")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Hidden field for existing images (JSON array for backend) */}
+            <input
+              type="hidden"
+              name="existing_images"
+              value={JSON.stringify(keptExistingImages)}
             />
 
             <Button type="submit" className="w-full" disabled={isPending}>

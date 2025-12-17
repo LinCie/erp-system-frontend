@@ -20,6 +20,13 @@ export {
  * Item schemas
  */
 
+export const itemImageSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  size: z.number(),
+  isNew: z.boolean().optional(),
+});
+
 export const itemSchema = entitySchema.extend({
   name: z.string(),
   code: z.string().optional(),
@@ -30,6 +37,7 @@ export const itemSchema = entitySchema.extend({
   weight: z.string(),
   notes: z.string().optional(),
   space_id: z.number().optional(),
+  images: z.array(itemImageSchema).optional(),
 });
 
 export const createItemSchema = z.object({
@@ -43,6 +51,7 @@ export const createItemSchema = z.object({
   notes: z.string().optional(),
   space_id: z.number().optional(),
   status: z.enum(["active", "inactive"]),
+  images: z.union([z.instanceof(File), z.array(z.instanceof(File))]).optional(),
 });
 
 export const updateItemSchema = createItemSchema.partial();
@@ -81,6 +90,7 @@ export const getManyItemsParamsSchema = getManyItemsQuerySchema;
  * Inferred types
  */
 
+export type ItemImage = z.infer<typeof itemImageSchema>;
 export type Item = z.infer<typeof itemSchema>;
 export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;

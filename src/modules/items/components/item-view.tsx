@@ -1,10 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, ImageOff } from "lucide-react";
 import { type Item } from "../types/schemas";
 import { Link, useRouter } from "@/shared/infrastructure/i18n";
+import { getItemImageUrl } from "@/shared/lib/image-url";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -198,6 +200,44 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
               </p>
               <p className="font-medium">{viewItem.weight}</p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Images */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>{t("view.images")}</CardTitle>
+            <CardDescription>{t("view.imagesDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {viewItem.images && viewItem.images.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                {viewItem.images.map((image, index) => (
+                  <div key={image.path} className="group relative">
+                    <div className="relative aspect-square overflow-hidden rounded-lg border">
+                      <img
+                        src={getItemImageUrl(image.path, image.isNew)}
+                        alt={`${viewItem.name} - ${image.name || `image ${index + 1}`}`}
+                        className="size-full object-cover transition-transform group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    {image.name && (
+                      <p className="text-muted-foreground mt-1 truncate text-center text-xs">
+                        {image.name}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <ImageOff className="text-muted-foreground mb-4 size-12" />
+                <p className="text-muted-foreground text-sm">
+                  {t("view.noImages")}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

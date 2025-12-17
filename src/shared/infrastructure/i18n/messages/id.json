@@ -162,14 +162,20 @@
       "description": "Deskripsi",
       "descriptionPlaceholder": "Masukkan deskripsi item...",
       "notes": "Catatan",
-      "notesPlaceholder": "Masukkan catatan (opsional)"
+      "notesPlaceholder": "Masukkan catatan (opsional)",
+      "images": "Gambar",
+      "imagesPlaceholder": "Klik untuk memilih",
+      "imagesHelperText": "atau seret dan lepas file di sini"
     },
     "view": {
       "back": "Kembali ke daftar item",
       "basicInfo": "Informasi Dasar",
       "basicInfoDescription": "Detail dasar tentang item ini",
       "pricing": "Harga",
-      "pricingDescription": "Informasi harga dan biaya"
+      "pricingDescription": "Informasi harga dan biaya",
+      "images": "Gambar",
+      "imagesDescription": "Gambar produk untuk item ini",
+      "noImages": "Tidak ada gambar"
     },
     "empty": "Tidak ada item ditemukan.",
     "status": {

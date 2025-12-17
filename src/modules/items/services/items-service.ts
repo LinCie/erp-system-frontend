@@ -6,8 +6,6 @@ import {
   type Item,
   type GetManyItemsPaginatedResponse,
   type ItemChatResponse,
-  type CreateItemInput,
-  type UpdateItemInput,
   type GetManyItemsParams,
 } from "../types/schemas";
 
@@ -51,37 +49,37 @@ export const itemsService = {
   },
 
   /**
-   * Creates a new item.
+   * Creates a new item using multipart/form-data.
    * @param token - Access token for authenticated requests
-   * @param data - Item creation data
+   * @param formData - FormData containing item fields and images
    * @returns Validated created item
    */
-  async createItem(token: string, data: CreateItemInput): Promise<Item> {
+  async createItem(token: string, formData: FormData): Promise<Item> {
     const response = await http
       .post("items", {
         context: { token },
-        json: data,
+        body: formData,
       })
       .json();
     return itemSchema.parse(response);
   },
 
   /**
-   * Updates an existing item.
+   * Updates an existing item using multipart/form-data.
    * @param token - Access token for authenticated requests
    * @param id - Item ID
-   * @param data - Item update data
+   * @param formData - FormData containing item fields and images
    * @returns Validated updated item
    */
   async updateItem(
     token: string,
     id: number,
-    data: UpdateItemInput
+    formData: FormData
   ): Promise<Item> {
     const response = await http
       .patch(`items/${id}`, {
         context: { token },
-        json: data,
+        body: formData,
       })
       .json();
     return itemSchema.parse(response);

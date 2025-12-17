@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { ItemImageUpload } from "./item-image-upload";
 
 /**
  * Props for the CreateItemModal component.
@@ -96,8 +97,12 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       notes: undefined,
       description: undefined,
       space_id: spaceId,
+      images: undefined,
     },
   });
+
+  // Key to reset image upload component
+  const [imageUploadKey, setImageUploadKey] = useState(0);
 
   // Auto-focus first input when modal opens
   useEffect(() => {
@@ -117,6 +122,7 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       startTransition(() => {
         setOpen(false);
         form.reset();
+        setImageUploadKey((prev) => prev + 1);
         onSuccess?.(state.data as Item);
       });
     } else if (!state.success && state.message && !hasHandledSuccess.current) {
@@ -131,8 +137,24 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
     }
   }, [open]);
 
+  // Reset image upload when modal closes
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setImageUploadKey((prev) => prev + 1);
+    }
+  };
+
+  // Handle image file changes
+  const handleImagesChange = (files: File[]) => {
+    form.setValue(
+      "images",
+      files.length === 1 ? files[0] : files.length > 0 ? files : undefined
+    );
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button size="sm" className="shrink-0 gap-2">
           <Plus className="size-4" />
@@ -331,6 +353,29 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
                       aria-label={t("fields.notes")}
                       className="resize-none"
                       rows={3}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Images */}
+            <FormField
+              control={form.control}
+              name="images"
+              render={() => (
+                <FormItem>
+                  <FormLabel>{t("fields.images")}</FormLabel>
+                  <FormControl>
+                    <ItemImageUpload
+                      key={imageUploadKey}
+                      name="images"
+                      onChange={handleImagesChange}
+                      disabled={isPending}
+                      multiple
+                      placeholder={t("fields.imagesPlaceholder")}
+                      helperText={t("fields.imagesHelperText")}
                     />
                   </FormControl>
                   <FormMessage />
