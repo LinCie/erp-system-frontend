@@ -10,6 +10,9 @@ import {
 /**
  * Syncs server-side validation errors to react-hook-form state.
  * Automatically sets form errors when server action returns field errors.
+ *
+ * Uses destructured setError for optimal performance per react-hook-form best practices.
+ *
  * @param form - The react-hook-form instance
  * @param errors - Server-side errors object from ActionResult
  * @example
@@ -24,16 +27,19 @@ export function useSyncFormErrors<T extends FieldValues>(
   form: UseFormReturn<T>,
   errors: Record<string, string[]> | undefined
 ): void {
+  // Destructure setError for stable reference per react-hook-form best practices
+  const { setError } = form;
+
   useEffect(() => {
     if (errors) {
       Object.entries(errors).forEach(([field, messages]) => {
         if (messages && messages.length > 0) {
-          form.setError(field as Path<T>, {
+          setError(field as Path<T>, {
             type: "server",
             message: messages[0],
           });
         }
       });
     }
-  }, [errors, form]);
+  }, [errors, setError]);
 }

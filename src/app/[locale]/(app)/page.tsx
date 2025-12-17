@@ -3,10 +3,6 @@ import { SpaceList } from "@/modules/spaces/components/space-list";
 import { spacesService } from "@/modules/spaces/services/spaces-service";
 import { type SpaceListResponse } from "@/modules/spaces/types/schemas";
 
-type Props = {
-  params: Promise<{ locale: string }>;
-};
-
 /** Default pagination metadata for initial state */
 const DEFAULT_META = {
   currentPage: 1,
@@ -20,11 +16,9 @@ const DEFAULT_META = {
  * Server component displaying welcome message and space list within the dashboard layout.
  * Fetches initial spaces server-side and passes them to the SpaceList component.
  * Uses getTranslations for server-side internationalization.
- * @param params - Route parameters containing the locale
  * @returns Dashboard page with translated welcome message and space list
  */
-export default async function DashboardPage({ params }: Props) {
-  const { locale } = await params;
+export default async function DashboardPage() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
@@ -38,5 +32,5 @@ export default async function DashboardPage({ params }: Props) {
     // If fetch fails, pass empty data - SpaceList will handle refetching
   }
 
-  return <SpaceList initialData={initialData} locale={locale} />;
+  return <SpaceList initialData={initialData} />;
 }

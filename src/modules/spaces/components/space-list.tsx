@@ -2,7 +2,7 @@
 "use no memo";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import Link from "next/link";
+import { Link } from "@/shared/infrastructure/i18n";
 import {
   useReactTable,
   getCoreRowModel,
@@ -67,8 +67,6 @@ import {
 interface SpaceListProps {
   /** Initial paginated spaces data fetched server-side */
   initialData: SpaceListResponse;
-  /** Current locale for routing */
-  locale: string;
 }
 
 /**
@@ -78,15 +76,14 @@ interface SpaceListProps {
  *
  * @param props - Component props
  * @param props.initialData - Initial paginated spaces data fetched server-side
- * @param props.locale - Current locale for routing
  * @returns SpaceList component with data table, search, and pagination controls
  *
  * @example
  * ```tsx
- * <SpaceList initialData={spacesResponse} locale="en" />
+ * <SpaceList initialData={spacesResponse} />
  * ```
  */
-export function SpaceList({ initialData, locale }: SpaceListProps) {
+export function SpaceList({ initialData }: SpaceListProps) {
   const t = useTranslations("spaces");
   const [spaces, setSpaces] = useState<Space[]>(initialData.data);
   const [meta, setMeta] = useState<PaginationMeta>(
@@ -134,7 +131,7 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
         header: t("columns.actions"),
         cell: ({ row }) => (
           <Button variant="ghost" size="sm" asChild>
-            <Link href={`/${locale}/space/${row.original.id}`}>
+            <Link href={`/space/${row.original.id}`}>
               <Eye className="mr-1 size-4" />
               {t("actions.view")}
             </Link>
@@ -142,7 +139,7 @@ export function SpaceList({ initialData, locale }: SpaceListProps) {
         ),
       },
     ],
-    [locale, t]
+    [t]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library -- React Compiler automatically skips memoization for TanStack Table

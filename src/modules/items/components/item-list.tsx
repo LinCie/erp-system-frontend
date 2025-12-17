@@ -119,22 +119,25 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
    * and removing the last item to maintain the limit.
    * @param item - The newly created item
    */
-  const handleItemCreated = (item: Item) => {
-    setItems((prev) => {
-      const updated = [item, ...prev];
-      // Remove last item if exceeds limit
-      if (updated.length > limit) {
-        return updated.slice(0, limit);
-      }
-      return updated;
-    });
-    // Update total items count
-    setMeta((prev) => ({
-      ...prev,
-      totalItems: prev.totalItems + 1,
-      totalPages: Math.ceil((prev.totalItems + 1) / limit),
-    }));
-  };
+  const handleItemCreated = useCallback(
+    (item: Item) => {
+      setItems((prev) => {
+        const updated = [item, ...prev];
+        // Remove last item if exceeds limit
+        if (updated.length > limit) {
+          return updated.slice(0, limit);
+        }
+        return updated;
+      });
+      // Update total items count
+      setMeta((prev) => ({
+        ...prev,
+        totalItems: prev.totalItems + 1,
+        totalPages: Math.ceil((prev.totalItems + 1) / limit),
+      }));
+    },
+    [limit]
+  );
 
   /**
    * Handles updated item by replacing it in the list.

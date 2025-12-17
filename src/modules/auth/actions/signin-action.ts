@@ -4,7 +4,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { authService } from "../services/auth-service";
 import { signinSchema, type ActionResult } from "../types/schemas";
-import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
+import {
+  isHttpError,
+  mapApiErrors,
+  type ApiError,
+} from "@/shared/infrastructure/http";
 import { setAuthCookies } from "@/shared/lib/auth-cookies";
 import { mapZodErrors } from "@/shared/lib/validation";
 
@@ -47,23 +51,10 @@ export async function signinAction(
     // Handle API errors
     if (isHttpError(error)) {
       const apiError = error as ApiError;
-
-      // Map API issues to field-specific errors if available
-      const errors: Record<string, string[]> = {};
-      if (apiError.apiIssues) {
-        for (const issue of apiError.apiIssues) {
-          const field = issue.path[0]?.toString() ?? "form";
-          if (!errors[field]) {
-            errors[field] = [];
-          }
-          errors[field].push(issue.message);
-        }
-      }
-
       return {
         success: false,
         message: apiError.apiMessage ?? "Invalid credentials",
-        errors: Object.keys(errors).length > 0 ? errors : undefined,
+        errors: mapApiErrors(apiError),
       };
     }
 

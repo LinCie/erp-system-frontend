@@ -1,6 +1,21 @@
 import ky, { HTTPError } from "ky";
 
 /**
+ * Extended context type for ky requests with authentication support.
+ */
+export interface HttpContext {
+  /** Bearer token for authenticated requests */
+  token?: string;
+}
+
+// Extend ky's Options type to include our custom context
+declare module "ky" {
+  interface Options {
+    context?: HttpContext;
+  }
+}
+
+/**
  * Error response structure from the backend API.
  * Contains a message and optional validation issues.
  */
@@ -110,4 +125,37 @@ export function getErrorMessage(error: unknown): string {
     return error.message;
   }
   return "An unexpected error occurred";
+}
+
+/**
+ * Maps API error issues to a field-keyed error object.
+ * Useful for displaying field-specific errors from API responses in forms.
+ * @param apiError - The API error with optional issues array
+ * @returns Record mapping field names to arrays of error messages, or undefined if no issues
+ * @example
+ * ```typescript
+ * if (isHttpError(error)) {
+ *   const apiError = error as ApiError;
+ *   const errors = mapApiErrors(apiError);
+ *   return { success: false, message: apiError.apiMessage, errors };
+ * }
+ * ```
+ */
+export function mapApiErrors(
+  apiError: ApiError
+): Record<string, string[]> | undefined {
+  if (!apiError.apiIssues || apiError.apiIssues.length === 0) {
+    return undefined;
+  }
+
+  const errors: Record<string, string[]> = {};
+  for (const issue of apiError.apiIssues) {
+    const field = issue.path[0]?.toString() ?? "form";
+    if (!errors[field]) {
+      errors[field] = [];
+    }
+    errors[field].push(issue.message);
+  }
+
+  return Object.keys(errors).length > 0 ? errors : undefined;
 }
