@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -17,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ImageZoom } from "@/components/ui/zoomable-image";
 import { UpdateItemModal } from "./update-item-modal";
 import { DeleteItemDialog } from "./delete-item-dialog";
 import { RichTextRenderer } from "@/components/rich-text-renderer";
@@ -214,14 +214,13 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                 {viewItem.images.map((image, index) => (
                   <div key={image.path} className="group relative">
-                    <div className="relative aspect-square overflow-hidden rounded-lg border">
-                      <img
-                        src={getItemImageUrl(image.path, image.isNew)}
-                        alt={`${viewItem.name} - ${image.name || `image ${index + 1}`}`}
-                        className="size-full object-cover transition-transform group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    </div>
+                    <ImageZoom
+                      src={getItemImageUrl(image.path, image.isNew)}
+                      alt={`${viewItem.name} - ${image.name || `image ${index + 1}`}`}
+                      width={300}
+                      height={300}
+                      className="aspect-square object-cover"
+                    />
                     {image.name && (
                       <p className="text-muted-foreground mt-1 truncate text-center text-xs">
                         {image.name}
