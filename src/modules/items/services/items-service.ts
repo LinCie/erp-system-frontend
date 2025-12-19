@@ -7,6 +7,9 @@ import {
   type GetManyItemsPaginatedResponse,
   type ItemChatResponse,
   type GetManyItemsParams,
+  CreateItemInput,
+  UpdateItemInput,
+  requestUploadResponseSchema,
 } from "../types/schemas";
 
 /**
@@ -51,14 +54,17 @@ export const itemsService = {
   /**
    * Creates a new item using multipart/form-data.
    * @param token - Access token for authenticated requests
-   * @param formData - FormData containing item fields and images
+   * @param data - Data containing item fields and images
    * @returns Validated created item
    */
-  async createItem(token: string, formData: FormData): Promise<Item> {
+  async createItem(token: string, data: CreateItemInput): Promise<Item> {
     const response = await http
       .post("items", {
         context: { token },
-        body: formData,
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
       .json();
     return itemSchema.parse(response);
@@ -68,18 +74,21 @@ export const itemsService = {
    * Updates an existing item using multipart/form-data.
    * @param token - Access token for authenticated requests
    * @param id - Item ID
-   * @param formData - FormData containing item fields and images
+   * @param data - Data containing item fields and images
    * @returns Validated updated item
    */
   async updateItem(
     token: string,
     id: number,
-    formData: FormData
+    data: UpdateItemInput
   ): Promise<Item> {
     const response = await http
       .patch(`items/${id}`, {
         context: { token },
-        body: formData,
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
       .json();
     return itemSchema.parse(response);
@@ -113,5 +122,24 @@ export const itemsService = {
       })
       .json();
     return itemChatResponseSchema.parse(response);
+  },
+
+  /**
+   * Requests a signed R2 upload URL.
+   * @param token - Access token for authenticated requests
+   * @param data - Content type and size of the file
+   * @returns Signed URL and key for upload
+   */
+  async requestUploadUrl(
+    token: string,
+    data: { contentType: string; size: number }
+  ) {
+    const response = await http
+      .post("items/upload", {
+        context: { token },
+        json: data,
+      })
+      .json();
+    return requestUploadResponseSchema.parse(response);
   },
 };

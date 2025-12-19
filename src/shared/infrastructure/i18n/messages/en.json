@@ -123,6 +123,7 @@
     "updateDescription": "Update the item details",
     "updateSuccess": "Item updated successfully",
     "updateError": "Failed to update item",
+    "uploading": "Uploading images...",
     "delete": {
       "trigger": "Delete",
       "title": "Are you sure?",

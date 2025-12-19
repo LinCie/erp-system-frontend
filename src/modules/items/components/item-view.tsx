@@ -220,6 +220,7 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
                       width={300}
                       height={300}
                       className="aspect-square object-cover"
+                      unoptimized
                     />
                     {image.name && (
                       <p className="text-muted-foreground mt-1 truncate text-center text-xs">

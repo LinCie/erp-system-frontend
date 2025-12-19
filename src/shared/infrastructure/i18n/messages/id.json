@@ -123,6 +123,7 @@
     "updateDescription": "Perbarui detail item",
     "updateSuccess": "Item berhasil diperbarui",
     "updateError": "Gagal memperbarui item",
+    "uploading": "Sedang mengupload...",
     "delete": {
       "trigger": "Hapus",
       "title": "Apakah Anda yakin?",

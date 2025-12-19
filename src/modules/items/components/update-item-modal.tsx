@@ -12,7 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
+import ky from "ky";
 import { updateItemAction } from "../actions/update-item-action";
+import { requestUploadUrlAction } from "../actions/request-upload-url-action";
 import {
   updateItemSchema,
   type UpdateItemInput,
@@ -84,6 +86,9 @@ export function UpdateItemModal({
 }: UpdateItemModalProps) {
   const t = useTranslations("items");
   const [open, setOpen] = useState(false);
+  const [images, setImages] = useState<File[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [state, formAction, isPending] = useActionState(
     updateItemAction.bind(null, item.id),
     {
@@ -158,21 +163,120 @@ export function UpdateItemModal({
     setOpen(isOpen);
     if (isOpen) {
       setKeptExistingImages(item.images ?? []);
+      setImages([]);
       setImageUploadKey((prev) => prev + 1);
     }
   };
 
   // Handle new image file changes
   const handleImagesChange = (files: File[]) => {
-    form.setValue(
-      "images",
-      files.length === 1 ? files[0] : files.length > 0 ? files : undefined
-    );
+    setImages(files);
   };
 
   // Handle existing images removal
   const handleExistingImagesChange = (images: ItemImage[]) => {
     setKeptExistingImages(images);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setUploadError(null);
+
+    // Upload all new images to R2 and collect their keys
+    const uploadedImages: {
+      name: string;
+      path: string;
+      size: number;
+      isNew: boolean;
+    }[] = [];
+    setIsUploading(true);
+
+    try {
+      for (const image of images) {
+        const response = await requestUploadUrlAction(image.type, image.size);
+        if (!response.success) {
+          setUploadError(
+            response.message ?? "Failed to get upload URL for image"
+          );
+          setIsUploading(false);
+          return;
+        }
+
+        if (!response.data) {
+          setUploadError("No upload URL received");
+          setIsUploading(false);
+          return;
+        }
+
+        const { url, key } = response.data;
+
+        try {
+          await ky.put(url, {
+            body: image,
+          });
+        } catch {
+          setUploadError(`Failed to upload image: ${image.name}`);
+          setIsUploading(false);
+          return;
+        }
+
+        uploadedImages.push({
+          name: image.name,
+          path: key,
+          size: image.size,
+          isNew: true,
+        });
+      }
+
+      // Build FormData with all form fields
+      const formData = new FormData();
+
+      // Add all text fields from form state (with fallbacks for partial schema)
+      const name = form.getValues("name");
+      const cost = form.getValues("cost");
+      const price = form.getValues("price");
+      const weight = form.getValues("weight");
+      const status = form.getValues("status");
+
+      if (name) formData.set("name", name);
+      if (cost) formData.set("cost", cost);
+      if (price) formData.set("price", price);
+      if (weight) formData.set("weight", weight);
+      if (status) formData.set("status", status);
+      formData.set("space_id", String(item.space_id));
+
+      // Add optional fields
+      const sku = form.getValues("sku");
+      if (sku) formData.set("sku", sku);
+
+      const description = form.getValues("description");
+      if (description) formData.set("description", description);
+
+      const notes = form.getValues("notes");
+      if (notes) formData.set("notes", notes);
+
+      // Combine kept existing images with newly uploaded images
+      const allImages = [
+        ...keptExistingImages.map((img) => ({
+          name: img.name,
+          path: img.path,
+          size: img.size,
+          isNew: img.isNew,
+        })),
+        ...uploadedImages,
+      ];
+
+      // Add images array as JSON string
+      if (allImages.length > 0) {
+        formData.set("images", JSON.stringify(allImages));
+      }
+
+      setIsUploading(false);
+      startTransition(() => formAction(formData));
+    } catch {
+      setUploadError("An unexpected error occurred during upload");
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -192,8 +296,9 @@ export function UpdateItemModal({
         </DialogHeader>
 
         <Form {...form}>
-          <form action={formAction} className="grid gap-4">
+          <form onSubmit={handleSubmit} className="grid gap-4">
             {!state.success && <FormErrorAlert message={state.message} />}
+            {uploadError && <FormErrorAlert message={uploadError} />}
 
             {/* Name */}
             <FormField
@@ -208,11 +313,11 @@ export function UpdateItemModal({
                       ref={(e) => {
                         field.ref(e);
                         (
-                          inputRef as React.MutableRefObject<HTMLInputElement | null>
+                          inputRef as React.RefObject<HTMLInputElement | null>
                         ).current = e;
                       }}
                       placeholder={t("fields.namePlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       aria-label={t("fields.name")}
                     />
                   </FormControl>
@@ -233,7 +338,7 @@ export function UpdateItemModal({
                       {...field}
                       value={field.value ?? ""}
                       placeholder={t("fields.skuPlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       aria-label={t("fields.sku")}
                     />
                   </FormControl>
@@ -253,7 +358,7 @@ export function UpdateItemModal({
                     <Input
                       {...field}
                       placeholder={t("fields.pricePlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       aria-label={t("fields.price")}
                     />
                   </FormControl>
@@ -273,7 +378,7 @@ export function UpdateItemModal({
                     <Input
                       {...field}
                       placeholder={t("fields.costPlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       aria-label={t("fields.cost")}
                     />
                   </FormControl>
@@ -293,7 +398,7 @@ export function UpdateItemModal({
                     <Input
                       {...field}
                       placeholder={t("fields.weightPlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       aria-label={t("fields.weight")}
                     />
                   </FormControl>
@@ -314,7 +419,7 @@ export function UpdateItemModal({
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger disabled={isPending}>
+                      <SelectTrigger disabled={isPending || isUploading}>
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -346,7 +451,7 @@ export function UpdateItemModal({
                       initialValue={field.value ?? undefined}
                       onChange={field.onChange}
                       placeholder={t("fields.descriptionPlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       ariaLabel={t("fields.description")}
                     />
                   </FormControl>
@@ -373,7 +478,7 @@ export function UpdateItemModal({
                       {...field}
                       value={field.value ?? ""}
                       placeholder={t("fields.notesPlaceholder")}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       aria-label={t("fields.notes")}
                       className="resize-none"
                       rows={3}
@@ -398,7 +503,7 @@ export function UpdateItemModal({
                       existingImages={keptExistingImages}
                       onChange={handleImagesChange}
                       onExistingImagesChange={handleExistingImagesChange}
-                      disabled={isPending}
+                      disabled={isPending || isUploading}
                       multiple
                       placeholder={t("fields.imagesPlaceholder")}
                       helperText={t("fields.imagesHelperText")}
@@ -409,15 +514,16 @@ export function UpdateItemModal({
               )}
             />
 
-            {/* Hidden field for existing images (JSON array for backend) */}
-            <input
-              type="hidden"
-              name="existing_images"
-              value={JSON.stringify(keptExistingImages)}
-            />
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? t("updating") : t("update")}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isPending || isUploading}
+            >
+              {isUploading
+                ? t("uploading")
+                : isPending
+                  ? t("updating")
+                  : t("update")}
             </Button>
           </form>
         </Form>

@@ -20,6 +20,18 @@ export {
  * Item schemas
  */
 
+export const requestUploadBodySchema = z.object({
+  contentType: z.string(),
+  size: z.number(),
+});
+
+export type RequestUploadBody = z.infer<typeof requestUploadBodySchema>;
+
+export const requestUploadResponseSchema = z.object({
+  url: z.string(),
+  key: z.string(),
+});
+
 export const itemImageSchema = z.object({
   name: z.string(),
   path: z.string(),
@@ -29,29 +41,22 @@ export const itemImageSchema = z.object({
 
 export const itemSchema = entitySchema.extend({
   name: z.string(),
-  code: z.string().optional(),
-  description: z.string().optional(),
-  sku: z.string().optional(),
   cost: z.string(),
   price: z.string(),
   weight: z.string(),
+  code: z.string().optional(),
+  description: z.string().optional(),
+  sku: z.string().optional(),
   notes: z.string().optional(),
   space_id: z.number().optional(),
   images: z.array(itemImageSchema).optional(),
 });
 
-export const createItemSchema = z.object({
-  name: z.string(),
-  code: z.string().optional(),
-  description: z.string().optional(),
-  sku: z.string().optional(),
-  cost: z.string(),
-  price: z.string(),
-  weight: z.string(),
-  notes: z.string().optional(),
-  space_id: z.number().optional(),
-  status: z.enum(["active", "inactive"]),
-  images: z.union([z.instanceof(File), z.array(z.instanceof(File))]).optional(),
+export const createItemSchema = itemSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+  deleted_at: true,
 });
 
 export const updateItemSchema = createItemSchema.partial();
@@ -102,3 +107,4 @@ export type ItemChatInput = z.infer<typeof itemChatSchema>;
 export type ItemChatResponse = z.infer<typeof itemChatResponseSchema>;
 export type GetManyItemsQuery = z.infer<typeof getManyItemsQuerySchema>;
 export type GetManyItemsParams = z.infer<typeof getManyItemsParamsSchema>;
+export type RequestUploadResponse = z.infer<typeof requestUploadResponseSchema>;
