@@ -32,6 +32,12 @@ export const requestUploadResponseSchema = z.object({
   key: z.string(),
 });
 
+export const itemFileSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  size: z.number(),
+});
+
 export const itemImageSchema = z.object({
   name: z.string(),
   path: z.string(),
@@ -44,12 +50,14 @@ export const itemSchema = entitySchema.extend({
   cost: z.string(),
   price: z.string(),
   weight: z.string(),
+  price_discount: z.string().optional(),
   code: z.string().optional(),
   description: z.string().optional(),
   sku: z.string().optional(),
   notes: z.string().optional(),
   space_id: z.number().optional(),
   images: z.array(itemImageSchema).optional(),
+  files: z.array(itemFileSchema).optional(),
 });
 
 export const createItemSchema = itemSchema.omit({
@@ -95,6 +103,7 @@ export const getManyItemsParamsSchema = getManyItemsQuerySchema;
  * Inferred types
  */
 
+export type ItemFile = z.infer<typeof itemFileSchema>;
 export type ItemImage = z.infer<typeof itemImageSchema>;
 export type Item = z.infer<typeof itemSchema>;
 export type CreateItemInput = z.infer<typeof createItemSchema>;

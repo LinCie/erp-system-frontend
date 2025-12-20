@@ -48,6 +48,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { ItemImageUpload } from "./item-image-upload";
+import { ItemFileUpload } from "./item-file-upload";
 import { requestUploadUrlAction } from "../actions/request-upload-url-action";
 import ky from "ky";
 
@@ -79,6 +80,7 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
   const t = useTranslations("items");
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [state, formAction, isPending] = useActionState(createItemAction, {
@@ -96,6 +98,7 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       name: "",
       sku: undefined,
       price: "",
+      price_discount: undefined,
       cost: "",
       weight: "",
       status: "active",
@@ -103,11 +106,14 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       description: undefined,
       space_id: spaceId,
       images: undefined,
+      files: undefined,
     },
   });
 
   // Key to reset image upload component
   const [imageUploadKey, setImageUploadKey] = useState(0);
+  // Key to reset file upload component
+  const [fileUploadKey, setFileUploadKey] = useState(0);
 
   // Auto-focus first input when modal opens
   useEffect(() => {
@@ -128,6 +134,7 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
         setOpen(false);
         form.reset();
         setImageUploadKey((prev) => prev + 1);
+        setFileUploadKey((prev) => prev + 1);
         onSuccess?.(state.data as Item);
       });
     } else if (!state.success && state.message && !hasHandledSuccess.current) {
@@ -147,7 +154,9 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
     setOpen(isOpen);
     if (!isOpen) {
       setImageUploadKey((prev) => prev + 1);
+      setFileUploadKey((prev) => prev + 1);
       setImages([]);
+      setFiles([]);
     }
   };
 
@@ -156,15 +165,22 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
     setImages(files);
   };
 
+  // Handle file changes
+  const handleFilesChange = (newFiles: File[]) => {
+    setFiles(newFiles);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUploadError(null);
 
     // Upload all images to R2 and collect their keys
     const uploadedImages = [];
+    const uploadedFiles = [];
     setIsUploading(true);
 
     try {
+      // Upload images
       for (const image of images) {
         const response = await requestUploadUrlAction(image.type, image.size);
         if (!response.success) {
@@ -201,6 +217,42 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
         });
       }
 
+      // Upload files
+      for (const file of files) {
+        const response = await requestUploadUrlAction(file.type, file.size);
+        if (!response.success) {
+          setUploadError(
+            response.message ?? "Failed to get upload URL for file"
+          );
+          setIsUploading(false);
+          return;
+        }
+
+        if (!response.data) {
+          setUploadError("No upload URL received");
+          setIsUploading(false);
+          return;
+        }
+
+        const { url, key } = response.data;
+
+        try {
+          await ky.put(url, {
+            body: file,
+          });
+        } catch {
+          setUploadError(`Failed to upload file: ${file.name}`);
+          setIsUploading(false);
+          return;
+        }
+
+        uploadedFiles.push({
+          name: file.name,
+          path: key,
+          size: file.size,
+        });
+      }
+
       // Build FormData with all form fields
       const formData = new FormData();
 
@@ -216,6 +268,9 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       const sku = form.getValues("sku");
       if (sku) formData.set("sku", sku);
 
+      const priceDiscount = form.getValues("price_discount");
+      if (priceDiscount) formData.set("price_discount", priceDiscount);
+
       const description = form.getValues("description");
       if (description) formData.set("description", description);
 
@@ -225,6 +280,11 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       // Add images array as JSON string
       if (uploadedImages.length > 0) {
         formData.set("images", JSON.stringify(uploadedImages));
+      }
+
+      // Add files array as JSON string
+      if (uploadedFiles.length > 0) {
+        formData.set("files", JSON.stringify(uploadedFiles));
       }
 
       setIsUploading(false);
@@ -314,6 +374,27 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
                       placeholder={t("fields.pricePlaceholder")}
                       disabled={isPending}
                       aria-label={t("fields.price")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Price Discount */}
+            <FormField
+              control={form.control}
+              name="price_discount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.priceDiscount")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={t("fields.priceDiscountPlaceholder")}
+                      disabled={isPending}
+                      aria-label={t("fields.priceDiscount")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -459,6 +540,29 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
                       multiple
                       placeholder={t("fields.imagesPlaceholder")}
                       helperText={t("fields.imagesHelperText")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Files */}
+            <FormField
+              control={form.control}
+              name="files"
+              render={() => (
+                <FormItem>
+                  <FormLabel>{t("fields.files")}</FormLabel>
+                  <FormControl>
+                    <ItemFileUpload
+                      key={fileUploadKey}
+                      name="files"
+                      onChange={handleFilesChange}
+                      disabled={isPending}
+                      multiple
+                      placeholder={t("fields.filesPlaceholder")}
+                      helperText={t("fields.filesHelperText")}
                     />
                   </FormControl>
                   <FormMessage />

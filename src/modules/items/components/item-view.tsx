@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Edit, Trash2, ImageOff } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  Trash2,
+  ImageOff,
+  FileIcon,
+  Download,
+} from "lucide-react";
 import { type Item } from "../types/schemas";
 import { Link, useRouter } from "@/shared/infrastructure/i18n";
 import { getItemImageUrl } from "@/shared/lib/image-url";
@@ -59,6 +66,14 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
       style: "currency",
       currency: "IDR",
     }).format(Number(value));
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   return (
@@ -193,6 +208,20 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
               <p className="font-medium">{formatCurrency(viewItem.cost)}</p>
             </div>
 
+            {viewItem.price_discount && (
+              <>
+                <Separator />
+                <div className="space-y-1">
+                  <p className="text-muted-foreground text-sm">
+                    {t("fields.priceDiscount")}
+                  </p>
+                  <p className="font-medium text-green-600">
+                    {formatCurrency(viewItem.price_discount)}
+                  </p>
+                </div>
+              </>
+            )}
+
             <Separator />
             <div className="space-y-1">
               <p className="text-muted-foreground text-sm">
@@ -235,6 +264,65 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
                 <ImageOff className="text-muted-foreground mb-4 size-12" />
                 <p className="text-muted-foreground text-sm">
                   {t("view.noImages")}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Files */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>{t("view.files")}</CardTitle>
+            <CardDescription>{t("view.filesDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {viewItem.files && viewItem.files.length > 0 ? (
+              <div className="space-y-2">
+                {viewItem.files.map((file) => (
+                  <div
+                    key={file.path}
+                    className="bg-muted/50 flex items-center justify-between gap-3 rounded-lg border p-3"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="bg-background rounded-md p-2">
+                        <FileIcon className="text-muted-foreground size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
+                          {file.name}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatFileSize(file.size)}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 shrink-0"
+                      asChild
+                    >
+                      <a
+                        href={getItemImageUrl(file.path, true)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download={file.name}
+                      >
+                        <Download className="size-4" />
+                        <span className="sr-only">
+                          {t("view.downloadFile")}
+                        </span>
+                      </a>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <FileIcon className="text-muted-foreground mb-4 size-12" />
+                <p className="text-muted-foreground text-sm">
+                  {t("view.noFiles")}
                 </p>
               </div>
             )}

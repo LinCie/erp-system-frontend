@@ -38,10 +38,21 @@ export async function updateItemAction(
     }
   }
 
+  const filesJson = formData.get("files");
+  let files = undefined;
+  if (filesJson && typeof filesJson === "string") {
+    try {
+      files = JSON.parse(filesJson);
+    } catch {
+      // Invalid JSON, skip files
+    }
+  }
+
   const rawData = {
     name: formData.get("name") || undefined,
     cost: formData.get("cost") || undefined,
     price: formData.get("price") || undefined,
+    price_discount: formData.get("price_discount") || undefined,
     weight: formData.get("weight") || undefined,
     status: formData.get("status") || undefined,
     space_id: formData.get("space_id")
@@ -52,6 +63,7 @@ export async function updateItemAction(
     sku: formData.get("sku") || undefined,
     notes: formData.get("notes") || undefined,
     images: images || [],
+    files: files || [],
   };
 
   const parsed = updateItemSchema.safeParse(rawData);

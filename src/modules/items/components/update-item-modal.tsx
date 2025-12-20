@@ -20,6 +20,7 @@ import {
   type UpdateItemInput,
   type Item,
   type ItemImage,
+  type ItemFile,
 } from "../types/schemas";
 import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
 import { FormErrorAlert } from "@/components/form-error-alert";
@@ -51,6 +52,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { ItemImageUpload } from "./item-image-upload";
+import { ItemFileUpload } from "./item-file-upload";
 
 /**
  * Props for the UpdateItemModal component.
@@ -87,6 +89,7 @@ export function UpdateItemModal({
   const t = useTranslations("items");
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [state, formAction, isPending] = useActionState(
@@ -107,6 +110,7 @@ export function UpdateItemModal({
       name: item.name,
       sku: item.sku,
       price: item.price,
+      price_discount: item.price_discount,
       cost: item.cost,
       weight: item.weight,
       status: item.status === "archived" ? "inactive" : item.status,
@@ -114,6 +118,7 @@ export function UpdateItemModal({
       description: item.description,
       space_id: item.space_id,
       images: undefined,
+      files: undefined,
     },
   });
 
@@ -121,8 +126,14 @@ export function UpdateItemModal({
   const [keptExistingImages, setKeptExistingImages] = useState<ItemImage[]>(
     item.images ?? []
   );
+  // Track kept existing files for file upload
+  const [keptExistingFiles, setKeptExistingFiles] = useState<ItemFile[]>(
+    item.files ?? []
+  );
   // Key to reset image upload component
   const [imageUploadKey, setImageUploadKey] = useState(0);
+  // Key to reset file upload component
+  const [fileUploadKey, setFileUploadKey] = useState(0);
 
   // Auto-focus first input when modal opens
   useEffect(() => {
@@ -143,7 +154,9 @@ export function UpdateItemModal({
       startTransition(() => {
         setOpen(false);
         setKeptExistingImages(updatedItem.images ?? []);
+        setKeptExistingFiles(updatedItem.files ?? []);
         setImageUploadKey((prev) => prev + 1);
+        setFileUploadKey((prev) => prev + 1);
         onSuccess?.(updatedItem);
       });
     } else if (!state.success && state.message && !hasHandledSuccess.current) {
@@ -163,8 +176,11 @@ export function UpdateItemModal({
     setOpen(isOpen);
     if (isOpen) {
       setKeptExistingImages(item.images ?? []);
+      setKeptExistingFiles(item.files ?? []);
       setImages([]);
+      setFiles([]);
       setImageUploadKey((prev) => prev + 1);
+      setFileUploadKey((prev) => prev + 1);
     }
   };
 
@@ -178,6 +194,16 @@ export function UpdateItemModal({
     setKeptExistingImages(images);
   };
 
+  // Handle new file changes
+  const handleFilesChange = (newFiles: File[]) => {
+    setFiles(newFiles);
+  };
+
+  // Handle existing files removal
+  const handleExistingFilesChange = (files: ItemFile[]) => {
+    setKeptExistingFiles(files);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUploadError(null);
@@ -189,9 +215,15 @@ export function UpdateItemModal({
       size: number;
       isNew: boolean;
     }[] = [];
+    const uploadedFiles: {
+      name: string;
+      path: string;
+      size: number;
+    }[] = [];
     setIsUploading(true);
 
     try {
+      // Upload images
       for (const image of images) {
         const response = await requestUploadUrlAction(image.type, image.size);
         if (!response.success) {
@@ -228,6 +260,42 @@ export function UpdateItemModal({
         });
       }
 
+      // Upload files
+      for (const file of files) {
+        const response = await requestUploadUrlAction(file.type, file.size);
+        if (!response.success) {
+          setUploadError(
+            response.message ?? "Failed to get upload URL for file"
+          );
+          setIsUploading(false);
+          return;
+        }
+
+        if (!response.data) {
+          setUploadError("No upload URL received");
+          setIsUploading(false);
+          return;
+        }
+
+        const { url, key } = response.data;
+
+        try {
+          await ky.put(url, {
+            body: file,
+          });
+        } catch {
+          setUploadError(`Failed to upload file: ${file.name}`);
+          setIsUploading(false);
+          return;
+        }
+
+        uploadedFiles.push({
+          name: file.name,
+          path: key,
+          size: file.size,
+        });
+      }
+
       // Build FormData with all form fields
       const formData = new FormData();
 
@@ -249,6 +317,9 @@ export function UpdateItemModal({
       const sku = form.getValues("sku");
       if (sku) formData.set("sku", sku);
 
+      const priceDiscount = form.getValues("price_discount");
+      if (priceDiscount) formData.set("price_discount", priceDiscount);
+
       const description = form.getValues("description");
       if (description) formData.set("description", description);
 
@@ -266,9 +337,24 @@ export function UpdateItemModal({
         ...uploadedImages,
       ];
 
+      // Combine kept existing files with newly uploaded files
+      const allFiles = [
+        ...keptExistingFiles.map((f) => ({
+          name: f.name,
+          path: f.path,
+          size: f.size,
+        })),
+        ...uploadedFiles,
+      ];
+
       // Add images array as JSON string
       if (allImages.length > 0) {
         formData.set("images", JSON.stringify(allImages));
+      }
+
+      // Add files array as JSON string
+      if (allFiles.length > 0) {
+        formData.set("files", JSON.stringify(allFiles));
       }
 
       setIsUploading(false);
@@ -360,6 +446,27 @@ export function UpdateItemModal({
                       placeholder={t("fields.pricePlaceholder")}
                       disabled={isPending || isUploading}
                       aria-label={t("fields.price")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Price Discount */}
+            <FormField
+              control={form.control}
+              name="price_discount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.priceDiscount")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={t("fields.priceDiscountPlaceholder")}
+                      disabled={isPending || isUploading}
+                      aria-label={t("fields.priceDiscount")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -507,6 +614,31 @@ export function UpdateItemModal({
                       multiple
                       placeholder={t("fields.imagesPlaceholder")}
                       helperText={t("fields.imagesHelperText")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Files */}
+            <FormField
+              control={form.control}
+              name="files"
+              render={() => (
+                <FormItem>
+                  <FormLabel>{t("fields.files")}</FormLabel>
+                  <FormControl>
+                    <ItemFileUpload
+                      key={fileUploadKey}
+                      name="files"
+                      existingFiles={keptExistingFiles}
+                      onChange={handleFilesChange}
+                      onExistingFilesChange={handleExistingFilesChange}
+                      disabled={isPending || isUploading}
+                      multiple
+                      placeholder={t("fields.filesPlaceholder")}
+                      helperText={t("fields.filesHelperText")}
                     />
                   </FormControl>
                   <FormMessage />

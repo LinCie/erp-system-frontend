@@ -156,6 +156,8 @@
       "code": "Kode",
       "price": "Harga",
       "pricePlaceholder": "Masukkan harga",
+      "priceDiscount": "Harga Diskon",
+      "priceDiscountPlaceholder": "Masukkan harga diskon (opsional)",
       "cost": "Biaya",
       "costPlaceholder": "Masukkan biaya",
       "weight": "Berat",
@@ -166,7 +168,10 @@
       "notesPlaceholder": "Masukkan catatan (opsional)",
       "images": "Gambar",
       "imagesPlaceholder": "Klik untuk memilih",
-      "imagesHelperText": "atau seret dan lepas file di sini"
+      "imagesHelperText": "atau seret dan lepas file di sini",
+      "files": "File",
+      "filesPlaceholder": "Klik untuk memilih",
+      "filesHelperText": "atau seret dan lepas file di sini"
     },
     "view": {
       "back": "Kembali ke daftar item",
@@ -176,7 +181,11 @@
       "pricingDescription": "Informasi harga dan biaya",
       "images": "Gambar",
       "imagesDescription": "Gambar produk untuk item ini",
-      "noImages": "Tidak ada gambar"
+      "noImages": "Tidak ada gambar",
+      "files": "File",
+      "filesDescription": "File terlampir untuk item ini",
+      "noFiles": "Tidak ada file",
+      "downloadFile": "Unduh file"
     },
     "empty": "Tidak ada item ditemukan.",
     "status": {

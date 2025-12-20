@@ -156,6 +156,8 @@
       "code": "Code",
       "price": "Price",
       "pricePlaceholder": "Enter price",
+      "priceDiscount": "Discount Price",
+      "priceDiscountPlaceholder": "Enter discount price (optional)",
       "cost": "Cost",
       "costPlaceholder": "Enter cost",
       "weight": "Weight",
@@ -166,7 +168,10 @@
       "notesPlaceholder": "Enter notes (optional)",
       "images": "Images",
       "imagesPlaceholder": "Click to select",
-      "imagesHelperText": "or drag and drop files here"
+      "imagesHelperText": "or drag and drop files here",
+      "files": "Files",
+      "filesPlaceholder": "Click to select",
+      "filesHelperText": "or drag and drop files here"
     },
     "view": {
       "back": "Back to items list",
@@ -176,7 +181,11 @@
       "pricingDescription": "Price and cost information",
       "images": "Images",
       "imagesDescription": "Product images for this item",
-      "noImages": "No images"
+      "noImages": "No images",
+      "files": "Files",
+      "filesDescription": "Attached files for this item",
+      "noFiles": "No files",
+      "downloadFile": "Download file"
     },
     "empty": "No items found.",
     "status": {
