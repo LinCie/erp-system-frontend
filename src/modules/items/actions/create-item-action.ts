@@ -11,11 +11,13 @@ import { createItemSchema, type Item } from "../types/schemas";
 
 /**
  * Server action for creating a new item.
+ * @param spaceId - Space ID for the item
  * @param _prevState - Previous action state (required for useActionState)
  * @param formData - The form data
  * @returns ActionResult with created item or validation errors
  */
 export async function createItemAction(
+  spaceId: number,
   _prevState: ActionResult<Item>,
   formData: FormData
 ): Promise<ActionResult<Item>> {
@@ -53,9 +55,7 @@ export async function createItemAction(
     price_discount: formData.get("price_discount") || undefined,
     weight: formData.get("weight"),
     status: formData.get("status"),
-    space_id: formData.get("space_id")
-      ? Number(formData.get("space_id"))
-      : undefined,
+    space_id: spaceId,
     description: formData.get("description") || undefined,
     sku: formData.get("sku") || undefined,
     notes: formData.get("notes") || undefined,

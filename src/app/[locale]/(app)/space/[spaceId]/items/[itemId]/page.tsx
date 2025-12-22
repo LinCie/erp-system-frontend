@@ -33,7 +33,10 @@ export default async function ItemViewPage({ params }: Props) {
   const { spaceId, itemId } = await params;
 
   // Fetch item data
-  const result = await getItemAction(Number(itemId), { withInventory: true });
+  const result = await getItemAction(Number(itemId), {
+    withInventory: true,
+    spaceId: parseInt(spaceId),
+  });
 
   // Handle error or not found
   if (!result.success || !result.data) {

@@ -60,6 +60,8 @@ import { ItemFileUpload } from "./item-file-upload";
 interface UpdateItemModalProps {
   /** Item to update */
   item: Item;
+  /** Space ID for the item */
+  spaceId: number;
   /** Callback when item is updated successfully, receives the updated item */
   onSuccess?: (item: Item) => void;
   /** Optional trigger element, defaults to icon button */
@@ -72,17 +74,19 @@ interface UpdateItemModalProps {
  *
  * @param props - Component props
  * @param props.item - Item to update
+ * @param props.spaceId - Space ID for the item
  * @param props.onSuccess - Optional callback when item is updated successfully
  * @param props.trigger - Optional custom trigger element
  * @returns UpdateItemModal component
  *
  * @example
  * ```tsx
- * <UpdateItemModal item={item} onSuccess={() => refetch()} />
+ * <UpdateItemModal item={item} spaceId={123} onSuccess={() => refetch()} />
  * ```
  */
 export function UpdateItemModal({
   item,
+  spaceId,
   onSuccess,
   trigger,
 }: UpdateItemModalProps) {
@@ -93,7 +97,7 @@ export function UpdateItemModal({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [state, formAction, isPending] = useActionState(
-    updateItemAction.bind(null, item.id),
+    updateItemAction.bind(null, item.id, spaceId),
     {
       success: false,
       message: undefined,
@@ -311,7 +315,6 @@ export function UpdateItemModal({
       if (price) formData.set("price", price);
       if (weight) formData.set("weight", weight);
       if (status) formData.set("status", status);
-      formData.set("space_id", String(item.space_id));
 
       // Add optional fields
       const sku = form.getValues("sku");
@@ -325,6 +328,8 @@ export function UpdateItemModal({
 
       const notes = form.getValues("notes");
       if (notes) formData.set("notes", notes);
+
+      // Note: space_id is passed via action binding, not FormData
 
       // Combine kept existing images with newly uploaded images
       const allImages = [

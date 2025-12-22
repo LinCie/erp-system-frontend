@@ -323,6 +323,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                 </DropdownMenuItem>
                 <UpdateItemModal
                   item={item}
+                  spaceId={spaceId!}
                   onSuccess={handleItemUpdated}
                   trigger={
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>

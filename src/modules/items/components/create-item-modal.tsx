@@ -83,11 +83,14 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [state, formAction, isPending] = useActionState(createItemAction, {
-    success: false,
-    message: undefined,
-    errors: undefined,
-  });
+  const [state, formAction, isPending] = useActionState(
+    createItemAction.bind(null, spaceId),
+    {
+      success: false,
+      message: undefined,
+      errors: undefined,
+    }
+  );
   const [, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const hasHandledSuccess = useRef(false);
@@ -262,7 +265,8 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       formData.set("price", form.getValues("price"));
       formData.set("weight", form.getValues("weight"));
       formData.set("status", form.getValues("status"));
-      formData.set("space_id", String(spaceId));
+
+      // Note: space_id is passed via action binding, not FormData
 
       // Add optional fields
       const sku = form.getValues("sku");
@@ -569,9 +573,6 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
                 </FormItem>
               )}
             />
-
-            {/* Hidden field for space_id */}
-            <input type="hidden" name="space_id" value={spaceId} />
 
             <Button
               type="submit"

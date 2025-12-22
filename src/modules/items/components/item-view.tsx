@@ -100,6 +100,7 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
         <div className="flex items-center gap-2">
           <UpdateItemModal
             item={viewItem}
+            spaceId={spaceId}
             onSuccess={handleUpdateItem}
             trigger={
               <Button variant="outline" size="sm" className="gap-2">

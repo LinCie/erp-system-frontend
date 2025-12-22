@@ -12,12 +12,14 @@ import { mapZodErrors } from "@/shared/lib";
  * Server action for updating an item.
  * Sends multipart/form-data to backend for image upload support.
  * @param id - Item ID to update
+ * @param spaceId - Space ID for the item
  * @param _prevState - Previous action state (required for useActionState)
  * @param formData - The form data
  * @returns ActionResult with updated item or validation errors
  */
 export async function updateItemAction(
   id: number,
+  spaceId: number,
   _prevState: ActionResult<Item>,
   formData: FormData
 ): Promise<ActionResult<Item>> {
@@ -55,9 +57,7 @@ export async function updateItemAction(
     price_discount: formData.get("price_discount") || undefined,
     weight: formData.get("weight") || undefined,
     status: formData.get("status") || undefined,
-    space_id: formData.get("space_id")
-      ? Number(formData.get("space_id"))
-      : undefined,
+    space_id: spaceId,
     code: formData.get("code") || undefined,
     description: formData.get("description") || undefined,
     sku: formData.get("sku") || undefined,

@@ -105,6 +105,7 @@ export const getManyItemsQuerySchema = z.object({
 });
 
 export const getItemQuerySchema = z.object({
+  spaceId: z.number().optional(),
   withInventory: z.boolean().optional(),
 });
 
