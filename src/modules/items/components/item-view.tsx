@@ -233,6 +233,17 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
           </CardContent>
         </Card>
 
+        {/* Inventory */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>{t("inventory.title")}</CardTitle>
+            <CardDescription>{t("inventory.description")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ItemInventoryTable inventories={viewItem.inventories ?? []} />
+          </CardContent>
+        </Card>
+
         {/* Images */}
         <Card className="md:col-span-2">
           <CardHeader>
@@ -327,17 +338,6 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
                 </p>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Inventory */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>{t("inventory.title")}</CardTitle>
-            <CardDescription>{t("inventory.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ItemInventoryTable inventories={viewItem.inventories ?? []} />
           </CardContent>
         </Card>
 
