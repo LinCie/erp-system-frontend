@@ -22,6 +22,7 @@ export default async function ItemsPage({ params }: Props) {
     spaceId: +spaceId,
     type: "full",
     limit: 10,
+    withInventory: true,
   });
 
   const initialData =

@@ -139,7 +139,20 @@
       "price": "Price",
       "notes": "Notes",
       "status": "Status",
+      "inventory": "Inventory",
       "actions": "Actions"
+    },
+    "inventory": {
+      "title": "Inventory",
+      "description": "Stock levels across different spaces",
+      "space": "Space",
+      "balance": "Balance",
+      "costPerUnit": "Cost/Unit",
+      "status": "Status",
+      "notes": "Notes",
+      "totalStock": "Total Stock",
+      "noInventory": "No inventory data available",
+      "empty": "No inventory records found"
     },
     "actions": {
       "title": "Actions",

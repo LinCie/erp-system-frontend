@@ -19,7 +19,11 @@ import {
 } from "@/shared/constants/pagination";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
 import { getManyItemsAction } from "../actions/get-items-action";
-import { type Item, type GetManyItemsResponse } from "../types/schemas";
+import {
+  type Item,
+  type GetManyItemsResponse,
+  type InventoryItem,
+} from "../types/schemas";
 import { type PaginationMeta } from "@/shared/types/pagination";
 import {
   Table,
@@ -179,6 +183,10 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         size: 200,
         minSize: 120,
         maxSize: 300,
+        cell: ({ row }) => {
+          const name = row.getValue("name") as string;
+          return <span className="line-clamp-3">{name}</span>;
+        },
       },
       {
         accessorKey: "price",
@@ -192,6 +200,66 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
             style: "currency",
             currency: "IDR",
           }).format(price);
+        },
+      },
+      {
+        accessorKey: "inventories",
+        header: t("columns.inventory"),
+        size: 200,
+        minSize: 150,
+        maxSize: 280,
+        cell: ({ row }) => {
+          const inventories = row.getValue("inventories") as
+            | InventoryItem[]
+            | undefined;
+          const totalStock =
+            inventories?.reduce((sum, inv) => sum + inv.balance, 0) ?? 0;
+
+          return (
+            <Table className="w-full text-xs">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="h-6 px-1 py-0.5 text-xs">
+                    {t("inventory.space")}
+                  </TableHead>
+                  <TableHead className="h-6 px-1 py-0.5 text-right text-xs">
+                    {t("inventory.balance")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inventories && inventories.length > 0 ? (
+                  inventories.map((inv, idx) => (
+                    <TableRow key={idx} className="hover:bg-transparent">
+                      <TableCell className="truncate px-1 py-0.5">
+                        {inv.space_name}
+                      </TableCell>
+                      <TableCell className="px-1 py-0.5 text-right tabular-nums">
+                        {inv.balance}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell
+                      colSpan={2}
+                      className="text-muted-foreground px-1 py-0.5 text-center"
+                    >
+                      {t("inventory.noInventory")}
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableRow className="bg-muted/50 hover:bg-muted/50 font-medium">
+                  <TableCell className="px-1 py-0.5">
+                    {t("inventory.totalStock")}
+                  </TableCell>
+                  <TableCell className="px-1 py-0.5 text-right tabular-nums">
+                    {totalStock}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          );
         },
       },
       {
@@ -228,6 +296,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
           return <Badge variant={variant}>{t(`status.${status}`)}</Badge>;
         },
       },
+
       {
         id: "actions",
         header: t("columns.actions"),
@@ -308,6 +377,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         page,
         spaceId,
         type: "full",
+        withInventory: true,
       });
 
       if (result.success && result.data) {

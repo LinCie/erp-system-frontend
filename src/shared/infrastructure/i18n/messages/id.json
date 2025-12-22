@@ -139,7 +139,20 @@
       "price": "Harga",
       "notes": "Catatan",
       "status": "Status",
+      "inventory": "Inventaris",
       "actions": "Aksi"
+    },
+    "inventory": {
+      "title": "Inventaris",
+      "description": "Tingkat stok di berbagai ruang",
+      "space": "Ruang",
+      "balance": "Saldo",
+      "costPerUnit": "Biaya/Unit",
+      "status": "Status",
+      "notes": "Catatan",
+      "totalStock": "Total Stok",
+      "noInventory": "Tidak ada data inventaris",
+      "empty": "Tidak ada catatan inventaris"
     },
     "actions": {
       "title": "Aksi",

@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { itemsService } from "../services/items-service";
-import { type Item } from "../types/schemas";
+import { GetItemQuery, type Item } from "../types/schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 
@@ -11,7 +11,10 @@ import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
  * @param id - Item ID
  * @returns ActionResult with item data or error message
  */
-export async function getItemAction(id: number): Promise<ActionResult<Item>> {
+export async function getItemAction(
+  id: number,
+  params?: GetItemQuery
+): Promise<ActionResult<Item>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
@@ -20,7 +23,7 @@ export async function getItemAction(id: number): Promise<ActionResult<Item>> {
   }
 
   try {
-    const data = await itemsService.getItem(accessToken, id);
+    const data = await itemsService.getItem(accessToken, id, params);
     return { success: true, data };
   } catch (error) {
     if (isHttpError(error)) {

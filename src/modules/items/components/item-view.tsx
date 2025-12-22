@@ -27,6 +27,7 @@ import { ImageZoom } from "@/components/ui/zoomable-image";
 import { UpdateItemModal } from "./update-item-modal";
 import { DeleteItemDialog } from "./delete-item-dialog";
 import { RichTextRenderer } from "@/components/rich-text-renderer";
+import { ItemInventoryTable } from "./item-inventory-table";
 
 /**
  * Props for the ItemView component.
@@ -326,6 +327,17 @@ export function ItemView({ item, spaceId }: ItemViewProps) {
                 </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Inventory */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>{t("inventory.title")}</CardTitle>
+            <CardDescription>{t("inventory.description")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ItemInventoryTable inventories={viewItem.inventories ?? []} />
           </CardContent>
         </Card>
 

@@ -20,6 +20,14 @@ export {
  * Item schemas
  */
 
+export const inventoryItemSchema = z.object({
+  balance: z.coerce.number(),
+  cost_per_unit: z.coerce.number(),
+  notes: z.string().optional(),
+  space_name: z.string(),
+  status: z.string(),
+});
+
 export const requestUploadBodySchema = z.object({
   contentType: z.string(),
   size: z.number(),
@@ -56,6 +64,7 @@ export const itemSchema = entitySchema.extend({
   space_id: z.number().optional(),
   images: z.array(itemImageSchema).optional(),
   files: z.array(itemFileSchema).optional(),
+  inventories: z.array(inventoryItemSchema).optional(),
 });
 
 export const createItemSchema = itemSchema.omit({
@@ -63,6 +72,7 @@ export const createItemSchema = itemSchema.omit({
   created_at: true,
   updated_at: true,
   deleted_at: true,
+  inventories: true,
 });
 
 export const updateItemSchema = createItemSchema.partial();
@@ -91,12 +101,18 @@ export const getManyItemsQuerySchema = z.object({
   status: z.enum(["active", "inactive"]).optional(),
   limit: z.number().int().positive().optional(),
   page: z.number().int().positive().optional(),
+  withInventory: z.boolean().optional(),
+});
+
+export const getItemQuerySchema = z.object({
+  withInventory: z.boolean().optional(),
 });
 
 /**
  * Inferred types
  */
 
+export type InventoryItem = z.infer<typeof inventoryItemSchema>;
 export type ItemFile = z.infer<typeof itemFileSchema>;
 export type ItemImage = z.infer<typeof itemImageSchema>;
 export type Item = z.infer<typeof itemSchema>;
@@ -108,3 +124,4 @@ export type ItemChatResponse = z.infer<typeof itemChatResponseSchema>;
 export type GetManyItemsQuery = z.infer<typeof getManyItemsQuerySchema>;
 export type RequestUploadResponse = z.infer<typeof requestUploadResponseSchema>;
 export type RequestUploadBody = z.infer<typeof requestUploadBodySchema>;
+export type GetItemQuery = z.infer<typeof getItemQuerySchema>;

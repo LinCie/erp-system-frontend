@@ -75,7 +75,10 @@ export async function createItemAction(
   // Call service
   try {
     const item = await itemsService.createItem(accessToken, parsed.data);
-    return { success: true, data: item };
+    const data = await itemsService.getItem(accessToken, item.id, {
+      withInventory: true,
+    });
+    return { success: true, data };
   } catch (error) {
     if (isHttpError(error)) {
       const apiError = error as ApiError;

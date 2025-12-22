@@ -10,6 +10,7 @@ import {
   CreateItemInput,
   UpdateItemInput,
   requestUploadResponseSchema,
+  GetItemQuery,
 } from "../types/schemas";
 
 /**
@@ -42,10 +43,15 @@ export const itemsService = {
    * @param id - Item ID
    * @returns Validated item details
    */
-  async getItem(token: string, id: number): Promise<Item> {
+  async getItem(
+    token: string,
+    id: number,
+    params?: GetItemQuery
+  ): Promise<Item> {
     const response = await http
       .get(`items/${id}`, {
         context: { token },
+        searchParams: params,
       })
       .json();
     return itemSchema.parse(response);
