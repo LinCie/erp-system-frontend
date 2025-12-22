@@ -3,8 +3,8 @@
 import { cookies } from "next/headers";
 import { itemsService } from "../services/items-service";
 import {
-  GetManyItemsParams,
-  type GetManyItemsPaginatedResponse,
+  type GetManyItemsQuery,
+  type GetManyItemsResponse,
 } from "../types/schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
@@ -15,8 +15,8 @@ import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
  * @returns ActionResult with items data or error message
  */
 export async function getManyItemsAction(
-  params: GetManyItemsParams
-): Promise<ActionResult<GetManyItemsPaginatedResponse>> {
+  params: GetManyItemsQuery
+): Promise<ActionResult<GetManyItemsResponse>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 

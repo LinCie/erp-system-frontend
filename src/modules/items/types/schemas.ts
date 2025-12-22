@@ -25,8 +25,6 @@ export const requestUploadBodySchema = z.object({
   size: z.number(),
 });
 
-export type RequestUploadBody = z.infer<typeof requestUploadBodySchema>;
-
 export const requestUploadResponseSchema = z.object({
   url: z.string(),
   key: z.string(),
@@ -74,8 +72,6 @@ export const getManyItemsResponseSchema = z.object({
   metadata: paginationMetaSchema,
 });
 
-export const getManyItemsPaginatedResponseSchema = getManyItemsResponseSchema;
-
 export const itemChatSchema = z.object({
   prompt: z.string(),
 });
@@ -97,8 +93,6 @@ export const getManyItemsQuerySchema = z.object({
   page: z.number().int().positive().optional(),
 });
 
-export const getManyItemsParamsSchema = getManyItemsQuerySchema;
-
 /**
  * Inferred types
  */
@@ -109,11 +103,8 @@ export type Item = z.infer<typeof itemSchema>;
 export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 export type GetManyItemsResponse = z.infer<typeof getManyItemsResponseSchema>;
-export type GetManyItemsPaginatedResponse = z.infer<
-  typeof getManyItemsPaginatedResponseSchema
->;
 export type ItemChatInput = z.infer<typeof itemChatSchema>;
 export type ItemChatResponse = z.infer<typeof itemChatResponseSchema>;
 export type GetManyItemsQuery = z.infer<typeof getManyItemsQuerySchema>;
-export type GetManyItemsParams = z.infer<typeof getManyItemsParamsSchema>;
 export type RequestUploadResponse = z.infer<typeof requestUploadResponseSchema>;
+export type RequestUploadBody = z.infer<typeof requestUploadBodySchema>;

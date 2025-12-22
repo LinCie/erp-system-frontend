@@ -19,10 +19,7 @@ import {
 } from "@/shared/constants/pagination";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
 import { getManyItemsAction } from "../actions/get-items-action";
-import {
-  type Item,
-  type GetManyItemsPaginatedResponse,
-} from "../types/schemas";
+import { type Item, type GetManyItemsResponse } from "../types/schemas";
 import { type PaginationMeta } from "@/shared/types/pagination";
 import {
   Table,
@@ -77,7 +74,7 @@ import { Link } from "@/shared/infrastructure/i18n";
  */
 interface ItemListProps {
   /** Initial paginated items data fetched server-side */
-  initialData: GetManyItemsPaginatedResponse;
+  initialData: GetManyItemsResponse;
   /** Space ID for filtering items */
   spaceId?: number;
 }

@@ -1,12 +1,12 @@
 import { http } from "@/shared/infrastructure/http";
 import {
   itemSchema,
-  getManyItemsPaginatedResponseSchema,
+  getManyItemsResponseSchema,
   itemChatResponseSchema,
   type Item,
-  type GetManyItemsPaginatedResponse,
+  type GetManyItemsResponse,
   type ItemChatResponse,
-  type GetManyItemsParams,
+  type GetManyItemsQuery,
   CreateItemInput,
   UpdateItemInput,
   requestUploadResponseSchema,
@@ -25,15 +25,15 @@ export const itemsService = {
    */
   async getManyItems(
     token: string,
-    params: GetManyItemsParams
-  ): Promise<GetManyItemsPaginatedResponse> {
+    params: GetManyItemsQuery
+  ): Promise<GetManyItemsResponse> {
     const response = await http
       .get("items", {
         context: { token },
         searchParams: params,
       })
       .json();
-    return getManyItemsPaginatedResponseSchema.parse(response);
+    return getManyItemsResponseSchema.parse(response);
   },
 
   /**
