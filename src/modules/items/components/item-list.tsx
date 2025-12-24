@@ -197,11 +197,31 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         minSize: 100,
         maxSize: 180,
         cell: ({ row }) => {
-          const price = row.getValue("price") as number;
-          return new Intl.NumberFormat(undefined, {
+          const price = parseFloat(row.getValue("price") as string);
+          const discountedPrice = row.original.price_discount
+            ? parseFloat(row.original.price_discount)
+            : undefined;
+          const formatted = new Intl.NumberFormat(undefined, {
             style: "currency",
             currency: "IDR",
           }).format(price);
+          const formattedDiscount = discountedPrice
+            ? new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: "IDR",
+              }).format(discountedPrice)
+            : null;
+
+          return discountedPrice ? (
+            <div className="flex flex-col gap-0.5">
+              <span>{formattedDiscount}</span>
+              <span className="text-muted-foreground text-xs line-through">
+                {formatted}
+              </span>
+            </div>
+          ) : (
+            <span>{formatted}</span>
+          );
         },
       },
       {
@@ -218,13 +238,13 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
             inventories?.reduce((sum, inv) => sum + inv.balance, 0) ?? 0;
 
           return (
-            <Table className="w-full text-xs">
+            <Table className="w-full text-sm">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="h-6 px-1 py-0.5 text-xs">
+                  <TableHead className="h-6 px-1 py-0.5 text-sm">
                     {t("inventory.space")}
                   </TableHead>
-                  <TableHead className="h-6 px-1 py-0.5 text-right text-xs">
+                  <TableHead className="h-6 px-1 py-0.5 text-right text-sm">
                     {t("inventory.balance")}
                   </TableHead>
                 </TableRow>
@@ -236,8 +256,8 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                       <TableCell className="truncate px-1 py-0.5">
                         {inv.space_name}
                       </TableCell>
-                      <TableCell className="px-1 py-0.5 text-right tabular-nums">
-                        {inv.balance}
+                      <TableCell className="text-primary px-1 py-0.5 text-right tabular-nums">
+                        {inv.balance} pcs
                       </TableCell>
                     </TableRow>
                   ))
