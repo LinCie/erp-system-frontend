@@ -98,7 +98,7 @@ export const getManyItemsQuerySchema = z.object({
   spaceId: z.number().optional(),
   type: z.enum(["full", "partial"]),
   search: z.string().optional(),
-  status: z.enum(["active", "inactive"]).optional(),
+  status: z.enum(["active", "inactive", "discounted", "all"]).optional(),
   limit: z.number().int().positive().optional(),
   page: z.number().int().positive().optional(),
   withInventory: z.boolean().optional(),

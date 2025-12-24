@@ -204,7 +204,9 @@
     "status": {
       "active": "Active",
       "inactive": "Inactive",
-      "archived": "Archived"
+      "archived": "Archived",
+      "discounted": "Discounted",
+      "all": "All"
     },
     "pagination": {
       "showing": "Showing {from} to {to} of {total} results"

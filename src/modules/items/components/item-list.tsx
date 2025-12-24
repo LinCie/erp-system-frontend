@@ -104,7 +104,9 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
     initialData.metadata ?? DEFAULT_PAGINATION_META
   );
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<"active" | "inactive">("active");
+  const [status, setStatus] = useState<
+    "active" | "inactive" | "discounted" | "all"
+  >("active");
   const [limit, setLimit] = useState<number>(LIMIT_OPTIONS[0]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -455,6 +457,10 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                     <SelectItem value="inactive">
                       {t("status.inactive")}
                     </SelectItem>
+                    <SelectItem value="discounted">
+                      {t("status.discounted")}
+                    </SelectItem>
+                    <SelectItem value="all">{t("status.all")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

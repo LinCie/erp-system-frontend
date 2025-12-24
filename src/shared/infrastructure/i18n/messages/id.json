@@ -204,7 +204,9 @@
     "status": {
       "active": "Aktif",
       "inactive": "Tidak Aktif",
-      "archived": "Diarsipkan"
+      "archived": "Diarsipkan",
+      "discounted": "Di Diskon",
+      "all": "Semua"
     },
     "pagination": {
       "showing": "Menampilkan {from} sampai {to} dari {total} hasil"
