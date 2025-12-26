@@ -206,7 +206,8 @@
       "inactive": "Tidak Aktif",
       "archived": "Diarsipkan",
       "discounted": "Di Diskon",
-      "all": "Semua"
+      "all": "Semua",
+      "unknown": "Tidak Diketahui"
     },
     "pagination": {
       "showing": "Menampilkan {from} sampai {to} dari {total} hasil"

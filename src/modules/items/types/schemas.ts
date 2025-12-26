@@ -51,11 +51,12 @@ export const itemImageSchema = z.object({
   isNew: z.boolean().optional(),
 });
 
-export const itemSchema = entitySchema.extend({
+export const itemSchema = entitySchema.omit({ status: true }).extend({
   name: z.string(),
   cost: z.string(),
   price: z.string(),
   weight: z.string(),
+  status: z.union([z.string(), z.enum(["active", "inactive"])]),
   price_discount: z.string().optional(),
   code: z.string().optional(),
   description: z.string().optional(),
@@ -98,7 +99,9 @@ export const getManyItemsQuerySchema = z.object({
   spaceId: z.number().optional(),
   type: z.enum(["full", "partial"]),
   search: z.string().optional(),
-  status: z.enum(["active", "inactive", "discounted", "all"]).optional(),
+  status: z
+    .enum(["active", "inactive", "discounted", "all", "unknown"])
+    .optional(),
   limit: z.number().int().positive().optional(),
   page: z.number().int().positive().optional(),
   withInventory: z.boolean().optional(),

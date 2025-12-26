@@ -187,7 +187,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         maxSize: 300,
         cell: ({ row }) => {
           const name = row.getValue("name") as string;
-          return <span className="line-clamp-3">{name}</span>;
+          return <span className="line-clamp-3 text-wrap">{name}</span>;
         },
       },
       {
@@ -293,7 +293,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         cell: ({ row }) => {
           const notes = row.getValue("notes") as string | null;
           return notes ? (
-            <span className="text-muted-foreground line-clamp-2 text-sm">
+            <span className="text-muted-foreground line-clamp-3 text-sm text-wrap">
               {notes}
             </span>
           ) : (
@@ -304,21 +304,22 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
       {
         accessorKey: "status",
         header: t("columns.status"),
-        size: 100,
+        size: 80,
         minSize: 80,
         maxSize: 120,
         cell: ({ row }) => {
           const status = row.getValue("status") as Item["status"];
-          const variant =
-            status === "active"
-              ? "default"
-              : status === "inactive"
-                ? "secondary"
-                : "outline";
-          return <Badge variant={variant}>{t(`status.${status}`)}</Badge>;
+          if (status === "active" || status === "inactive") {
+            const variant = status === "active" ? "default" : "secondary";
+            return (
+              <Badge variant={variant} className="line-clamp-3">
+                {t(`status.${status}`)}
+              </Badge>
+            );
+          }
+          return <span className="line-clamp-3 text-wrap">{status}</span>;
         },
       },
-
       {
         id: "actions",
         header: t("columns.actions"),
@@ -479,6 +480,9 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                     </SelectItem>
                     <SelectItem value="discounted">
                       {t("status.discounted")}
+                    </SelectItem>
+                    <SelectItem value="unknown">
+                      {t("status.unknown")}
                     </SelectItem>
                     <SelectItem value="all">{t("status.all")}</SelectItem>
                   </SelectContent>

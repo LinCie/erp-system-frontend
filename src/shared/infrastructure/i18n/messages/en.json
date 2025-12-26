@@ -206,7 +206,8 @@
       "inactive": "Inactive",
       "archived": "Archived",
       "discounted": "Discounted",
-      "all": "All"
+      "all": "All",
+      "unknown": "Unknown"
     },
     "pagination": {
       "showing": "Showing {from} to {to} of {total} results"
