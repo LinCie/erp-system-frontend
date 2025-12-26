@@ -100,6 +100,7 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
     defaultValues: {
       name: "",
       sku: undefined,
+      code: undefined,
       price: "",
       price_discount: undefined,
       cost: "",
@@ -272,6 +273,9 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
       const sku = form.getValues("sku");
       if (sku) formData.set("sku", sku);
 
+      const code = form.getValues("code");
+      if (code) formData.set("code", code);
+
       const priceDiscount = form.getValues("price_discount");
       if (priceDiscount) formData.set("price_discount", priceDiscount);
 
@@ -358,6 +362,27 @@ export function CreateItemModal({ spaceId, onSuccess }: CreateItemModalProps) {
                       placeholder={t("fields.skuPlaceholder")}
                       disabled={isPending}
                       aria-label={t("fields.sku")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Code */}
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.code")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={t("fields.codePlaceholder")}
+                      disabled={isPending}
+                      aria-label={t("fields.code")}
                     />
                   </FormControl>
                   <FormMessage />

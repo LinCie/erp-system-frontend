@@ -58,6 +58,7 @@ export async function createItemAction(
     space_id: spaceId,
     description: formData.get("description") || undefined,
     sku: formData.get("sku") || undefined,
+    code: formData.get("code") || undefined,
     notes: formData.get("notes") || undefined,
     images,
     files,

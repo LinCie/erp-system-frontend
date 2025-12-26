@@ -167,6 +167,7 @@
       "sku": "SKU",
       "skuPlaceholder": "Masukkan SKU",
       "code": "Kode",
+      "codePlaceholder": "Masukkan Kode",
       "price": "Harga",
       "pricePlaceholder": "Masukkan harga",
       "priceDiscount": "Harga Diskon",

@@ -167,6 +167,7 @@
       "sku": "SKU",
       "skuPlaceholder": "Enter SKU",
       "code": "Code",
+      "codePlaceholder": "Enter Code",
       "price": "Price",
       "pricePlaceholder": "Enter price",
       "priceDiscount": "Discount Price",
