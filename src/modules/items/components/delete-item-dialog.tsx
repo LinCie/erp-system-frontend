@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { deleteItemAction } from "../actions/delete-item-action";
-import { type Item } from "../types/schemas";
+import { type Item } from "../schemas";
 import {
   AlertDialog,
   AlertDialogAction,

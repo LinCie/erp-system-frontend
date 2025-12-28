@@ -6,8 +6,8 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { mapZodErrors } from "@/shared/lib";
 import { ApiError, isHttpError } from "@/shared/infrastructure/http";
-import { itemsService } from "../services/items-service";
-import { createItemSchema, type Item } from "../types/schemas";
+import { CreateItem, getOneItem } from "../services";
+import { createItemSchema, type Item } from "../schemas";
 
 /**
  * Server action for creating a new item.
@@ -75,9 +75,14 @@ export async function createItemAction(
 
   // Call service
   try {
-    const item = await itemsService.createItem(accessToken, parsed.data);
-    const data = await itemsService.getItem(accessToken, item.id, {
-      withInventory: true,
+    const item = await CreateItem({
+      token: accessToken,
+      data: parsed.data,
+    });
+    const data = await getOneItem({
+      token: accessToken,
+      id: item.id,
+      searchParams: { withInventory: true },
     });
     return { success: true, data };
   } catch (error) {

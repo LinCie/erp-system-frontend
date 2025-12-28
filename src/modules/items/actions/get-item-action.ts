@@ -1,8 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { itemsService } from "../services/items-service";
-import { GetItemQuery, type Item } from "../types/schemas";
+import { getOneItem } from "../services";
+import { GetItemQuery, type Item } from "../schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 
@@ -23,7 +23,11 @@ export async function getItemAction(
   }
 
   try {
-    const data = await itemsService.getItem(accessToken, id, params);
+    const data = await getOneItem({
+      token: accessToken,
+      id,
+      searchParams: params,
+    });
     return { success: true, data };
   } catch (error) {
     if (isHttpError(error)) {

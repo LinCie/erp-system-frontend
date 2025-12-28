@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 import { getItemImageUrl } from "@/shared/lib/image-url";
-import { type ItemFile } from "../types/schemas";
+import { type ItemFile } from "../schemas";
 
 /** Maximum total file size in bytes (100MB) */
 const MAX_TOTAL_SIZE_BYTES = 100 * 1024 * 1024;

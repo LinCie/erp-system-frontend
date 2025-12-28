@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { itemsService } from "../services/items-service";
-import { updateItemSchema, type Item } from "../types/schemas";
+import { UpdateItem, getOneItem } from "../services";
+import { updateItemSchema, type Item } from "../schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 import { mapZodErrors } from "@/shared/lib";
@@ -77,9 +77,15 @@ export async function updateItemAction(
 
   // Call service
   try {
-    const item = await itemsService.updateItem(accessToken, id, parsed.data);
-    const data = await itemsService.getItem(accessToken, item.id, {
-      withInventory: true,
+    const item = await UpdateItem({
+      token: accessToken,
+      id,
+      data: parsed.data,
+    });
+    const data = await getOneItem({
+      token: accessToken,
+      id: item.id,
+      searchParams: { withInventory: true },
     });
     return { success: true, data };
   } catch (error) {

@@ -13,11 +13,7 @@ import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { createItemAction } from "../actions/create-item-action";
-import {
-  createItemSchema,
-  type CreateItemInput,
-  type Item,
-} from "../types/schemas";
+import { createItemSchema, type CreateItemInput, type Item } from "../schemas";
 import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
 import { FormErrorAlert } from "@/components/form-error-alert";
 import {

@@ -12,7 +12,7 @@ import {
 import { Package } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { type InventoryItem } from "../types/schemas";
+import { type InventoryItem } from "../schemas";
 import {
   Table,
   TableBody,

@@ -5,8 +5,8 @@ import type { ActionResult } from "@/shared/types/action-result";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { ApiError, isHttpError } from "@/shared/infrastructure/http";
-import { itemsService } from "../services/items-service";
-import { type RequestUploadResponse } from "../types/schemas";
+import { requestUploadUrl } from "../services";
+import { type RequestUploadResponse } from "@/shared/types";
 
 /**
  * Server action for requesting a signed R2 upload URL.
@@ -26,7 +26,8 @@ export async function requestUploadUrlAction(
   }
 
   try {
-    const data = await itemsService.requestUploadUrl(accessToken, {
+    const data = await requestUploadUrl({
+      token: accessToken,
       contentType,
       size,
     });

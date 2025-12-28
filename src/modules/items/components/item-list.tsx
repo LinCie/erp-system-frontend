@@ -23,7 +23,7 @@ import {
   type Item,
   type GetManyItemsResponse,
   type InventoryItem,
-} from "../types/schemas";
+} from "../schemas";
 import { type PaginationMeta } from "@/shared/types/pagination";
 import {
   Table,

@@ -10,7 +10,7 @@ import {
   FileIcon,
   Download,
 } from "lucide-react";
-import { type Item } from "../types/schemas";
+import { type Item } from "../schemas";
 import { Link, useRouter } from "@/shared/infrastructure/i18n";
 import { getItemImageUrl } from "@/shared/lib/image-url";
 import { Button } from "@/components/ui/button";

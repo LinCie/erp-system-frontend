@@ -1,8 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { itemsService } from "../services/items-service";
-import { itemChatSchema, type ItemChatResponse } from "../types/schemas";
+import { chatWithItems } from "../services";
+import { itemChatSchema, type ItemChatResponse } from "../schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 import { mapZodErrors } from "@/shared/lib/validation";
@@ -41,10 +41,10 @@ export async function chatItemsAction(
 
   // Call service
   try {
-    const response = await itemsService.chatWithItems(
-      accessToken,
-      result.data.prompt
-    );
+    const response = await chatWithItems({
+      token: accessToken,
+      prompt: result.data.prompt,
+    });
     return { success: true, data: response };
   } catch (error) {
     if (isHttpError(error)) {

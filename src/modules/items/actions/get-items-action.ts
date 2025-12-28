@@ -1,11 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { itemsService } from "../services/items-service";
-import {
-  type GetManyItemsQuery,
-  type GetManyItemsResponse,
-} from "../types/schemas";
+import { getManyItems } from "../services";
+import { type GetManyItemsQuery, type GetManyItemsResponse } from "../schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 
@@ -25,7 +22,10 @@ export async function getManyItemsAction(
   }
 
   try {
-    const data = await itemsService.getManyItems(accessToken, params);
+    const data = await getManyItems({
+      token: accessToken,
+      searchParams: params,
+    });
     return { success: true, data };
   } catch (error) {
     if (isHttpError(error)) {

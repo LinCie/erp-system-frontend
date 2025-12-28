@@ -21,7 +21,7 @@ import {
   type Item,
   type ItemImage,
   type ItemFile,
-} from "../types/schemas";
+} from "../schemas";
 import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
 import { FormErrorAlert } from "@/components/form-error-alert";
 import {

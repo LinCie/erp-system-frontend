@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { itemsService } from "../services/items-service";
+import { deleteItem } from "../services";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 
@@ -19,7 +19,7 @@ export async function deleteItemAction(id: number): Promise<ActionResult> {
   }
 
   try {
-    await itemsService.deleteItem(accessToken, id);
+    await deleteItem({ token: accessToken, id });
     return { success: true, message: "Item deleted successfully" };
   } catch (error) {
     if (isHttpError(error)) {
