@@ -2,6 +2,7 @@ import { z } from "zod";
 import { entitySchema } from "@/shared/types";
 
 export const inventoryItemSchema = z.object({
+  id: z.coerce.number(),
   balance: z.coerce.number(),
   cost_per_unit: z.coerce.number(),
   notes: z.string().optional(),

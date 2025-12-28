@@ -212,6 +212,27 @@
     },
     "pagination": {
       "showing": "Showing {from} to {to} of {total} results"
+    },
+    "mutations": {
+      "title": "Transaction {itemName} : {spaceName}",
+      "pickDateRange": "Pick a date range",
+      "page": "page",
+      "fetchError": "Failed to fetch mutations",
+      "empty": "No mutations found",
+      "columns": {
+        "date": "Date",
+        "number": "Number",
+        "description": "Description",
+        "notes": "Notes",
+        "type": "Type",
+        "cost": "Cost",
+        "debit": "Debit",
+        "credit": "Credit",
+        "runningBalance": "Running Balance"
+      },
+      "openingBalance": "Opening Balance",
+      "closingBalance": "Closing Balance",
+      "totalTransactions": "Total transactions: {count}"
     }
   },
   "metadata": {

@@ -212,6 +212,27 @@
     },
     "pagination": {
       "showing": "Menampilkan {from} sampai {to} dari {total} hasil"
+    },
+    "mutations": {
+      "title": "Transaksi {itemName} : {spaceName}",
+      "pickDateRange": "Pilih rentang tanggal",
+      "page": "halaman",
+      "fetchError": "Gagal memuat mutasi",
+      "empty": "Tidak ada mutasi ditemukan",
+      "columns": {
+        "date": "Tanggal",
+        "number": "Nomor",
+        "description": "Deskripsi",
+        "notes": "Notes",
+        "type": "Jenis",
+        "cost": "Modal",
+        "debit": "Debit",
+        "credit": "Kredit",
+        "runningBalance": "Saldo Berjalan"
+      },
+      "openingBalance": "Saldo Awal",
+      "closingBalance": "Saldo Akhir",
+      "totalTransactions": "Total transaksi: {count}"
     }
   },
   "metadata": {

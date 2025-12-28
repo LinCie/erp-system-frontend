@@ -71,6 +71,7 @@ import {
 import { CreateItemModal } from "./create-item-modal";
 import { UpdateItemModal } from "./update-item-modal";
 import { DeleteItemDialog } from "./delete-item-dialog";
+import { ItemMutationsModal } from "./item-mutations-modal";
 import { Link } from "@/shared/infrastructure/i18n";
 
 /**
@@ -234,6 +235,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
           const inventories = row.getValue("inventories") as
             | InventoryItem[]
             | undefined;
+          const itemName = row.original.name;
           const totalStock =
             inventories?.reduce((sum, inv) => sum + inv.balance, 0) ?? 0;
 
@@ -256,8 +258,20 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                       <TableCell className="truncate px-1 py-0.5">
                         {inv.space_name}
                       </TableCell>
-                      <TableCell className="text-primary px-1 py-0.5 text-right tabular-nums">
-                        {inv.balance} pcs
+                      <TableCell className="px-1 py-0.5 text-right tabular-nums">
+                        <ItemMutationsModal
+                          inventoryId={inv.id}
+                          itemName={itemName}
+                          spaceName={inv.space_name}
+                          trigger={
+                            <button
+                              type="button"
+                              className="text-primary cursor-pointer hover:underline"
+                            >
+                              {inv.balance} pcs
+                            </button>
+                          }
+                        />
                       </TableCell>
                     </TableRow>
                   ))
