@@ -379,11 +379,11 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
                           {detail.quantity}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
-                          {formatCurrency(detail.price)}
+                          {formatCurrency(detail.price.toString())}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
-                          {detail.discount !== "0"
-                            ? formatCurrency(detail.discount)
+                          {detail.discount.toString() !== "0"
+                            ? formatCurrency(detail.discount.toString())
                             : "—"}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
