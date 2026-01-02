@@ -251,6 +251,103 @@
     "itemView": {
       "title": "{name} - Detail Item",
       "description": "Lihat detail lengkap item"
+    },
+    "trades": {
+      "title": "Transaksi",
+      "description": "Kelola dan lihat semua transaksi"
+    },
+    "tradeView": {
+      "title": "{number} - Detail Transaksi",
+      "description": "Lihat detail lengkap transaksi"
+    }
+  },
+  "trades": {
+    "title": "Transaksi",
+    "description": "Kelola dan lihat semua transaksi di ruang Anda",
+    "searchPlaceholder": "Cari transaksi...",
+    "show": "Tampilkan",
+    "create": "Buat Transaksi",
+    "fetchError": "Gagal memuat transaksi",
+    "empty": "Tidak ada transaksi ditemukan.",
+    "columns": {
+      "date": "Tanggal",
+      "number": "Nomor",
+      "team": "Tim",
+      "contact": "Kontak",
+      "description": "Deskripsi",
+      "sku": "SKU",
+      "status": "Status",
+      "actions": "Aksi"
+    },
+    "modelType": {
+      "all": "Semua Transaksi",
+      "interaction": "Interaksi",
+      "purchaseOrder": "Purchase Order",
+      "salesOrder": "Sales Order"
+    },
+    "status": {
+      "all": "Semua Status",
+      "TX_DRAFT": "Draft",
+      "TX_REQUEST": "Request",
+      "TX_READY": "Perlu Dikirim",
+      "TX_SENT": "Dikirim Seller",
+      "TX_RECEIVED": "Diterima Penerima",
+      "TX_COMPLETED": "Pesanan Selesai",
+      "TX_CANCELED": "Batal",
+      "TX_RETURN": "Return",
+      "TX_CLOSED": "Closed"
+    },
+    "actions": {
+      "title": "Aksi",
+      "openMenu": "Buka menu",
+      "view": "Lihat",
+      "edit": "Ubah",
+      "delete": "Hapus"
+    },
+    "delete": {
+      "trigger": "Hapus",
+      "title": "Apakah Anda yakin?",
+      "description": "Ini akan menghapus transaksi \"{number}\" secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "confirm": "Hapus",
+      "deleting": "Menghapus...",
+      "success": "Transaksi berhasil dihapus",
+      "error": "Gagal menghapus transaksi"
+    },
+    "view": {
+      "back": "Kembali ke daftar transaksi",
+      "basicInfo": "Informasi Dasar",
+      "basicInfoDescription": "Detail dasar tentang transaksi ini",
+      "number": "Nomor Transaksi",
+      "total": "Total",
+      "fee": "Biaya",
+      "timestamps": "Waktu",
+      "timestampsDescription": "Tanggal penting untuk transaksi ini",
+      "createdAt": "Dibuat Pada",
+      "sentTime": "Waktu Kirim",
+      "receivedTime": "Waktu Diterima",
+      "updatedAt": "Diperbarui Pada",
+      "notes": "Catatan",
+      "notesDescription": "Catatan dan deskripsi",
+      "description": "Deskripsi",
+      "senderNotes": "Catatan Pengirim",
+      "receiverNotes": "Catatan Penerima",
+      "handlerNotes": "Catatan Handler",
+      "lineItems": "Item",
+      "lineItemsDescription": "Item yang termasuk dalam transaksi ini",
+      "noLineItems": "Tidak ada item",
+      "itemSku": "SKU",
+      "itemName": "Nama",
+      "quantity": "Qty",
+      "price": "Harga",
+      "discount": "Diskon",
+      "itemNotes": "Catatan",
+      "tags": "Tag",
+      "parties": "Pihak",
+      "partiesDescription": "Informasi pengirim, penerima, dan handler",
+      "sender": "Pengirim",
+      "receiver": "Penerima",
+      "handler": "Handler"
     }
   }
 }

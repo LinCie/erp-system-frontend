@@ -251,6 +251,103 @@
     "itemView": {
       "title": "{name} - Item Details",
       "description": "View complete item details"
+    },
+    "trades": {
+      "title": "Trades",
+      "description": "Manage and view all trades"
+    },
+    "tradeView": {
+      "title": "{number} - Trade Details",
+      "description": "View complete trade details"
+    }
+  },
+  "trades": {
+    "title": "Trades",
+    "description": "Manage and view all trades in your space",
+    "searchPlaceholder": "Search trades...",
+    "show": "Show",
+    "create": "Create Trade",
+    "fetchError": "Failed to fetch trades",
+    "empty": "No trades found.",
+    "columns": {
+      "date": "Date",
+      "number": "Number",
+      "team": "Team",
+      "contact": "Contact",
+      "description": "Description",
+      "sku": "SKU",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "modelType": {
+      "all": "All Trades",
+      "interaction": "Interaction",
+      "purchaseOrder": "Purchase Order",
+      "salesOrder": "Sales Order"
+    },
+    "status": {
+      "all": "All Status",
+      "TX_DRAFT": "Draft",
+      "TX_REQUEST": "Request",
+      "TX_READY": "Ready to Ship",
+      "TX_SENT": "Shipped",
+      "TX_RECEIVED": "Received",
+      "TX_COMPLETED": "Completed",
+      "TX_CANCELED": "Canceled",
+      "TX_RETURN": "Return",
+      "TX_CLOSED": "Closed"
+    },
+    "actions": {
+      "title": "Actions",
+      "openMenu": "Open menu",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "delete": {
+      "trigger": "Delete",
+      "title": "Are you sure?",
+      "description": "This will permanently delete trade \"{number}\". This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "success": "Trade deleted successfully",
+      "error": "Failed to delete trade"
+    },
+    "view": {
+      "back": "Back to trades list",
+      "basicInfo": "Basic Information",
+      "basicInfoDescription": "Basic details about this trade",
+      "number": "Trade Number",
+      "total": "Total",
+      "fee": "Fee",
+      "timestamps": "Timestamps",
+      "timestampsDescription": "Important dates for this trade",
+      "createdAt": "Created At",
+      "sentTime": "Sent Time",
+      "receivedTime": "Received Time",
+      "updatedAt": "Updated At",
+      "notes": "Notes",
+      "notesDescription": "Notes and descriptions",
+      "description": "Description",
+      "senderNotes": "Sender Notes",
+      "receiverNotes": "Receiver Notes",
+      "handlerNotes": "Handler Notes",
+      "lineItems": "Line Items",
+      "lineItemsDescription": "Items included in this trade",
+      "noLineItems": "No line items",
+      "itemSku": "SKU",
+      "itemName": "Name",
+      "quantity": "Qty",
+      "price": "Price",
+      "discount": "Discount",
+      "itemNotes": "Notes",
+      "tags": "Tags",
+      "parties": "Parties",
+      "partiesDescription": "Sender, receiver, and handler information",
+      "sender": "Sender",
+      "receiver": "Receiver",
+      "handler": "Handler"
     }
   }
 }

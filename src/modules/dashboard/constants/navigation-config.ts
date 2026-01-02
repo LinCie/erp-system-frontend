@@ -4,6 +4,7 @@ import {
   Settings,
   HelpCircle,
   Boxes,
+  ArrowLeftRight,
 } from "lucide-react";
 import type { NavItem } from "@/shared/types/navigation";
 
@@ -34,6 +35,19 @@ export const mainNavItems: NavItem[] = [
       {
         title: "Items",
         url: "/items",
+        spaceOnly: true,
+      },
+    ],
+  },
+  {
+    title: "Transactions",
+    url: "",
+    icon: ArrowLeftRight,
+    spaceOnly: true,
+    items: [
+      {
+        title: "Trades",
+        url: "/trades",
         spaceOnly: true,
       },
     ],
