@@ -12,7 +12,7 @@ export async function CreateItem(params: CreateItemParams): Promise<Item> {
   const response = await http
     .post("items", {
       context: { token },
-      body: JSON.stringify(data),
+      json: data,
     })
     .json();
 
