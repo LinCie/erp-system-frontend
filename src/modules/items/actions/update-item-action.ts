@@ -89,6 +89,7 @@ export async function updateItemAction(
     });
     return { success: true, data };
   } catch (error) {
+    console.log(error);
     if (isHttpError(error)) {
       const apiError = error as ApiError;
       return {

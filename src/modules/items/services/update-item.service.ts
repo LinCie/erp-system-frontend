@@ -11,7 +11,7 @@ export async function UpdateItem(params: UpdateItemParams): Promise<Item> {
   const { token, id, data } = params;
 
   const response = await http
-    .patch(`/items/${id}`, {
+    .patch(`items/${id}`, {
       context: { token },
       body: JSON.stringify(data),
     })

@@ -10,7 +10,7 @@ export async function CreateItem(params: CreateItemParams): Promise<Item> {
   const { token, data } = params;
 
   const response = await http
-    .post("/items", {
+    .post("items", {
       context: { token },
       body: JSON.stringify(data),
     })
