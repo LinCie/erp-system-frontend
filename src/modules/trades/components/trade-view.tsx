@@ -372,9 +372,9 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
                     {trade.details.map((detail) => (
                       <TableRow key={detail.id}>
                         <TableCell className="font-medium">
-                          {detail.sku || "—"}
+                          {detail.item?.sku || "—"}
                         </TableCell>
-                        <TableCell>{detail.name || "—"}</TableCell>
+                        <TableCell>{detail.item?.name || "—"}</TableCell>
                         <TableCell className="text-right tabular-nums">
                           {detail.quantity}
                         </TableCell>

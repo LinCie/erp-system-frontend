@@ -304,6 +304,18 @@
       "edit": "Edit",
       "delete": "Delete"
     },
+    "createTitle": "Create Trade",
+    "createDescription": "Create a new trade transaction",
+    "createSuccess": "Trade created successfully",
+    "createError": "Failed to create trade",
+    "creating": "Creating...",
+    "fields": {
+      "number": "Trade Number",
+      "numberPlaceholder": "Enter trade number (optional)",
+      "sentTime": "Sent Time",
+      "senderNotes": "Sender Notes",
+      "senderNotesPlaceholder": "Enter notes from sender..."
+    },
     "delete": {
       "trigger": "Delete",
       "title": "Are you sure?",

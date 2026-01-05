@@ -9,7 +9,7 @@ import {
   flexRender,
   type ColumnDef,
 } from "@tanstack/react-table";
-import { AlertCircle, MoreHorizontal, Plus } from "lucide-react";
+import { AlertCircle, MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useDebounce } from "@/shared/hooks/use-debounce";
@@ -67,6 +67,7 @@ import {
 } from "@/components/ui/pagination";
 import { DeleteTradeDialog } from "./delete-trade-dialog";
 import { Link } from "@/shared/infrastructure/i18n";
+import { CreateTradeModal } from "./create-trade-modal";
 
 /** Model type filter options */
 const MODEL_TYPE_OPTIONS = [
@@ -251,9 +252,10 @@ export function TradeList({ spaceId }: TradeListProps) {
         maxSize: 300,
         cell: ({ row }) => {
           // Use aggregated sku field from backend
-          const sku = row.original.sku;
+          const details = row.original.details;
+          const sku = details?.map((d) => d.item?.sku);
           return sku ? (
-            <span className="line-clamp-2 text-wrap">{sku}</span>
+            <span className="line-clamp-2 text-wrap">{sku.join(", ")}</span>
           ) : (
             <span className="text-muted-foreground">—</span>
           );
@@ -355,6 +357,7 @@ export function TradeList({ spaceId }: TradeListProps) {
         search: debouncedSearch || undefined,
         status: status === "all" ? undefined : status,
         modelType: modelType === "all" ? undefined : modelType,
+        order: "desc",
         limit,
         page,
         withDetails: "true",
@@ -474,11 +477,8 @@ export function TradeList({ spaceId }: TradeListProps) {
           </PopoverContent>
         </Popover>
 
-        {/* Create Button (placeholder) */}
-        <Button className="shrink-0 gap-2">
-          <Plus className="size-4" />
-          {t("create")}
-        </Button>
+        {/* Create Button */}
+        <CreateTradeModal spaceId={spaceId} />
       </div>
 
       {/* Error State */}

@@ -304,6 +304,18 @@
       "edit": "Ubah",
       "delete": "Hapus"
     },
+    "createTitle": "Buat Transaksi",
+    "createDescription": "Buat transaksi baru",
+    "createSuccess": "Transaksi berhasil dibuat",
+    "createError": "Gagal membuat transaksi",
+    "creating": "Membuat...",
+    "fields": {
+      "number": "Nomor Transaksi",
+      "numberPlaceholder": "Masukkan nomor transaksi (opsional)",
+      "sentTime": "Waktu Kirim",
+      "senderNotes": "Catatan Pengirim",
+      "senderNotesPlaceholder": "Masukkan catatan dari pengirim..."
+    },
     "delete": {
       "trigger": "Hapus",
       "title": "Apakah Anda yakin?",

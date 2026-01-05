@@ -45,8 +45,6 @@ export const tradeLinkSchema = z.object({
  */
 export const tradeDetailSchema = z.object({
   id: z.number(),
-  item_id: z.number().nullable().optional(),
-  model_type: z.string(),
   sku: z.string().optional(),
   name: z.string().optional(),
   quantity: z.number(),
@@ -56,6 +54,15 @@ export const tradeDetailSchema = z.object({
   debit: z.number(),
   credit: z.number(),
   notes: z.string().optional(),
+  item: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      sku: z.string().nullable(),
+      cost: z.string(),
+      price: z.string(),
+    })
+    .optional(),
 });
 
 /**
@@ -96,7 +103,6 @@ export const tradeSchema = z.object({
   receiver: playerInfoSchema.nullable().optional(),
   handler: playerInfoSchema.nullable().optional(),
   // Aggregated fields
-  sku: z.string().optional(),
   all_notes: z.string().optional(),
   created_at: z.string().nullable().optional(),
   updated_at: z.string().nullable().optional(),
