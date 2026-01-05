@@ -85,24 +85,6 @@ async function refreshAccessToken(
 }
 
 /**
- * Validates the access token by making a request to the backend.
- * @param accessToken - The access token to validate
- * @returns True if valid, false if expired/invalid
- */
-async function validateAccessToken(accessToken: string): Promise<boolean> {
-  try {
-    const response = await http.get("auth/validate", {
-      cache: "no-store",
-      context: { token: accessToken },
-    });
-
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Clears auth cookies and redirects to signin with locale prefix.
  * @param request - The incoming request
  * @param callbackUrl - Optional callback URL after signin
@@ -128,8 +110,8 @@ function clearAuthAndRedirect(
 /**
  * Proxy for route protection with i18n routing and automatic token refresh.
  * - Handles locale routing before authentication checks
- * - Validates access token on protected routes
- * - Refreshes expired access tokens using refresh token
+ * - Trusts access token existence (backend validates on API calls)
+ * - Only attempts refresh when access token is missing but refresh token exists
  * - Clears tokens and redirects to signin if refresh fails
  * - Redirects authenticated users from auth pages to home
  * @param request - The incoming request
@@ -160,16 +142,12 @@ export default async function proxy(request: NextRequest) {
     return clearAuthAndRedirect(request, pathnameWithoutLocale);
   }
 
-  // Has access token - validate it
+  // Has access token - trust it, let backend validate on actual API calls
   if (accessToken) {
-    const isValid = await validateAccessToken(accessToken);
-
-    if (isValid) {
-      return handleI18nRouting(request);
-    }
+    return handleI18nRouting(request);
   }
 
-  // Access token missing or invalid - try refresh
+  // Access token missing but has refresh token - try refresh
   if (refreshToken) {
     const newTokens = await refreshAccessToken(refreshToken);
 

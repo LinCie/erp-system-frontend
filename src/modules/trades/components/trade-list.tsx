@@ -2,6 +2,7 @@
 "use no memo";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -113,6 +114,8 @@ function getStatusVariant(
  */
 export function TradeList({ spaceId }: TradeListProps) {
   const t = useTranslations("trades");
+  const router = useRouter();
+
   const [trades, setTrades] = useState<Trade[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>(DEFAULT_PAGINATION_META);
   const [search, setSearch] = useState("");
@@ -171,6 +174,7 @@ export function TradeList({ spaceId }: TradeListProps) {
           return (
             <Link
               href={`/space/${spaceId}/trades/${trade.id}`}
+              prefetch={false}
               className="text-primary hover:underline"
             >
               {number}
@@ -285,7 +289,14 @@ export function TradeList({ spaceId }: TradeListProps) {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  onMouseEnter={() =>
+                    router.prefetch(`/space/${spaceId}/trades/${trade.id}`)
+                  }
+                >
                   <MoreHorizontal className="size-4" />
                   <span className="sr-only">{t("actions.openMenu")}</span>
                 </Button>
@@ -294,7 +305,10 @@ export function TradeList({ spaceId }: TradeListProps) {
                 <DropdownMenuLabel>{t("actions.title")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href={`/space/${spaceId}/trades/${trade.id}`}>
+                  <Link
+                    href={`/space/${spaceId}/trades/${trade.id}`}
+                    prefetch={false}
+                  >
                     {t("actions.view")}
                   </Link>
                 </DropdownMenuItem>
@@ -320,7 +334,7 @@ export function TradeList({ spaceId }: TradeListProps) {
         },
       },
     ],
-    [t, spaceId, handleTradeDeleted]
+    [t, spaceId, handleTradeDeleted, router]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -529,7 +543,7 @@ export function TradeList({ spaceId }: TradeListProps) {
             ) : (
               // Data Rows
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={`trade-${row.original.id}-row`}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}

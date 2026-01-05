@@ -1,10 +1,36 @@
 "use server";
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { getOneTrade } from "../services";
 import { type Trade } from "../schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
+
+/**
+ * Internal cached function to fetch trade data.
+ * Uses React cache to dedupe calls within the same request.
+ */
+const getCachedTrade = cache(
+  async (id: number, accessToken: string): Promise<ActionResult<Trade>> => {
+    try {
+      const data = await getOneTrade({
+        token: accessToken,
+        id,
+      });
+      return { success: true, data };
+    } catch (error) {
+      if (isHttpError(error)) {
+        const apiError = error as ApiError;
+        return {
+          success: false,
+          message: apiError.apiMessage ?? "Failed to fetch trade",
+        };
+      }
+      return { success: false, message: "An unexpected error occurred" };
+    }
+  }
+);
 
 /**
  * Server Action to fetch a single trade by ID with authentication.
@@ -19,20 +45,5 @@ export async function getTradeAction(id: number): Promise<ActionResult<Trade>> {
     return { success: false, message: "Not authenticated" };
   }
 
-  try {
-    const data = await getOneTrade({
-      token: accessToken,
-      id,
-    });
-    return { success: true, data };
-  } catch (error) {
-    if (isHttpError(error)) {
-      const apiError = error as ApiError;
-      return {
-        success: false,
-        message: apiError.apiMessage ?? "Failed to fetch trade",
-      };
-    }
-    return { success: false, message: "An unexpected error occurred" };
-  }
+  return getCachedTrade(id, accessToken);
 }

@@ -1,7 +1,7 @@
 import { type ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 
-/** Access token expires in 15 minutes (900 seconds) */
-export const ACCESS_TOKEN_MAX_AGE = 15 * 60;
+/** Access token expires in 10 minutes (600 seconds) */
+export const ACCESS_TOKEN_MAX_AGE = 10 * 60;
 
 /** Refresh token expires in 7 days (604800 seconds) */
 export const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;

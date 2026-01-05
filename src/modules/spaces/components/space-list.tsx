@@ -1,7 +1,7 @@
 "use client";
 "use no memo";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "@/shared/infrastructure/i18n";
 import {
   useReactTable,
@@ -20,11 +20,7 @@ import {
 } from "@/shared/constants/pagination";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
 import { getSpacesAction } from "../actions/get-spaces-action";
-import {
-  type Space,
-  type SpaceListResponse,
-  type PaginationMeta,
-} from "../types/schemas";
+import { type Space, type PaginationMeta } from "../types/schemas";
 import {
   Table,
   TableBody,
@@ -62,14 +58,6 @@ import {
 } from "@/components/ui/pagination";
 
 /**
- * Props for the SpaceList component.
- */
-interface SpaceListProps {
-  /** Initial paginated spaces data fetched server-side */
-  initialData: SpaceListResponse;
-}
-
-/**
  * SpaceList component displays a data table of spaces with search and pagination controls.
  * Implements debounced search input and limit selector for customizing the view.
  * Provides View action for navigating to individual space detail pages.
@@ -83,23 +71,18 @@ interface SpaceListProps {
  * <SpaceList initialData={spacesResponse} />
  * ```
  */
-export function SpaceList({ initialData }: SpaceListProps) {
+export function SpaceList() {
   const t = useTranslations("spaces");
-  const [spaces, setSpaces] = useState<Space[]>(initialData.data);
-  const [meta, setMeta] = useState<PaginationMeta>(
-    initialData.metadata ?? DEFAULT_PAGINATION_META
-  );
+  const [spaces, setSpaces] = useState<Space[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta>(DEFAULT_PAGINATION_META);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [limit, setLimit] = useState<number>(LIMIT_OPTIONS[0]);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
-
-  // Track initial render to skip first fetch (data already provided via initialData)
-  const isInitialRender = useRef(true);
 
   // Define table columns with stable reference
   const columns = useMemo<ColumnDef<Space>[]>(
@@ -151,11 +134,6 @@ export function SpaceList({ initialData }: SpaceListProps) {
 
   // Fetch spaces when search, status, limit, or page changes (skip initial render)
   useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-
     const fetchSpaces = async () => {
       setIsLoading(true);
       setError(null);

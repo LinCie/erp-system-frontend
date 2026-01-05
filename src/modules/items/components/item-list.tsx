@@ -1,7 +1,8 @@
 "use client";
 "use no memo";
 
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -19,11 +20,7 @@ import {
 } from "@/shared/constants/pagination";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
 import { getManyItemsAction } from "../actions/get-items-action";
-import {
-  type Item,
-  type GetManyItemsResponse,
-  type InventoryItem,
-} from "../schemas";
+import { type Item, type InventoryItem } from "../schemas";
 import { type PaginationMeta } from "@/shared/types/pagination";
 import {
   Table,
@@ -78,8 +75,6 @@ import { Link } from "@/shared/infrastructure/i18n";
  * Props for the ItemList component.
  */
 interface ItemListProps {
-  /** Initial paginated items data fetched server-side */
-  initialData: GetManyItemsResponse;
   /** Space ID for filtering items */
   spaceId?: number;
 }
@@ -98,25 +93,21 @@ interface ItemListProps {
  * <ItemList initialData={itemsResponse} spaceId={123} />
  * ```
  */
-export function ItemList({ initialData, spaceId }: ItemListProps) {
+export function ItemList({ spaceId }: ItemListProps) {
+  const router = useRouter();
   const t = useTranslations("items");
-  const [items, setItems] = useState<Item[]>(initialData.data);
-  const [meta, setMeta] = useState<PaginationMeta>(
-    initialData.metadata ?? DEFAULT_PAGINATION_META
-  );
+  const [items, setItems] = useState<Item[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta>(DEFAULT_PAGINATION_META);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<
     "active" | "inactive" | "discounted" | "all"
   >("active");
   const [limit, setLimit] = useState<number>(LIMIT_OPTIONS[0]);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
-
-  // Track initial render to skip first fetch (data already provided via initialData)
-  const isInitialRender = useRef(true);
 
   /**
    * Handles newly created item by prepending it to the list
@@ -345,7 +336,14 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8">
+                <Button
+                  onMouseEnter={() =>
+                    router.prefetch(`/space/${spaceId}/items/${item.id}`)
+                  }
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                >
                   <MoreHorizontal className="size-4" />
                   <span className="sr-only">{t("actions.openMenu")}</span>
                 </Button>
@@ -354,7 +352,10 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
                 <DropdownMenuLabel>{t("actions.title")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href={`/space/${spaceId}/items/${item.id}`}>
+                  <Link
+                    prefetch={false}
+                    href={`/space/${spaceId}/items/${item.id}`}
+                  >
                     {t("actions.view")}
                   </Link>
                 </DropdownMenuItem>
@@ -387,7 +388,7 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
         },
       },
     ],
-    [t, handleItemUpdated, handleItemDeleted, spaceId]
+    [t, handleItemUpdated, handleItemDeleted, spaceId, router]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -399,11 +400,6 @@ export function ItemList({ initialData, spaceId }: ItemListProps) {
 
   // Fetch items when search, status, limit, or page changes (skip initial render)
   useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-
     const fetchItems = async () => {
       setIsLoading(true);
       setError(null);
