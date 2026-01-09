@@ -3,3 +3,8 @@ export { getOneTrade } from "./get-trade.service";
 export { createTrade } from "./create-trade.service";
 export { updateTrade } from "./update-trade.service";
 export { deleteTrade } from "./delete-trade.service";
+export { getTradeContacts } from "./get-trade-contacts.service";
+export { getTradeItems } from "./get-trade-items.service";
+export { createTradeDetail } from "./create-trade-detail.service";
+export { updateTradeDetail } from "./update-trade-detail.service";
+export { deleteTradeDetail } from "./delete-trade-detail.service";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { type Trade } from "../schemas";
 import { Link, useRouter } from "@/shared/infrastructure/i18n";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DeleteTradeDialog } from "./delete-trade-dialog";
+import { UpdateTradeModal } from "./update-trade-modal";
 
 /**
  * Props for the TradeView component.
@@ -86,7 +87,7 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex max-w-full flex-col gap-6 overflow-x-hidden">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -104,11 +105,15 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Edit button - placeholder */}
-          <Button variant="outline" size="sm" className="gap-2">
-            <Edit className="size-4" />
-            <span className="hidden sm:inline">{t("actions.edit")}</span>
-          </Button>
+          {/* Edit button */}
+          <UpdateTradeModal
+            tradeId={trade.id}
+            spaceId={spaceId}
+            initialData={trade}
+            onSuccess={() => {
+              // Refetch trade after update
+            }}
+          />
           <DeleteTradeDialog
             trade={trade}
             onSuccess={() => router.push(`/space/${spaceId}/trades`)}
@@ -343,14 +348,14 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
         )}
 
         {/* Line Items */}
-        <Card className="md:col-span-2">
+        <Card className="w-full min-w-0 overflow-hidden md:col-span-2">
           <CardHeader>
             <CardTitle>{t("view.lineItems")}</CardTitle>
             <CardDescription>{t("view.lineItemsDescription")}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             {trade.details && trade.details.length > 0 ? (
-              <div className="overflow-hidden rounded-lg border">
+              <div className="min-w-[600px] rounded-lg border sm:min-w-0">
                 <Table>
                   <TableHeader className="bg-muted/50">
                     <TableRow>

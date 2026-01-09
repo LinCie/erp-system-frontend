@@ -68,6 +68,7 @@ import {
 import { DeleteTradeDialog } from "./delete-trade-dialog";
 import { Link } from "@/shared/infrastructure/i18n";
 import { CreateTradeModal } from "./create-trade-modal";
+import { UpdateTradeModal } from "./update-trade-modal";
 
 /** Model type filter options */
 const MODEL_TYPE_OPTIONS = [
@@ -314,9 +315,19 @@ export function TradeList({ spaceId }: TradeListProps) {
                     {t("actions.view")}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  {t("actions.edit")}
-                </DropdownMenuItem>
+                <UpdateTradeModal
+                  tradeId={trade.id}
+                  spaceId={spaceId}
+                  initialData={trade}
+                  onSuccess={() => {
+                    // Refetch trades after update
+                  }}
+                  trigger={
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      {t("actions.edit")}
+                    </DropdownMenuItem>
+                  }
+                />
                 <DropdownMenuSeparator />
                 <DeleteTradeDialog
                   trade={trade}
