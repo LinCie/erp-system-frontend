@@ -1,440 +1,178 @@
-# AI SYSTEM INSTRUCTIONS: ERP System Frontend
+# AI Assistant Guide - ERP System Frontend
 
-## SECTION 0: MANDATORY PRE-EXECUTION REQUIREMENTS
+This guide provides comprehensive instructions for AI assistants working on the ERP System Frontend codebase. Follow these guidelines strictly to ensure consistency and quality.
 
-### 0.1 Context7 MCP (REQUIRED)
-
-BEFORE generating code, EXECUTE:
-1. `resolve-library-id("<library>")` → get library ID
-2. `get-library-docs(libraryId, topic="<topic>")` → fetch docs
-3. THEN generate code
-
-LIBRARIES REQUIRING LOOKUP:
-- `next.js` (App Router, Server Components, Server Actions)
-- `react` (hooks, useActionState, React Compiler)
-- `zod` (validation schemas)
-- `zustand` (state management)
-- `tailwindcss` (utility classes)
-- `react-hook-form` (form handling)
-- `next-intl` (internationalization)
-- `@tanstack/react-table` (data tables)
-- `ky` (HTTP client)
-
-### 0.2 Shadcn MCP (REQUIRED FOR UI COMPONENTS)
-
-FOR Shadcn UI work, USE Shadcn MCP tools (NOT Context7):
-1. `search_items_in_registries(registries: ["@shadcn"], query: "<component>")`
-2. `view_items_in_registries(items: ["@shadcn/<component>"])`
-3. `get_item_examples_from_registries(registries: ["@shadcn"], query: "<component>-demo")`
-4. `get_add_command_for_items(items: ["@shadcn/<component>"])`
-5. `get_audit_checklist()` after creating components
-
-CONFIGURED REGISTRIES: `@shadcn`, `@shadcn-studio`, `@ss-components`, `@ss-blocks`, `@ss-themes`, `@shadcn-io`
+## Table of Contents
+- [Project Overview](#project-overview)
+- [MCP Usage Requirements](#mcp-usage-requirements-critical)
+- [Project Architecture](#project-architecture)
+- [Code Generation Guidelines](#code-generation-guidelines)
+- [Do's and Don'ts](#dos-and-donts)
+- [Specific Patterns](#specific-patterns)
+- [Testing & Quality](#testing--quality)
 
 ---
 
-## SECTION 1: PROJECT METADATA
+## Project Overview
 
-```yaml
-name: erp-system-frontend
-framework: Next.js 16.0.7 (App Router)
-language: TypeScript (strict mode)
-react: 19.2.0 (React Compiler enabled)
-ui: Shadcn UI (new-york style, RSC enabled)
-http: ky 1.14.1
-validation: zod 4.x
-state: zustand 5.x
-forms: react-hook-form 7.x + @hookform/resolvers 5.x
-styling: Tailwind CSS 4.x
-i18n: next-intl 4.x
-tables: @tanstack/react-table 8.x
-icons: lucide-react
-package_manager: bun (NEVER npm/yarn/pnpm)
+### Tech Stack
+- **Framework**: Next.js 16.0.7 with App Router
+- **React**: 19.2.0
+- **Language**: TypeScript 5 (strict mode enabled)
+- **Styling**: Tailwind CSS 4 with shadcn/ui components
+- **State Management**: Zustand 5.0.9
+- **Form Handling**: React Hook Form 7.68.0 + Zod 4.1.13
+- **HTTP Client**: ky 1.14.1
+- **Internationalization**: next-intl 4.5.8
+- **Rich Text Editor**: Lexical 0.39.0
+- **Icons**: Lucide React
+- **Theme**: next-themes for dark mode
+
+### Key Features
+- Multi-tenant ERP system with workspace support
+- Module-based architecture (auth, dashboard, items, trades, spaces)
+- Server actions for form submissions
+- Client components for interactive UI
+- Comprehensive type safety with TypeScript strict mode
+
+---
+
+## MCP Usage Requirements (CRITICAL)
+
+### 🚨 ALWAYS Use Context7 MCP Before Generating Code
+
+**MANDATORY**: Before writing any code, you MUST consult the Context7 MCP to:
+1. Get up-to-date documentation for any library/framework
+2. Verify best practices and patterns
+3. Find code examples for specific implementations
+4. Understand the latest API changes
+
+**Process**:
+```
+1. Use resolve-library-id to find the correct library ID
+2. Use query-docs to get specific implementation guidance
+3. Only then write code based on verified documentation
 ```
 
+**Example workflow**:
+```
+Task: Add a new form with validation
+→ resolve-library-id: "react-hook-form"
+→ query-docs: "How to implement form validation with Zod"
+→ Write code based on verified docs
+```
+
+### 🧠 Use Sequential Thinking MCP for Complex Issues
+
+**When to use**:
+- Encountering difficult architectural decisions
+- Debugging complex problems
+- Designing new features that require careful planning
+- Multi-step problem solving
+- When unsure about the best approach
+
+**Trigger automatically** for:
+- Refactoring tasks affecting multiple modules
+- Performance optimization challenges
+- Integration between multiple systems
+- Complex state management scenarios
+
+### Available MCP Servers
+
+1. **Context7 MCP** (@upstash/context7-mcp)
+   - **Always use first** for any library documentation
+   - Tools: `resolve-library-id`, `query-docs`
+   - Limits: Max 3 calls per question
+
+2. **Sequential Thinking MCP** (@modelcontextprotocol/server-sequential-thinking)
+   - Use for complex problem-solving
+   - Tools: `sequentialthinking`
+   - Helps break down complex issues into steps
+
+3. **Next.js MCP** (next-devtools)
+   - Next.js development server integration
+   - Tools: `nextjs_index`, `nextjs_call`, `nextjs_docs`, `browser_eval`
+   - Use for diagnostics, route inspection, and Next.js-specific implementation guidance
+
+4. **shadcn MCP** (shadcn)
+   - shadcn/ui component registry and generation
+   - Tools: `get_project_registries`, `list_items_in_registries`, `search_items_in_registries`, `view_items_in_registries`, `get_item_examples_from_registries`, `get_add_command_for_items`
+   - Use for discovering, viewing examples, and adding shadcn/ui components
+
 ---
 
-## SECTION 2: DIRECTORY STRUCTURE
+## Project Architecture
+
+### Directory Structure
 
 ```
 src/
-├── app/                              # ROUTER LAYER (Server Components ONLY)
-│   ├── [locale]/                     # Locale dynamic segment (next-intl)
-│   │   ├── (app)/                    # Authenticated routes group
-│   │   │   ├── [spaceId]/            # Space-scoped routes
-│   │   │   ├── layout.tsx            # Dashboard layout with sidebar
-│   │   │   └── page.tsx              # Dashboard home
-│   │   ├── (auth)/                   # Authentication routes group
-│   │   │   ├── signin/page.tsx
-│   │   │   ├── signup/page.tsx
-│   │   │   └── layout.tsx            # Centered card layout
-│   │   ├── layout.tsx                # NextIntlClientProvider wrapper
-│   │   └── not-found.tsx
-│   ├── api/                          # API routes (currently empty - uses rewrites)
-│   ├── layout.tsx                    # Root layout (html, body, font)
-│   └── globals.css                   # Tailwind imports
-├── components/                       # GLOBAL UI LAYER
-│   ├── ui/                           # Shadcn UI components
-│   ├── form-error-alert.tsx          # Shared form error display
-│   └── language-switcher.tsx         # Locale switching component
-├── modules/                          # DOMAIN LAYER (business logic)
-│   ├── auth/                         # Authentication module
-│   ├── dashboard/                    # Dashboard/layout module
-│   └── spaces/                       # Spaces module
-├── shared/                           # SHARED LAYER (cross-cutting)
-│   ├── constants/                    # App-wide constants
-│   ├── hooks/                        # Shared React hooks
-│   ├── infrastructure/               # Core infrastructure
-│   │   ├── http.ts                   # Ky HTTP client
-│   │   └── i18n/                     # Internationalization
-│   ├── lib/                          # Utility functions
-│   └── types/                        # Shared TypeScript types
-└── proxy.ts                          # Middleware (auth + i18n routing)
+├── app/                    # Next.js App Router
+│   └── [locale]/          # Internationalization routes
+│       ├── (app)/        # Authenticated routes
+│       └── (auth)/       # Public authentication routes
+├── components/           # Reusable UI components
+│   └── ui/              # shadcn/ui components
+├── modules/             # Feature modules
+│   └── [module-name]/
+│       ├── actions/     # Server actions
+│       ├── components/  # Module-specific components
+│       ├── schemas/     # Zod validation schemas
+│       ├── services/    # API service layer
+│       ├── store/       # Zustand stores
+│       └── types/       # TypeScript types
+├── shared/              # Shared utilities
+│   ├── constants/       # Constants and configuration
+│   ├── hooks/           # Custom React hooks
+│   ├── infrastructure/  # Infrastructure layer (HTTP, etc.)
+│   └── lib/             # Utility functions
 ```
+
+### Module Pattern
+
+Each feature module follows this structure:
+
+1. **actions/** - Server actions for form submissions and mutations
+2. **components/** - Module-specific React components
+3. **schemas/** - Zod validation schemas
+4. **services/** - API service layer functions
+5. **store/** - Zustand state stores (if needed)
+6. **types/** - TypeScript type definitions
+
+### Path Aliases
+
+Use the following path aliases consistently:
+- `@/*` → `./src/*`
+- `@/components` → `./src/components`
+- `@/shared/lib` → `./src/shared/lib`
+- `@/shared/hooks` → `./src/shared/hooks`
 
 ---
 
-## SECTION 3: INTERNATIONALIZATION (next-intl)
+## Code Generation Guidelines
 
-### 3.1 Configuration
+### Server Actions
 
-```typescript
-// Supported locales
-locales: ["id", "en"]  // Indonesian (default), English
-defaultLocale: "id"
-localePrefix: "always" // URLs always include locale: /id/signin, /en/signin
-```
+Server actions are used for form submissions and data mutations. They must:
+- Be marked with `"use server"`
+- Follow the `ActionResult<T>` pattern
+- Include comprehensive JSDoc comments
+- Use the centralized `http` client for API calls
 
-### 3.2 Route Structure
-
-ALL routes are prefixed with `[locale]`:
-- `/id/signin` - Indonesian signin
-- `/en/signin` - English signin
-- `/id/` - Indonesian dashboard
-- `/en/` - English dashboard
-
-### 3.3 Usage Patterns
-
-**Server Components (pages, layouts):**
-```typescript
-import { getTranslations } from "next-intl/server";
-
-export default async function Page() {
-  const t = await getTranslations("namespace");
-  return <h1>{t("key")}</h1>;
-}
-```
-
-**Client Components:**
-```typescript
-"use client";
-import { useTranslations } from "next-intl";
-
-export function Component() {
-  const t = useTranslations("namespace");
-  return <span>{t("key")}</span>;
-}
-```
-
-**Navigation (locale-aware):**
-```typescript
-import { Link, redirect, usePathname, useRouter } from "@/shared/infrastructure/i18n";
-
-// Link automatically handles locale prefix
-<Link href="/signin">Sign In</Link>
-```
-
-### 3.4 Message Files
-
-Location: `src/shared/infrastructure/i18n/messages/{locale}.json`
-
-Structure:
-```json
-{
-  "common": { "loading": "Loading..." },
-  "auth": {
-    "signin": { "title": "Welcome back", "email": "Email" }
-  },
-  "metadata": {
-    "signin": { "title": "Sign In", "description": "..." }
-  }
-}
-```
-
----
-
-## SECTION 4: LAYER RULES
-
-### 4.1 `src/app/[locale]/` (Router Layer)
-
-ALLOWED:
-- Server Components ONLY
-- Route definitions, layouts, metadata
-- `getTranslations` for server-side i18n
-- Import from `src/modules/*/components`
-- Import from `src/components/ui`
-
-FORBIDDEN:
-- `useState`, `useEffect`, `useActionState`
-- `"use client"` directive
-- `useTranslations` (use `getTranslations` instead)
-- Business logic
-- Direct API calls
-
-### 4.2 `src/modules/<name>/` (Domain Layer)
-
-STRUCTURE:
-```
-modules/<module-name>/
-├── actions/           # Server Actions with "use server"
-│   └── <action>-action.ts
-├── components/        # Client Components with "use client"
-│   └── <component>.tsx
-├── constants/         # Module-specific constants
-│   └── <name>-config.ts
-├── services/          # API service objects
-│   └── <module>-service.ts
-├── store/             # Zustand stores (optional)
-│   └── use-<module>-store.ts
-└── types/             # Zod schemas + TypeScript types
-    └── schemas.ts
-```
-
-### 4.3 `src/components/` (Global UI Layer)
-
-ALLOWED:
-- Pure presentational components
-- Shadcn UI base components
-- Generic reusable atoms (form-error-alert, language-switcher)
-
-FORBIDDEN:
-- Business logic
-- Module-specific imports
-- Direct API calls
-
-### 4.4 `src/shared/` (Shared Layer)
-
-STRUCTURE:
-```
-shared/
-├── constants/
-│   ├── index.ts           # Re-exports
-│   ├── pagination.ts      # DEFAULT_PAGINATION_META, LIMIT_OPTIONS
-│   └── ui.ts              # SEARCH_DEBOUNCE_DELAY
-├── hooks/
-│   ├── index.ts           # Re-exports
-│   ├── use-debounce.ts    # Debounce values
-│   ├── use-mobile.ts      # Mobile breakpoint detection
-│   └── use-sync-form-errors.ts  # Sync server errors to react-hook-form
-├── infrastructure/
-│   ├── http.ts            # Ky client with error handling
-│   └── i18n/
-│       ├── index.ts       # Re-exports routing, navigation
-│       ├── routing.ts     # defineRouting config
-│       ├── navigation.ts  # Link, redirect, usePathname, useRouter
-│       ├── request.ts     # getRequestConfig for message loading
-│       └── messages/      # Translation JSON files
-│           ├── id.json
-│           └── en.json
-├── lib/
-│   ├── index.ts           # Re-exports
-│   ├── auth-cookies.ts    # setAuthCookies, clearAuthCookies
-│   ├── pagination.ts      # getPageNumbers utility
-│   ├── string-utils.ts    # getInitials utility
-│   ├── utils.ts           # cn() utility
-│   └── validation.ts      # mapZodErrors utility
-└── types/
-    ├── index.ts           # Re-exports
-    ├── action-result.ts   # ActionResult<T>, initialActionState
-    ├── api-schemas.ts     # errorResponseSchema
-    ├── navigation.ts      # NavItem, NavSubItem, UserInfo, BreadcrumbItemConfig
-    └── pagination.ts      # PaginationMeta, PaginationParams, PaginatedResponse<T>
-```
-
----
-
-## SECTION 5: CODE PATTERNS
-
-### 5.1 Naming Conventions
-
-| Type | Convention | Example |
-|------|------------|---------|
-| Files/Folders | kebab-case | `signin-form.tsx`, `auth-service.ts` |
-| Components | PascalCase | `SigninForm`, `SpaceList` |
-| Functions/Variables | camelCase | `signinAction`, `isAuthenticated` |
-| Types/Interfaces | PascalCase | `SigninInput`, `ActionResult` |
-| Zod Schemas | camelCase + Schema | `signinSchema`, `spaceListResponseSchema` |
-| Zustand Stores | use + PascalCase + Store | `useAuthStore` |
-| Server Actions | camelCase + Action | `signinAction`, `getSpacesAction` |
-| Services | camelCase + Service | `authService`, `spacesService` |
-| Translation keys | dot.notation | `auth.signin.title` |
-
-### 5.2 HTTP Client Pattern
-
-LOCATION: `@/shared/infrastructure/http`
-
-```typescript
-import { http, isHttpError, getErrorMessage, type ApiError } from "@/shared/infrastructure/http";
-
-// In services - without auth:
-const response = await http.post("auth/signin", { json: data }).json();
-return schema.parse(response);
-
-// In services - with auth token:
-const response = await http.get("spaces", {
-  context: { token: accessToken },
-  searchParams: params,
-}).json();
-return schema.parse(response);
-```
-
-EXPORTS:
-- `http` - Ky instance with prefixUrl: `${NEXT_PUBLIC_APP_URL}/api`
-- `isHttpError(error)` - Type guard for HTTPError
-- `getErrorMessage(error)` - Extract user-friendly message
-- `ApiError` - Extended HTTPError with `apiMessage`, `apiIssues`
-
-API PROXY: Next.js rewrites `/api/*` to `${BACKEND_URL}/*` (configured in next.config.ts)
-
-### 5.3 Zod Validation Pattern
-
-LOCATION: `src/modules/<module>/types/schemas.ts`
-
-```typescript
-import { z } from "zod";
-
-// Re-export shared types for convenience
-export { type ActionResult, initialActionState } from "@/shared/types/action-result";
-export { type PaginationMeta, paginationMetaSchema } from "@/shared/types/pagination";
-
-// Define schema
-export const entitySchema = z.object({
-  id: z.number(),
-  name: z.string().min(1, "Name is required"),
-  status: z.enum(["active", "inactive", "archived"]),
-});
-
-// Response schema with pagination
-export const entityListResponseSchema = z.object({
-  data: z.array(entitySchema),
-  metadata: paginationMetaSchema,
-});
-
-// Infer types from schemas
-export type Entity = z.infer<typeof entitySchema>;
-export type EntityListResponse = z.infer<typeof entityListResponseSchema>;
-```
-
-RULES:
-- ALL API responses MUST be validated with `.parse()`
-- ALL form inputs MUST have Zod schemas
-- Types MUST be inferred from schemas using `z.infer<>`
-- Re-export shared types from module schemas.ts for convenience
-
-### 5.4 ActionResult Pattern
-
-LOCATION: `@/shared/types/action-result`
-
-```typescript
-// Generic ActionResult with optional data payload
-export interface ActionResult<T = undefined> {
-  success: boolean;
-  message?: string;
-  errors?: Record<string, string[]>;
-  data?: T;
-}
-
-// Initial state for useActionState
-export const initialActionState: ActionResult = {
-  success: false,
-  message: undefined,
-  errors: undefined,
-};
-```
-
-USAGE:
-- Form actions: `ActionResult` (no data)
-- Data fetching actions: `ActionResult<ResponseType>`
-
-### 5.5 Server Action Pattern (Form Submission)
-
-LOCATION: `src/modules/<module>/actions/<action>-action.ts`
-
+**Example**:
 ```typescript
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { moduleService } from "../services/<module>-service";
-import { schema, type ActionResult } from "../types/schemas";
-import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
-import { mapZodErrors } from "@/shared/lib/validation";
+import type { ActionResult } from "@/shared/types/action-result";
+import { createItemSchema, type Item } from "../schemas";
+import { CreateItem } from "../services";
 
-/**
- * Server action for form submission.
- * @param _prevState - Previous action state (required for useActionState)
- * @param formData - The form data
- * @returns ActionResult with success status and errors
- */
-export async function submitAction(
-  _prevState: ActionResult,
+export async function createItemAction(
+  spaceId: number,
+  _prevState: ActionResult<Item>,
   formData: FormData
-): Promise<ActionResult> {
-  // 1. Extract form data
-  const rawData = {
-    field: formData.get("field"),
-  };
-
-  // 2. Validate with Zod
-  const result = schema.safeParse(rawData);
-  if (!result.success) {
-    return {
-      success: false,
-      message: "Validation failed",
-      errors: mapZodErrors(result.error),
-    };
-  }
-
-  // 3. Call service
-  try {
-    await moduleService.method(result.data);
-  } catch (error) {
-    if (isHttpError(error)) {
-      const apiError = error as ApiError;
-      return {
-        success: false,
-        message: apiError.apiMessage ?? "Operation failed",
-      };
-    }
-    return { success: false, message: "An unexpected error occurred" };
-  }
-
-  // 4. Redirect on success
-  redirect("/destination");
-}
-```
-
-### 5.6 Server Action Pattern (Data Fetching)
-
-LOCATION: `src/modules/<module>/actions/<action>-action.ts`
-
-```typescript
-"use server";
-
-import { cookies } from "next/headers";
-import { moduleService } from "../services/<module>-service";
-import { type ResponseType } from "../types/schemas";
-import { type ActionResult } from "@/shared/types/action-result";
-import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
-
-/**
- * Server Action to fetch data with authentication.
- * @param params - Optional query parameters
- * @returns ActionResult with data or error message
- */
-export async function getDataAction(
-  params?: QueryParams
-): Promise<ActionResult<ResponseType>> {
+): Promise<ActionResult<Item>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
@@ -442,723 +180,447 @@ export async function getDataAction(
     return { success: false, message: "Not authenticated" };
   }
 
+  const rawData = {
+    name: formData.get("name"),
+    // ... other fields
+  };
+
+  const parsed = createItemSchema.safeParse(rawData);
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Validation failed",
+      errors: mapZodErrors(parsed.error),
+    };
+  }
+
   try {
-    const data = await moduleService.getData(accessToken, params);
-    return { success: true, data };
+    const item = await CreateItem({
+      token: accessToken,
+      data: parsed.data,
+    });
+    return { success: true, data: item };
   } catch (error) {
-    if (isHttpError(error)) {
-      const apiError = error as ApiError;
-      return { success: false, message: apiError.apiMessage ?? "Failed to fetch data" };
-    }
-    return { success: false, message: "An unexpected error occurred" };
+    // Handle errors using isHttpError and getErrorMessage
   }
 }
 ```
 
-### 5.7 Service Pattern
+### Client Components
 
-LOCATION: `src/modules/<module>/services/<module>-service.ts`
+Client components are used for interactive UI with:
+- `"use client"` directive at the top
+- React hooks for state management
+- `useActionState` for form submissions
+- `react-hook-form` for form handling
 
+**Example**:
 ```typescript
-import { http } from "@/shared/infrastructure/http";
-import { type InputType, type ResponseType, responseSchema } from "../types/schemas";
+"use client";
 
-/**
- * Service for handling API operations.
- * All responses are validated against Zod schemas.
- */
-export const moduleService = {
-  /**
-   * Fetches data with optional authentication.
-   * @param token - Access token for authenticated requests
-   * @param params - Optional query parameters
-   * @returns Validated response data
-   */
-  async getData(token: string, params?: QueryParams): Promise<ResponseType> {
-    const response = await http
-      .get("endpoint", {
-        context: { token },
-        searchParams: params,
-      })
-      .json();
-    return responseSchema.parse(response);
-  },
+import { useActionState, useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createItemAction } from "../actions/create-item-action";
+import { createItemSchema, type CreateItemInput } from "../schemas";
 
-  /**
-   * Creates a new resource.
-   * @param data - Input data
-   * @returns Validated response
-   */
-  async create(data: InputType): Promise<ResponseType> {
-    const response = await http.post("endpoint", { json: data }).json();
-    return responseSchema.parse(response);
-  },
-};
+export function CreateItemModal({ spaceId }: { spaceId: number }) {
+  const [state, formAction, isPending] = useActionState(
+    createItemAction.bind(null, spaceId),
+    { success: false }
+  );
+
+  const form = useForm<CreateItemInput>({
+    resolver: zodResolver(createItemSchema),
+    defaultValues: { /* ... */ }
+  });
+
+  // Component implementation
+}
 ```
 
-### 5.8 Zustand Store Pattern
+### Service Layer
 
-LOCATION: `src/modules/<module>/store/use-<module>-store.ts`
+Service layer functions handle API calls using the centralized `http` client:
+- Must be in `services/` directory
+- Use the `http` client from `@/shared/infrastructure/http`
+- Include TypeScript types for requests and responses
+- Handle errors appropriately
+
+**Example**:
+```typescript
+import { http } from "@/shared/infrastructure/http";
+import type { CreateItemInput, Item } from "../schemas";
+
+export async function CreateItem({
+  token,
+  data,
+}: {
+  token: string;
+  data: CreateItemInput;
+}): Promise<Item> {
+  return await http
+    .post("items", {
+      json: data,
+      context: { token },
+    })
+    .json();
+}
+```
+
+### Zod Schemas
+
+All data validation uses Zod schemas:
+- Define in `schemas/` directory
+- Export both schema and inferred types
+- Include comprehensive validation rules
+
+**Example**:
+```typescript
+import { z } from "zod";
+
+export const createItemSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  sku: z.string().optional(),
+  price: z.string().min(1, "Price is required"),
+  status: z.enum(["active", "inactive"]),
+  // ... other fields
+});
+
+export type CreateItemInput = z.infer<typeof createItemSchema>;
+export type Item = z.infer<typeof itemSchema>;
+```
+
+### shadcn/ui Components
+
+- Use shadcn/ui components from `@/components/ui`
+- Follow the "new-york" style variant
+- All UI components are pre-generated in `src/components/ui/`
+- Use Lucide React icons for all iconography
+- Import from `lucide-react`
+
+**Example**:
+```typescript
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Plus } from "lucide-react";
+```
+
+---
+
+## Do's and Don'ts
+
+### ✅ DO
+
+1. **ALWAYS use Context7 MCP** before generating code for any library
+2. **Follow the module structure** pattern consistently
+3. **Use React Hook Form + Zod** for all forms
+4. **Implement server actions** for form submissions
+5. **Use the centralized `http` client** for all API calls
+6. **Include comprehensive JSDoc comments** for all functions
+7. **Use TypeScript strict mode** - no `any` types
+8. **Follow existing naming conventions** (camelCase for variables, PascalCase for components)
+9. **Use path aliases** (`@/*`) for all imports
+10. **Handle errors properly** with `isHttpError` and `getErrorMessage`
+11. **Use `useSyncFormErrors`** hook to sync server errors to forms
+12. **Separate server and client components** correctly
+13. **Use Zustand** for global state management when needed
+14. **Follow the file organization** within modules
+15. **Use shadcn/ui components** for all UI elements
+16. **Implement internationalization** with next-intl for all user-facing text
+17. **Use semantic HTML** and accessibility best practices
+18. **Add aria-labels** to form inputs and interactive elements
+19. **Use Sequential Thinking MCP** for complex problems
+20. **Follow the existing code style** (Prettier configuration)
+
+### ❌ DON'T
+
+1. **NEVER generate code without consulting Context7 MCP first**
+2. **Don't use raw `fetch`** - always use the `http` client
+3. **Don't create components outside established patterns**
+4. **Don't skip validation schemas** - always use Zod
+5. **Don't mix server and client logic** incorrectly
+6. **Don't use `any` types** - use proper TypeScript types
+7. **Don't ignore TypeScript strict mode errors**
+8. **Don't bypass the module structure** - follow the established pattern
+9. **Don't use inline styles** - use Tailwind CSS classes
+10. **Don't create duplicate UI components** - use existing shadcn/ui components
+11. **Don't hardcode strings** - use next-intl for translations
+12. **Don't ignore error handling** - always handle API errors
+13. **Don't use `console.log` in production code** - use proper logging
+14. **Don't commit without linting** - run `bun run lint` and `bun run format`
+15. **Don't create large files** - split into smaller, focused components
+16. **Don't use prop drilling** - use Zustand stores for shared state
+17. **Don't skip JSDoc comments** - document all functions
+18. **Don't use inline event handlers** - separate into functions
+19. **Don't ignore accessibility** - always use semantic HTML
+20. **Don't break existing patterns** - follow the established conventions
+
+---
+
+## Specific Patterns
+
+### Form Pattern
+
+All forms follow this pattern:
+
+1. **Zod Schema** in `schemas/`
+2. **Server Action** in `actions/`
+3. **Service Function** in `services/`
+4. **Client Component** with:
+   - `useForm` from react-hook-form
+   - `zodResolver` for validation
+   - `useActionState` for submission
+   - `useSyncFormErrors` for error syncing
+
+### Error Handling Pattern
+
+```typescript
+import { isHttpError, getErrorMessage } from "@/shared/infrastructure/http";
+
+try {
+  const result = await someApiCall();
+} catch (error) {
+  if (isHttpError(error)) {
+    const apiError = error;
+    return {
+      success: false,
+      message: apiError.apiMessage ?? "Request failed",
+    };
+  }
+  return {
+    success: false,
+    message: getErrorMessage(error),
+  };
+}
+```
+
+### API Error Mapping Pattern
+
+```typescript
+import { mapApiErrors } from "@/shared/infrastructure/http";
+
+if (isHttpError(error)) {
+  const apiError = error as ApiError;
+  return {
+    success: false,
+    message: apiError.apiMessage,
+    errors: mapApiErrors(apiError),
+  };
+}
+```
+
+### File Upload Pattern
+
+For file uploads (images, documents):
+1. Request upload URL via `requestUploadUrlAction`
+2. Upload file to R2 using the returned URL
+3. Submit file metadata (name, path, size) with the form data
+
+### Internationalization Pattern
+
+```typescript
+import { useTranslations } from "next-intl";
+
+export function MyComponent() {
+  const t = useTranslations("items");
+
+  return <div>{t("create")}</div>;
+}
+```
+
+### Zustand Store Pattern
 
 ```typescript
 import { create } from "zustand";
 
-interface State {
-  field: string;
-  isLoading: boolean;
+interface AuthState {
+  user: User | null;
+  setUser: (user: User | null) => void;
 }
 
-interface Actions {
-  setField: (value: string) => void;
-  setLoading: (value: boolean) => void;
-  clear: () => void;
-}
-
-type Store = State & Actions;
-
-/**
- * Zustand store for managing module state.
- * @example
- * ```tsx
- * const field = useModuleStore((state) => state.field);
- * const { setField, clear } = useModuleStore();
- * ```
- */
-export const useModuleStore = create<Store>()((set) => ({
-  // State
-  field: "",
-  isLoading: false,
-
-  // Actions
-  setField: (value) => set({ field: value }),
-  setLoading: (value) => set({ isLoading: value }),
-  clear: () => set({ field: "", isLoading: false }),
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
 }));
 ```
 
-### 5.9 Form Component Pattern
+---
 
-LOCATION: `src/modules/<module>/components/<form-name>.tsx`
+## Testing & Quality
+
+### Code Quality Tools
+
+- **ESLint**: `bun run lint`
+- **Prettier**: `bun run format`
+- **Husky**: Pre-commit hooks for linting
+- **lint-staged**: Runs linters on staged files
+
+### Pre-commit Workflow
+
+```bash
+# Automatic on commit:
+1. Prettier formats all staged files
+2. ESLint checks for issues
+3. Commit blocked if linting fails
+```
+
+### Development Workflow
+
+```bash
+# Start development server
+bun run dev
+
+# Run linting
+bun run lint
+
+# Format code
+bun run format
+
+# Build for production
+bun run build
+```
+
+---
+
+## MCP Command Reference
+
+### Context7 MCP Usage
 
 ```typescript
-"use client";
+// 1. Resolve library ID
+→ resolve-library-id({
+    query: "How to implement form validation with React Hook Form",
+    libraryName: "react-hook-form"
+  })
 
-import { useEffect, useRef, useActionState } from "react";
+// 2. Query documentation
+→ query-docs({
+    libraryId: "/org/react-hook-form",
+    query: "Form validation with Zod schema integration"
+  })
+```
+
+### Sequential Thinking MCP Usage
+
+```typescript
+// For complex problems
+→ sequentialthinking({
+    thought: "First, I need to understand the problem...",
+    nextThoughtNeeded: true,
+    thoughtNumber: 1,
+    totalThoughts: 5
+  })
+```
+
+### Next.js MCP Usage
+
+```typescript
+// 1. Discover Next.js dev servers
+→ nextjs_index()
+
+// 2. Call a Next.js MCP tool
+→ nextjs_call({
+    port: "3000",
+    toolName: "get_errors"
+  })
+
+// 3. Query Next.js documentation
+→ nextjs_docs({
+    path: "/docs/app/api-reference/functions/cookies"
+  })
+```
+
+### shadcn MCP Usage
+
+```typescript
+// 1. Search for components
+→ search_items_in_registries({
+    registries: ["@shadcn"],
+    query: "button"
+  })
+
+// 2. View component details
+→ view_items_in_registries({
+    items: ["@shadcn/button", "@shadcn/dialog"]
+  })
+
+// 3. Get examples
+→ get_item_examples_from_registries({
+    registries: ["@shadcn"],
+    query: "button-demo"
+  })
+
+// 4. Get add command
+→ get_add_command_for_items({
+    items: ["@shadcn/button"]
+  })
+```
+
+---
+
+## Quick Reference
+
+### Common Imports
+
+```typescript
+// React
+import { useState, useEffect, useTransition } from "react";
+import { useActionState } from "react";
+
+// Forms
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { submitAction } from "../actions/<action>-action";
-import { schema, type InputType, initialActionState } from "../types/schemas";
-import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
-import { FormErrorAlert } from "@/components/form-error-alert";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-
-/**
- * Form component with Zod validation and server action integration.
- * Auto-focuses first input on mount.
- * Syncs server-side errors with form state.
- */
-export function FormComponent() {
-  const t = useTranslations("namespace");
-  const [state, formAction, isPending] = useActionState(submitAction, initialActionState);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const form = useForm<InputType>({
-    resolver: zodResolver(schema),
-    defaultValues: { field: "" },
-  });
-
-  // Auto-focus first input
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  // Sync server errors to form
-  useSyncFormErrors(form, state.errors);
-
-  return (
-    <Form {...form}>
-      <form action={formAction} className="grid gap-4">
-        {!state.success && <FormErrorAlert message={state.message} />}
-
-        <FormField
-          control={form.control}
-          name="field"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("fieldLabel")}</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  ref={(e) => {
-                    field.ref(e);
-                    (inputRef as React.MutableRefObject<HTMLInputElement | null>).current = e;
-                  }}
-                  placeholder={t("fieldPlaceholder")}
-                  disabled={isPending}
-                  aria-label={t("fieldLabel")}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" className="mt-2 w-full" disabled={isPending}>
-          {isPending ? t("submitting") : t("submit")}
-        </Button>
-      </form>
-    </Form>
-  );
-}
-```
-
-### 5.10 Data Table Component Pattern
-
-LOCATION: `src/modules/<module>/components/<list-name>.tsx`
-
-```typescript
-"use client";
-"use no memo"; // Required for TanStack Table with React Compiler
-
-import { useState, useEffect, useMemo, useRef } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  type ColumnDef,
-} from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
-import { useDebounce } from "@/shared/hooks/use-debounce";
-import { getPageNumbers } from "@/shared/lib/pagination";
-import { DEFAULT_PAGINATION_META, LIMIT_OPTIONS } from "@/shared/constants/pagination";
-import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
-import { getDataAction } from "../actions/get-data-action";
-import { type Entity, type EntityListResponse, type PaginationMeta } from "../types/schemas";
-// ... UI component imports
-
-interface ListProps {
-  initialData: EntityListResponse;
-  locale: string;
-}
-
-export function EntityList({ initialData, locale }: ListProps) {
-  const t = useTranslations("module");
-  const [data, setData] = useState<Entity[]>(initialData.data);
-  const [meta, setMeta] = useState<PaginationMeta>(initialData.metadata ?? DEFAULT_PAGINATION_META);
-  const [search, setSearch] = useState("");
-  const [limit, setLimit] = useState<number>(LIMIT_OPTIONS[0]);
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
-  const isInitialRender = useRef(true);
-
-  const columns = useMemo<ColumnDef<Entity>[]>(() => [
-    { accessorKey: "name", header: t("columns.name") },
-    // ... more columns
-  ], [t]);
-
-  // eslint-disable-next-line react-hooks/incompatible-library -- React Compiler skips memoization for TanStack Table
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  // Fetch on filter changes (skip initial render)
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    // ... fetch logic
-  }, [debouncedSearch, limit, page]);
-
-  // ... render table with search, pagination
-}
-```
-
-IMPORTANT: Use `"use no memo"` directive at top of file for TanStack Table components to work with React Compiler.
-
-### 5.11 Page Component Pattern (Server)
-
-LOCATION: `src/app/[locale]/(app|auth)/<route>/page.tsx`
-
-```typescript
-import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import { getTranslations } from "next-intl/server";
-import { ModuleComponent } from "@/modules/<module>/components/<component>";
-import { moduleService } from "@/modules/<module>/services/<module>-service";
-
-type Props = {
-  params: Promise<{ locale: string }>;
-};
-
-/**
- * Generates internationalized metadata.
- */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "metadata.page" });
-  return {
-    title: t("title"),
-    description: t("description"),
-  };
-}
-
-/**
- * Page server component.
- * Fetches initial data server-side and passes to client components.
- */
-export default async function Page({ params }: Props) {
-  const { locale } = await params;
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
-  // Fetch initial data server-side
-  let initialData = { data: [], metadata: DEFAULT_META };
-  try {
-    if (accessToken) {
-      initialData = await moduleService.getData(accessToken, { limit: 10 });
-    }
-  } catch {
-    // Pass empty data - component will handle refetching
-  }
-
-  return <ModuleComponent initialData={initialData} locale={locale} />;
-}
-```
-
----
-
-## SECTION 6: STYLING RULES
-
-### 6.1 Mobile-First (MANDATORY)
-
-```tsx
-// ✅ CORRECT: Mobile base → Desktop overrides
-<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-
-// ❌ WRONG: Desktop first
-<div className="grid grid-cols-3 sm:grid-cols-1">
-```
-
-### 6.2 Width Handling
-
-```tsx
-// ✅ CORRECT: Fluid widths with max constraints
-<div className="w-full max-w-sm sm:max-w-md">
-<Input className="w-full sm:max-w-xs" />
-
-// ❌ WRONG: Fixed pixels
-<div className="w-[500px]">
-```
-
-### 6.3 Touch Targets
-
-- Interactive elements: minimum 44px height on mobile
-- Use `min-h-11` or `h-11` for buttons/inputs
-- Ensure adequate spacing between clickable elements
-
-### 6.4 Responsive Visibility
-
-```tsx
-// Hide on mobile, show on desktop
-<div className="hidden sm:block">Desktop only</div>
-
-// Show on mobile, hide on desktop
-<div className="sm:hidden">Mobile only</div>
-```
-
-### 6.5 Utility Function
-
-```typescript
-import { cn } from "@/shared/lib/utils";
-
-<div className={cn(
-  "base-classes",
-  conditional && "conditional-classes",
-  variant === "primary" && "variant-classes"
-)}>
-```
-
----
-
-## SECTION 7: IMPORT ALIASES
-
-```typescript
-"@/*" → "./src/*"
-
-// Infrastructure
-import { http, isHttpError, type ApiError } from "@/shared/infrastructure/http";
-import { Link, redirect, usePathname, routing } from "@/shared/infrastructure/i18n";
-
-// Shared utilities
-import { cn } from "@/shared/lib/utils";
-import { mapZodErrors } from "@/shared/lib/validation";
-import { setAuthCookies, clearAuthCookies } from "@/shared/lib/auth-cookies";
-import { getPageNumbers } from "@/shared/lib/pagination";
-import { getInitials } from "@/shared/lib/string-utils";
-
-// Shared hooks
-import { useDebounce, useIsMobile, useSyncFormErrors } from "@/shared/hooks";
-
-// Shared types
-import { type ActionResult, initialActionState } from "@/shared/types/action-result";
-import { type PaginationMeta, type PaginatedResponse } from "@/shared/types/pagination";
-import { type NavItem, type UserInfo } from "@/shared/types/navigation";
-
-// Shared constants
-import { DEFAULT_PAGINATION_META, LIMIT_OPTIONS } from "@/shared/constants/pagination";
-import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants/ui";
+import { z } from "zod";
 
 // UI Components
 import { Button } from "@/components/ui/button";
-import { FormErrorAlert } from "@/components/form-error-alert";
+import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
+// ... other UI components
 
-// Module imports
-import { authService } from "@/modules/auth/services/auth-service";
-import { SigninForm } from "@/modules/auth/components/signin-form";
+// Icons
+import { Plus, Trash, Edit } from "lucide-react";
+
+// Hooks
+import { useTranslations } from "next-intl";
+import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
+
+// Infrastructure
+import { http, isHttpError, getErrorMessage } from "@/shared/infrastructure/http";
+
+// Types
+import type { ActionResult } from "@/shared/types/action-result";
 ```
+
+### File Naming Conventions
+
+- Components: `kebab-case.tsx` (e.g., `create-item-modal.tsx`)
+- Server Actions: `kebab-case-action.ts` (e.g., `create-item-action.ts`)
+- Services: `kebab-case.service.ts` (e.g., `create-item.service.ts`)
+- Schemas: `kebab-case.schema.ts` (e.g., `create-item.schema.ts`)
+- Types: `kebab-case.ts` (e.g., `schemas.ts` for exported types)
+- Stores: `use-kebab-case-store.ts` (e.g., `use-auth-store.ts`)
 
 ---
 
-## SECTION 8: JSDOC REQUIREMENTS
+## Final Checklist
 
-ALL exported functions/components MUST have JSDoc:
+Before generating any code, ensure you:
 
-```typescript
-/**
- * Brief description of purpose.
- * @param paramName - Parameter description
- * @returns Return value description
- * @throws Error conditions (if applicable)
- * @example
- * ```typescript
- * const result = await functionName(param);
- * ```
- */
-```
-
----
-
-## SECTION 9: ENVIRONMENT VARIABLES
-
-```bash
-# Backend API URL (used in next.config.ts rewrites)
-BACKEND_URL=http://localhost:8000
-
-# Frontend URL (used by HTTP client prefixUrl)
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Node environment
-NODE_ENV=development|production
-```
+- [ ] Consulted Context7 MCP for library documentation
+- [ ] Used Sequential Thinking MCP for complex problems
+- [ ] Followed the module structure pattern
+- [ ] Included proper TypeScript types
+- [ ] Added comprehensive JSDoc comments
+- [ ] Used appropriate hooks and patterns
+- [ ] Followed existing naming conventions
+- [ ] Implemented error handling
+- [ ] Used the centralized `http` client
+- [ ] Included internationalization where needed
+- [ ] Followed accessibility best practices
 
 ---
 
-## SECTION 10: POST-CODE COMMANDS
-
-AFTER writing code, EXECUTE:
-
-```bash
-bun run lint --fix
-```
-
-NEVER use: `npm`, `yarn`, `pnpm`
-
----
-
-## SECTION 11: VERIFICATION CHECKLIST
-
-BEFORE completing task, VERIFY:
-
-```
-[ ] Context7/Shadcn MCP lookup performed
-[ ] File names are kebab-case
-[ ] Component names are PascalCase
-[ ] src/app/[locale]/ has NO useState/useEffect/useActionState
-[ ] src/app/[locale]/ uses getTranslations (NOT useTranslations)
-[ ] Client components use useTranslations from next-intl
-[ ] Navigation uses Link from @/shared/infrastructure/i18n
-[ ] HTTP calls use @/shared/infrastructure/http
-[ ] All inputs validated with Zod
-[ ] Types inferred from Zod schemas (z.infer<>)
-[ ] ActionResult<T> used for server actions
-[ ] useSyncFormErrors used in form components
-[ ] JSDoc comments on all exports
-[ ] No `any` types
-[ ] Mobile-first styling (base → sm: → md: → lg:)
-[ ] No fixed pixel widths
-[ ] TanStack Table components have "use no memo" directive
-[ ] Translation keys added to both id.json and en.json
-[ ] Ran `bun run lint --fix`
-```
-
----
-
-## SECTION 12: FILE CREATION DECISION TREE
-
-```
-Is it a route/page?
-  YES → src/app/[locale]/(app|auth)/<route>/page.tsx
-  NO ↓
-
-Is it a Shadcn UI component?
-  YES → src/components/ui/<component>.tsx (use shadcn add command)
-  NO ↓
-
-Is it a shared presentational component?
-  YES → src/components/<component>.tsx
-  NO ↓
-
-Is it domain-specific?
-  YES → src/modules/<domain>/
-    ├── Server Action? → actions/<name>-action.ts
-    ├── Client Component? → components/<name>.tsx
-    ├── API Service? → services/<domain>-service.ts
-    ├── Zustand Store? → store/use-<domain>-store.ts
-    ├── Zod Schema? → types/schemas.ts
-    └── Constants? → constants/<name>-config.ts
-  NO ↓
-
-Is it shared infrastructure?
-  YES → src/shared/infrastructure/<name>.ts
-  NO ↓
-
-Is it a shared hook?
-  YES → src/shared/hooks/use-<name>.ts (add to index.ts)
-  NO ↓
-
-Is it a shared utility?
-  YES → src/shared/lib/<name>.ts (add to index.ts)
-  NO ↓
-
-Is it a shared type?
-  YES → src/shared/types/<name>.ts (add to index.ts)
-  NO ↓
-
-Is it a shared constant?
-  YES → src/shared/constants/<name>.ts (add to index.ts)
-  NO → Ask for clarification
-```
-
----
-
-## SECTION 13: EXISTING MODULES REFERENCE
-
-### 13.1 Auth Module (`src/modules/auth/`)
-
-```
-auth/
-├── actions/
-│   ├── signin-action.ts      # Form action → redirect to /
-│   ├── signup-action.ts      # Form action → redirect to /
-│   └── signout-action.ts     # Simple action → redirect to /signin
-├── components/
-│   ├── signin-form.tsx       # Email + password form
-│   ├── signup-form.tsx       # Name + email + password form
-│   └── signout-button.tsx    # Button triggering signout
-├── services/
-│   └── auth-service.ts       # signup, signin, signout, refresh
-├── store/
-│   └── use-auth-store.ts     # isAuthenticated state
-└── types/
-    └── schemas.ts            # signinSchema, signupSchema, tokensResponseSchema
-```
-
-### 13.2 Dashboard Module (`src/modules/dashboard/`)
-
-```
-dashboard/
-├── components/
-│   ├── app-sidebar.tsx       # Main sidebar with nav + user
-│   ├── nav-main.tsx          # Navigation menu items
-│   ├── nav-user.tsx          # User dropdown in footer
-│   └── site-header.tsx       # Sticky header with breadcrumbs
-└── constants/
-    └── navigation-config.ts  # mainNavItems, secondaryNavItems
-```
-
-### 13.3 Spaces Module (`src/modules/spaces/`)
-
-```
-spaces/
-├── actions/
-│   └── get-spaces-action.ts  # Data fetching with auth
-├── components/
-│   └── space-list.tsx        # Data table with search + pagination
-├── services/
-│   └── spaces-service.ts     # getSpaces with token
-└── types/
-    └── schemas.ts            # spaceSchema, spaceListResponseSchema
-```
-
----
-
-## SECTION 14: FORBIDDEN PATTERNS
-
-```typescript
-// ❌ NEVER DO:
-
-// Wrong HTTP client
-import axios from "axios";           // Use http from @/shared/infrastructure/http
-fetch("url");                        // Use http from @/shared/infrastructure/http
-
-// Wrong package manager
-npm install                          // Use bun add
-yarn add                             // Use bun add
-pnpm add                             // Use bun add
-
-// Wrong types
-const x: any = ...;                  // Use proper types
-
-// Wrong layer violations
-"use client" in src/app/[locale]/    // Keep app layer server-only
-useState in src/app/[locale]/        // Keep app layer server-only
-useTranslations in src/app/[locale]/ // Use getTranslations for server components
-Business logic in src/components/    // Use src/modules/
-
-// Wrong navigation
-import Link from "next/link";        // Use Link from @/shared/infrastructure/i18n
-import { redirect } from "next/navigation"; // Use redirect from @/shared/infrastructure/i18n (in client)
-
-// Wrong i18n in server components
-useTranslations("namespace");        // Use getTranslations for server components
-
-// Missing directives for TanStack Table
-// Components using useReactTable MUST have "use no memo" at top
-```
-
----
-
-## SECTION 15: MIDDLEWARE (src/proxy.ts)
-
-The middleware handles:
-1. **i18n routing** - Locale prefix management via next-intl
-2. **Auth protection** - Token validation and refresh
-3. **Route guards** - Redirect authenticated users from auth pages
-
-```typescript
-// Public routes (no auth required)
-const PUBLIC_ROUTES = ["/signin", "/signup"];
-
-// Auth routes (redirect to home if authenticated)
-const AUTH_ROUTES = ["/signin", "/signup"];
-```
-
-Token flow:
-1. Check for access_token cookie
-2. If valid → proceed
-3. If invalid/missing → try refresh with refresh_token
-4. If refresh succeeds → set new cookies, proceed
-5. If refresh fails → clear cookies, redirect to /signin
-
----
-
-## SECTION 16: AUTHENTICATION FLOW
-
-### Cookies Used:
-- `access_token` - JWT access token (15 min expiry)
-- `refresh_token` - JWT refresh token (7 day expiry)
-- `sidebar_state` - Sidebar open/closed state
-
-### Auth Functions:
-```typescript
-// Set tokens after signin/signup
-import { setAuthCookies } from "@/shared/lib/auth-cookies";
-const cookieStore = await cookies();
-setAuthCookies(cookieStore, { access: "...", refresh: "..." });
-
-// Clear tokens on signout
-import { clearAuthCookies } from "@/shared/lib/auth-cookies";
-clearAuthCookies(cookieStore);
-```
-
-### Protected API Calls:
-```typescript
-// In server actions - get token from cookies
-const cookieStore = await cookies();
-const accessToken = cookieStore.get("access_token")?.value;
-
-// Pass to service
-const data = await moduleService.getData(accessToken, params);
-
-// In service - use context for Bearer token
-const response = await http.get("endpoint", {
-  context: { token: accessToken },
-}).json();
-```
-
----
-
-## SECTION 17: EXAMPLE MODULE CREATION
-
-USER: "Create a products module with CRUD"
-
-AI EXECUTION:
-
-1. **Context7 lookup**: Fetch Next.js, React, Zod, react-hook-form docs
-2. **Create structure**:
-
-```
-src/modules/products/
-├── actions/
-│   ├── get-products-action.ts
-│   ├── create-product-action.ts
-│   ├── update-product-action.ts
-│   └── delete-product-action.ts
-├── components/
-│   ├── product-list.tsx
-│   ├── product-form.tsx
-│   └── product-delete-dialog.tsx
-├── services/
-│   └── products-service.ts
-└── types/
-    └── schemas.ts
-```
-
-3. **Add translations** to both `id.json` and `en.json`
-4. **Create page** at `src/app/[locale]/(app)/products/page.tsx`
-5. **Run**: `bun run lint --fix`
-
----
-
-## SECTION 18: QUICK REFERENCE
-
-### Shared Hooks
-| Hook | Purpose |
-|------|---------|
-| `useDebounce(value, delay)` | Debounce rapidly changing values |
-| `useIsMobile()` | Detect mobile viewport |
-| `useSyncFormErrors(form, errors)` | Sync server errors to react-hook-form |
-
-### Shared Utilities
-| Function | Purpose |
-|----------|---------|
-| `cn(...classes)` | Merge Tailwind classes |
-| `mapZodErrors(zodError)` | Convert Zod errors to field map |
-| `getPageNumbers(current, total)` | Generate pagination numbers |
-| `getInitials(name)` | Get initials from name |
-| `setAuthCookies(store, tokens)` | Set JWT cookies |
-| `clearAuthCookies(store)` | Clear JWT cookies |
-
-### Shared Constants
-| Constant | Value |
-|----------|-------|
-| `DEFAULT_PAGINATION_META` | `{ currentPage: 1, totalPages: 1, totalItems: 0, itemsPerPage: 10 }` |
-| `LIMIT_OPTIONS` | `[10, 20, 50]` |
-| `SEARCH_DEBOUNCE_DELAY` | `300` (ms) |
+**Remember**: This is a strict guide. Always follow these patterns and conventions to maintain code quality and consistency across the project.
