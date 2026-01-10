@@ -86,7 +86,7 @@ function mapDetailsToInput(details?: Trade["details"]): DetailRow[] {
     return {
       id: detail.id, // Preserve persisted ID
       item_id: detail.item?.id ?? null,
-      model_type: "",
+      model_type: detail.model_type,
       quantity: detail.quantity,
       price: detail.price,
       discount: detail.discount ?? 0,
@@ -281,63 +281,45 @@ export function UpdateTradeModal({
     [form]
   );
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  /**
+   * Handles form submission with type-safe FormData construction.
+   * Uses form.handleSubmit() to leverage React Hook Form's validation.
+   */
+  const handleSubmit = (data: UpdateTradeInput) => {
     const formData = new FormData();
 
-    // Add simple fields
-    const status = form.getValues("status");
-    if (status) formData.set("status", status);
+    /**
+     * Helper function to safely set FormData values based on type.
+     * - Objects/arrays: JSON.stringify()
+     * - Numbers: String()
+     * - Strings: raw value
+     * Skips undefined, null, and empty strings
+     */
+    const setValue = (key: string, value: unknown) => {
+      if (value === undefined || value === null || value === "") return;
 
-    const sentTime = form.getValues("sent_time");
-    if (sentTime) formData.set("sent_time", sentTime);
+      if (typeof value === "object") {
+        formData.set(key, JSON.stringify(value));
+      } else {
+        formData.set(key, String(value));
+      }
+    };
 
-    const receivedTime = form.getValues("received_time");
-    if (receivedTime) formData.set("received_time", receivedTime);
+    // Set all form values with type-safe handling
+    Object.entries(data).forEach(([key, value]) => setValue(key, value));
 
-    const receiverNotes = form.getValues("receiver_notes");
-    if (receiverNotes) formData.set("receiver_notes", receiverNotes);
-
-    const handlerNotes = form.getValues("handler_notes");
-    if (handlerNotes) formData.set("handler_notes", handlerNotes);
-
-    const description = form.getValues("description");
-    if (description) formData.set("description", description);
-
-    const parentId = form.getValues("parent_id");
-    if (parentId !== undefined && parentId !== null) {
-      formData.set("parent_id", String(parentId));
+    // Add existing files as JSON (non-schema field)
+    if (existingFiles.length > 0) {
+      formData.set("files", JSON.stringify(existingFiles));
     }
 
-    const receiverId = form.getValues("receiver_id");
-    if (receiverId !== undefined && receiverId !== null) {
-      formData.set("receiver_id", String(receiverId));
-    }
-
-    const handlerId = form.getValues("handler_id");
-    if (handlerId !== undefined && handlerId !== null) {
-      formData.set("handler_id", String(handlerId));
-    }
-
-    // Add tags as JSON
-    const tags = form.getValues("tags");
-    if (tags && tags.length > 0) {
-      formData.set("tags", JSON.stringify(tags));
-    }
-
-    // Add links as JSON (filter out empty URLs)
+    // Add links as JSON (filter out empty URLs) - non-schema field
     const validLinks = links.filter((link) => link.url.trim().length > 0);
     if (validLinks.length > 0) {
       formData.set("links", JSON.stringify(validLinks));
     }
 
-    // Add existing files as JSON
-    if (existingFiles.length > 0) {
-      formData.set("files", JSON.stringify(existingFiles));
-    }
-
-    // Add details as JSON (filter out rows without item selected)
+    // Add details as JSON (filter out rows without item selected) - non-schema field
     // Strip UI-only fields before sending
     const validDetails = details
       .filter((detail) => detail.item_id !== null)
@@ -370,7 +352,10 @@ export function UpdateTradeModal({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             {!state.success && <FormErrorAlert message={state.message} />}
 
             {/* Row 1: Parent Trade, Contact */}

@@ -41,5 +41,5 @@ export default async function TradeViewPage({ params }: Props) {
     notFound();
   }
 
-  return <TradeView trade={result.data} spaceId={Number(spaceId)} />;
+  return <TradeView initialTrade={result.data} spaceId={Number(spaceId)} />;
 }

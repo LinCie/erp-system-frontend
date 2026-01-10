@@ -54,6 +54,7 @@ export const tradeDetailSchema = z.object({
   debit: z.number(),
   credit: z.number(),
   notes: z.string().optional(),
+  model_type: z.string().optional(),
   item: z
     .object({
       id: z.number(),

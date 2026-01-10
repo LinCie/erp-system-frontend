@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { type Trade } from "../schemas";
@@ -24,13 +25,14 @@ import {
 } from "@/components/ui/table";
 import { DeleteTradeDialog } from "./delete-trade-dialog";
 import { UpdateTradeModal } from "./update-trade-modal";
+import { getTradeAction } from "../actions/get-trade-action";
 
 /**
  * Props for the TradeView component.
  */
 interface TradeViewProps {
   /** Trade data to display */
-  trade: Trade;
+  initialTrade: Trade;
   /** Space ID for navigation */
   spaceId: number;
 }
@@ -64,7 +66,8 @@ function getStatusVariant(
  * @param props.spaceId - Space ID for navigation
  * @returns TradeView component with trade details and actions
  */
-export function TradeView({ trade, spaceId }: TradeViewProps) {
+export function TradeView({ initialTrade, spaceId }: TradeViewProps) {
+  const [trade, setTrade] = useState(initialTrade);
   const router = useRouter();
   const t = useTranslations("trades");
 
@@ -110,8 +113,11 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
             tradeId={trade.id}
             spaceId={spaceId}
             initialData={trade}
-            onSuccess={() => {
-              // Refetch trade after update
+            onSuccess={async (trade) => {
+              const result = await getTradeAction(Number(trade.id));
+              if (result.data) {
+                setTrade(result.data);
+              }
             }}
           />
           <DeleteTradeDialog
@@ -360,6 +366,7 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
                   <TableHeader className="bg-muted/50">
                     <TableRow>
                       <TableHead>{t("view.itemSku")}</TableHead>
+                      <TableHead>{t("view.itemType")}</TableHead>
                       <TableHead>{t("view.itemName")}</TableHead>
                       <TableHead className="text-right">
                         {t("view.quantity")}
@@ -378,6 +385,9 @@ export function TradeView({ trade, spaceId }: TradeViewProps) {
                       <TableRow key={detail.id}>
                         <TableCell className="font-medium">
                           {detail.item?.sku || "—"}
+                        </TableCell>
+                        <TableCell>
+                          {t(`detailTypes.${detail.model_type}`) || "—"}
                         </TableCell>
                         <TableCell>{detail.item?.name || "—"}</TableCell>
                         <TableCell className="text-right tabular-nums">

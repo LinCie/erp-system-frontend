@@ -308,15 +308,15 @@
       "action": "Action"
     },
     "detailTypes": {
-      "Interaksi": "Interaction",
-      "Sales": "Sales",
-      "Tagihan": "Invoice",
-      "Pembayaran": "Payment",
-      "Purchase": "Purchase",
-      "Damage": "Damage",
-      "Return": "Return",
-      "Pajak": "Tax",
-      "Undefined": "Undefined"
+      "ITR": "Interaction",
+      "SO": "Sales",
+      "BILL": "Invoice",
+      "PAY": "Payment",
+      "PO": "Purchase",
+      "DMG": "Damage",
+      "RTR": "Return",
+      "TAX": "Tax",
+      "UNDF": "Undefined"
     },
     "createTitle": "Create Trade",
     "createDescription": "Create a new trade transaction",
@@ -410,6 +410,7 @@
       "lineItemsDescription": "Items included in this trade",
       "noLineItems": "No line items",
       "itemSku": "SKU",
+      "itemType": "Type",
       "itemName": "Name",
       "quantity": "Qty",
       "price": "Price",

@@ -308,15 +308,15 @@
       "action": "Aksi"
     },
     "detailTypes": {
-      "Interaksi": "Interaksi",
-      "Sales": "Sales",
-      "Tagihan": "Tagihan",
-      "Pembayaran": "Pembayaran",
-      "Purchase": "Purchase",
-      "Damage": "Damage",
-      "Return": "Return",
-      "Pajak": "Pajak",
-      "Undefined": "Tidak Ditentukan"
+      "ITR": "Interaksi",
+      "SO": "Sales",
+      "BILL": "Tagihan",
+      "PAY": "Pembayaran",
+      "PO": "Purchase",
+      "DMG": "Damage",
+      "RTR": "Return",
+      "TAX": "Pajak",
+      "UNDF": "Tidak Ditentukan"
     },
     "createTitle": "Buat Transaksi",
     "createDescription": "Buat transaksi baru",
@@ -410,6 +410,7 @@
       "lineItemsDescription": "Item yang termasuk dalam transaksi ini",
       "noLineItems": "Tidak ada item",
       "itemSku": "SKU",
+      "itemType": "Tipe",
       "itemName": "Nama",
       "quantity": "Qty",
       "price": "Harga",

@@ -5,15 +5,15 @@ import { tradeFileSchema, tradeLinkSchema } from "./trades.schema";
  * Trade detail type enum values.
  */
 export const TRADE_DETAIL_TYPES = [
-  "Interaksi",
-  "Sales",
-  "Tagihan",
-  "Pembayaran",
-  "Purchase",
-  "Damage",
-  "Return",
-  "Pajak",
-  "Undefined",
+  "ITR",
+  "SO",
+  "BILL",
+  "PAY",
+  "PO",
+  "DMG",
+  "RTR",
+  "TAX",
+  "UNDF",
 ] as const;
 
 export type TradeDetailType = (typeof TRADE_DETAIL_TYPES)[number];
@@ -24,7 +24,7 @@ export type TradeDetailType = (typeof TRADE_DETAIL_TYPES)[number];
  */
 export const createTradeDetailSchema = z.object({
   item_id: z.number(),
-  model_type: z.string(),
+  model_type: z.string().optional(),
   quantity: z.number(),
   price: z.number(),
   discount: z.number().optional(),
@@ -57,7 +57,7 @@ export const updateTradeDetailSchema = z.object({
 export const tradeDetailInputSchema = z.object({
   id: z.number().optional(),
   item_id: z.number().nullable(),
-  model_type: z.string(),
+  model_type: z.string().optional(),
   quantity: z.number(),
   price: z.number(),
   discount: z.number().optional(),
