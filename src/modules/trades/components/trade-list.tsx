@@ -69,6 +69,7 @@ import { DeleteTradeDialog } from "./delete-trade-dialog";
 import { Link } from "@/shared/infrastructure/i18n";
 import { CreateTradeModal } from "./create-trade-modal";
 import { UpdateTradeModal } from "./update-trade-modal";
+import { getTradeAction } from "../actions/get-trade-action";
 
 /** Model type filter options */
 const MODEL_TYPE_OPTIONS = [
@@ -319,8 +320,19 @@ export function TradeList({ spaceId }: TradeListProps) {
                   tradeId={trade.id}
                   spaceId={spaceId}
                   initialData={trade}
-                  onSuccess={() => {
-                    // Refetch trades after update
+                  onSuccess={async (trade) => {
+                    const result = await getTradeAction(Number(trade.id));
+                    if (result.data) {
+                      const updatedTrade = result.data;
+                      setTrades((trades) =>
+                        trades.map((t) => {
+                          if (t.id === trade.id) {
+                            return updatedTrade;
+                          }
+                          return t;
+                        })
+                      );
+                    }
                   }}
                   trigger={
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -489,7 +501,33 @@ export function TradeList({ spaceId }: TradeListProps) {
         </Popover>
 
         {/* Create Button */}
-        <CreateTradeModal spaceId={spaceId} />
+        <CreateTradeModal
+          spaceId={spaceId}
+          onSuccess={async (trade) => {
+            // Fetch the newly created trade with full details
+            const result = await getTradeAction(Number(trade.id));
+            if (result.data) {
+              const newTrade = result.data;
+
+              // Update trades list: add new trade at the beginning, remove last if needed
+              setTrades((prevTrades) => {
+                const updated = [newTrade, ...prevTrades];
+                // Keep only 'limit' number of trades
+                if (updated.length > limit) {
+                  return updated.slice(0, limit);
+                }
+                return updated;
+              });
+
+              // Update metadata to reflect the new total
+              setMeta((prevMeta) => ({
+                ...prevMeta,
+                totalItems: prevMeta.totalItems + 1,
+                totalPages: Math.ceil((prevMeta.totalItems + 1) / limit),
+              }));
+            }
+          }}
+        />
       </div>
 
       {/* Error State */}
