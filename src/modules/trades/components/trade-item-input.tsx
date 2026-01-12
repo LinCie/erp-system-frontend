@@ -100,10 +100,10 @@ export function TradeItemInput({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="h-auto w-full justify-between text-left whitespace-normal"
           disabled={disabled}
         >
-          <span className="truncate">
+          <span className="mr-2">
             {selectedItem
               ? formatItemLabel(selectedItem)
               : (placeholder ?? t("fields.itemPlaceholder"))}

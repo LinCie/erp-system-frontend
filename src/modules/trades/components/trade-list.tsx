@@ -68,7 +68,6 @@ import {
 import { DeleteTradeDialog } from "./delete-trade-dialog";
 import { Link } from "@/shared/infrastructure/i18n";
 import { CreateTradeModal } from "./create-trade-modal";
-import { UpdateTradeModal } from "./update-trade-modal";
 import { getTradeAction } from "../actions/get-trade-action";
 
 /** Model type filter options */
@@ -179,6 +178,7 @@ export function TradeList({ spaceId }: TradeListProps) {
               href={`/space/${spaceId}/trades/${trade.id}`}
               prefetch={false}
               className="text-primary hover:underline"
+              target="_blank"
             >
               {number}
             </Link>
@@ -317,30 +317,6 @@ export function TradeList({ spaceId }: TradeListProps) {
                     {t("actions.view")}
                   </Link>
                 </DropdownMenuItem>
-                <UpdateTradeModal
-                  tradeId={trade.id}
-                  spaceId={spaceId}
-                  initialData={trade}
-                  onSuccess={async (trade) => {
-                    const result = await getTradeAction(Number(trade.id));
-                    if (result.data) {
-                      const updatedTrade = result.data;
-                      setTrades((trades) =>
-                        trades.map((t) => {
-                          if (t.id === trade.id) {
-                            return updatedTrade;
-                          }
-                          return t;
-                        })
-                      );
-                    }
-                  }}
-                  trigger={
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      {t("actions.edit")}
-                    </DropdownMenuItem>
-                  }
-                />
                 <DropdownMenuSeparator />
                 <DeleteTradeDialog
                   trade={trade}

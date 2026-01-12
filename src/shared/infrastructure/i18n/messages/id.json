@@ -259,6 +259,10 @@
     "tradeView": {
       "title": "{number} - Detail Transaksi",
       "description": "Lihat detail lengkap transaksi"
+    },
+    "tradeEdit": {
+      "title": "{number} - Ubah Transaksi",
+      "description": "Ubah detail transaksi"
     }
   },
   "trades": {
@@ -376,6 +380,10 @@
       "detailDiscount": "Diskon",
       "detailNotes": "Catatan",
       "detailNotesPlaceholder": "Catatan..."
+    },
+    "validation": {
+      "itemRequired": "Item {row}: Item diperlukan",
+      "typeRequired": "Item {row}: Type diperlukan"
     },
     "delete": {
       "trigger": "Hapus",

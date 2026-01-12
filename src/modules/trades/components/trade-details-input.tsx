@@ -18,6 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
@@ -179,9 +181,7 @@ export function TradeDetailsInput({
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12 text-center">#</TableHead>
-                <TableHead className="min-w-[200px]">
-                  {t("fields.item")}
-                </TableHead>
+                <TableHead className="w-[300px]">{t("fields.item")}</TableHead>
                 <TableHead className="w-[140px]">
                   {t("fields.detailType")}
                 </TableHead>
@@ -252,7 +252,7 @@ export function TradeDetailsInput({
                           )
                         }
                         disabled={disabled}
-                        className="w-full"
+                        className="w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                     </TableCell>
                     <TableCell>
@@ -268,7 +268,7 @@ export function TradeDetailsInput({
                           )
                         }
                         disabled={disabled}
-                        className="w-full"
+                        className="w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                     </TableCell>
                     <TableCell>
@@ -284,18 +284,18 @@ export function TradeDetailsInput({
                           )
                         }
                         disabled={disabled}
-                        className="w-full"
+                        className="w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                     </TableCell>
                     <TableCell>
-                      <Input
+                      <Textarea
                         value={detail.notes ?? ""}
                         onChange={(e) =>
                           handleFieldChange(index, "notes", e.target.value)
                         }
                         disabled={disabled}
                         placeholder={t("fields.detailNotesPlaceholder")}
-                        className="w-full"
+                        className="min-h-[40px] w-full"
                       />
                     </TableCell>
                     <TableCell>

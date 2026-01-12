@@ -1,5 +1,4 @@
 "use client";
-"use no memo";
 
 import {
   useEffect,
@@ -12,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { updateTradeAction } from "../actions/update-trade-action";
@@ -27,14 +26,6 @@ import {
 } from "../schemas";
 import { useSyncFormErrors } from "@/shared/hooks/use-sync-form-errors";
 import { FormErrorAlert } from "@/components/form-error-alert";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -109,35 +100,25 @@ function mapDetailsToInput(details?: Trade["details"]): DetailRow[] {
 }
 
 /**
- * Props for the UpdateTradeModal component.
+ * Props for the TradeEdit component.
  */
-interface UpdateTradeModalProps {
+interface TradeEditProps {
   /** Trade ID to update */
   tradeId: number;
   /** Space ID for the trade */
   spaceId: number;
   /** Initial trade data to populate the form */
   initialData: Trade;
-  /** Callback when trade is updated successfully */
-  onSuccess?: (trade: Trade) => void;
-  /** Optional custom trigger element */
-  trigger?: React.ReactNode;
 }
 
 /**
- * Modal dialog for updating a trade.
+ * TradeEdit component displays the trade edit form as a full page.
  * Includes form validation and server action integration.
  */
-export function UpdateTradeModal({
-  tradeId,
-  spaceId,
-  initialData,
-  onSuccess,
-  trigger,
-}: UpdateTradeModalProps) {
+export function TradeEdit({ tradeId, spaceId, initialData }: TradeEditProps) {
   const t = useTranslations("trades");
   const tCommon = useTranslations("common");
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   // Track initial details for diffing in server action
   const initialDetailsRef = useRef<TradeDetailInput[]>(
@@ -186,48 +167,18 @@ export function UpdateTradeModal({
   // Sync server errors to form
   useSyncFormErrors(form, state.errors);
 
-  // Close modal and reset form on success
+  // Redirect to trade view on success
   useEffect(() => {
     if (state.success && state.data && !hasHandledSuccess.current) {
       hasHandledSuccess.current = true;
       toast.success(state.message ?? t("updateSuccess"));
       startTransition(() => {
-        setOpen(false);
-        onSuccess?.(state.data as Trade);
+        router.push(`/space/${spaceId}/trades/${tradeId}`);
       });
     } else if (!state.success && state.message && !hasHandledSuccess.current) {
       toast.error(state.message ?? t("updateError"));
     }
-  }, [state.success, state.data, state.message, onSuccess, t]);
-
-  // Reset success handler when modal opens
-  useEffect(() => {
-    if (open) {
-      hasHandledSuccess.current = false;
-      // Reset to initial data when opening
-      const mappedDetails = mapDetailsToInput(initialData.details);
-      setExistingFiles(initialData.files ?? []);
-      setLinks(initialData.links ?? []);
-      setDetails(mappedDetails);
-      // Update initial details ref for diffing
-      initialDetailsRef.current = mappedDetails.map(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        ({ _selectedItem, _unitPrice, ...rest }) => rest
-      );
-      form.reset({
-        handler_id: initialData.handler_id ?? null,
-        sent_time: initialData.sent_time ?? undefined,
-        received_time: initialData.received_time ?? undefined,
-        receiver_id: initialData.receiver_id ?? undefined,
-        receiver_notes: initialData.receiver_notes ?? "",
-        handler_notes: initialData.handler_notes ?? "",
-        description: initialData.description ?? "",
-        status: initialData.status ?? "TX_DRAFT",
-        parent_id: initialData.parent_id ?? undefined,
-        tags: initialData.tags ?? [],
-      });
-    }
-  }, [open, initialData, form]);
+  }, [state.success, state.data, state.message, tradeId, spaceId, router, t]);
 
   // Handle parent trade change
   const handleParentChange = useCallback(
@@ -286,6 +237,18 @@ export function UpdateTradeModal({
    * Uses form.handleSubmit() to leverage React Hook Form's validation.
    */
   const handleSubmit = (data: UpdateTradeInput) => {
+    // Validate details
+    for (const [index, detail] of details.entries()) {
+      if (!detail.item_id) {
+        toast.error(t("validation.itemRequired", { row: index + 1 }));
+        return;
+      }
+      if (!detail.model_type) {
+        toast.error(t("validation.typeRequired", { row: index + 1 }));
+        return;
+      }
+    }
+
     const formData = new FormData();
 
     /**
@@ -329,228 +292,213 @@ export function UpdateTradeModal({
       formData.set("details", JSON.stringify(validDetails));
     }
 
-    // Note: New file uploads would need separate handling via multipart
-    // For now, we only track existing files
-
     startTransition(() => formAction(formData));
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="outline" size="sm" className="gap-2">
-            <Pencil className="size-4" />
-            <span className="hidden sm:inline">{t("actions.edit")}</span>
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-5xl">
-        <DialogHeader>
-          <DialogTitle>{t("updateTitle")}</DialogTitle>
-          <DialogDescription>{t("updateDescription")}</DialogDescription>
-        </DialogHeader>
+    <div className="w-full">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">{t("updateTitle")}</h1>
+        <p className="text-muted-foreground mt-2">{t("updateDescription")}</p>
+      </div>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
-          >
-            {!state.success && <FormErrorAlert message={state.message} />}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          {!state.success && <FormErrorAlert message={state.message} />}
 
-            {/* Row 1: Parent Trade, Contact */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <ParentTradeInput
-                spaceId={spaceId}
-                tradeId={tradeId}
-                value={form.watch("parent_id") ?? null}
-                onChange={handleParentChange}
-                name="parent_id"
-              />
-
-              <TradeContactInput
-                spaceId={spaceId}
-                value={form.watch("receiver_id") ?? null}
-                onChange={handleContactChange}
-                name="receiver_id"
-              />
-            </div>
-
-            {/* Row 2: Transaction Date, Status */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="sent_time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("fields.transactionDate")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="datetime-local"
-                        value={field.value ?? ""}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("fields.status")}</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value ?? ""}
-                      disabled={isPending}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue
-                            placeholder={t("fields.statusPlaceholder")}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {TRADE_STATUSES.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {t(`status.${status}`)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Row 3: Receiver Notes */}
-            <FormField
-              control={form.control}
-              name="receiver_notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("fields.receiverNotes")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder={t("fields.receiverNotesPlaceholder")}
-                      disabled={isPending}
-                      className="resize-none"
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Row 4: Handler Notes */}
-            <FormField
-              control={form.control}
-              name="handler_notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("fields.handlerNotes")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder={t("fields.handlerNotesPlaceholder")}
-                      disabled={isPending}
-                      className="resize-none"
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Row 5: File Upload */}
-            <div className="space-y-2">
-              <Label>{t("fields.files")}</Label>
-              <TradeFileUpload
-                name="files"
-                existingFiles={existingFiles}
-                onChange={handleFilesChange}
-                onExistingFilesChange={handleExistingFilesChange}
-                disabled={isPending}
-                placeholder={t("fields.filesPlaceholder")}
-                helperText={t("fields.filesHelperText")}
-              />
-            </div>
-
-            {/* Row 6: Received Date, Tags */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="received_time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("fields.receivedDate")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="datetime-local"
-                        value={field.value ?? ""}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <Label>{t("fields.tags")}</Label>
-                <Input
-                  value={tagsString}
-                  onChange={(e) => handleTagsChange(e.target.value)}
-                  placeholder={t("fields.tagsPlaceholder")}
-                  disabled={isPending}
-                />
-              </div>
-            </div>
-
-            {/* Row 7: Links */}
-            <TradeLinksInput
-              value={links}
-              onChange={handleLinksChange}
-              disabled={isPending}
-            />
-
-            {/* Row 8: Trade Details */}
-            <TradeDetailsInput
-              value={details}
-              onChange={handleDetailsChange}
+          {/* Row 1: Parent Trade, Contact */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ParentTradeInput
               spaceId={spaceId}
-              disabled={isPending}
+              tradeId={tradeId}
+              value={form.watch("parent_id") ?? null}
+              onChange={handleParentChange}
+              name="parent_id"
             />
 
-            {/* Submit Button */}
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
+            <TradeContactInput
+              spaceId={spaceId}
+              value={form.watch("receiver_id") ?? null}
+              onChange={handleContactChange}
+              name="receiver_id"
+            />
+          </div>
+
+          {/* Row 2: Transaction Date, Status */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="sent_time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.transactionDate")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="datetime-local"
+                      value={field.value ?? ""}
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.status")}</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value ?? ""}
+                    disabled={isPending}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={t("fields.statusPlaceholder")}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {TRADE_STATUSES.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {t(`status.${status}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Row 3: Receiver Notes */}
+          <FormField
+            control={form.control}
+            name="receiver_notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("fields.receiverNotes")}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder={t("fields.receiverNotesPlaceholder")}
+                    disabled={isPending}
+                    className="resize-none"
+                    rows={3}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Row 4: Handler Notes */}
+          <FormField
+            control={form.control}
+            name="handler_notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("fields.handlerNotes")}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder={t("fields.handlerNotesPlaceholder")}
+                    disabled={isPending}
+                    className="resize-none"
+                    rows={3}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Row 5: File Upload */}
+          <div className="space-y-2">
+            <Label>{t("fields.files")}</Label>
+            <TradeFileUpload
+              name="files"
+              existingFiles={existingFiles}
+              onChange={handleFilesChange}
+              onExistingFilesChange={handleExistingFilesChange}
+              disabled={isPending}
+              placeholder={t("fields.filesPlaceholder")}
+              helperText={t("fields.filesHelperText")}
+            />
+          </div>
+
+          {/* Row 6: Received Date, Tags */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="received_time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.receivedDate")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="datetime-local"
+                      value={field.value ?? ""}
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-2">
+              <Label>{t("fields.tags")}</Label>
+              <Input
+                value={tagsString}
+                onChange={(e) => handleTagsChange(e.target.value)}
+                placeholder={t("fields.tagsPlaceholder")}
                 disabled={isPending}
-              >
-                {tCommon("cancel")}
-              </Button>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? t("updating") : tCommon("save")}
-              </Button>
+              />
             </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          </div>
+
+          {/* Row 7: Links */}
+          <TradeLinksInput
+            value={links}
+            onChange={handleLinksChange}
+            disabled={isPending}
+          />
+
+          {/* Row 8: Trade Details */}
+          <TradeDetailsInput
+            value={details}
+            onChange={handleDetailsChange}
+            spaceId={spaceId}
+            disabled={isPending}
+          />
+
+          {/* Submit Button */}
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push(`/space/${spaceId}/trades/${tradeId}`)}
+              disabled={isPending}
+            >
+              {tCommon("cancel")}
+            </Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? t("updating") : tCommon("save")}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

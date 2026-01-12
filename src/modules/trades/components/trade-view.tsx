@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { type Trade } from "../schemas";
 import { Link, useRouter } from "@/shared/infrastructure/i18n";
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DeleteTradeDialog } from "./delete-trade-dialog";
-import { UpdateTradeModal } from "./update-trade-modal";
-import { getTradeAction } from "../actions/get-trade-action";
 
 /**
  * Props for the TradeView component.
@@ -109,17 +107,12 @@ export function TradeView({ initialTrade, spaceId }: TradeViewProps) {
         </div>
         <div className="flex items-center gap-2">
           {/* Edit button */}
-          <UpdateTradeModal
-            tradeId={trade.id}
-            spaceId={spaceId}
-            initialData={trade}
-            onSuccess={async (trade) => {
-              const result = await getTradeAction(Number(trade.id));
-              if (result.data) {
-                setTrade(result.data);
-              }
-            }}
-          />
+          <Button variant="outline" size="sm" className="gap-2" asChild>
+            <Link href={`/space/${spaceId}/trades/${trade.id}/edit`}>
+              <Edit className="size-4" />
+              <span className="hidden sm:inline">{t("actions.edit")}</span>
+            </Link>
+          </Button>
           <DeleteTradeDialog
             trade={trade}
             onSuccess={() => router.push(`/space/${spaceId}/trades`)}

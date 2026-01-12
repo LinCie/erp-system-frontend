@@ -259,6 +259,10 @@
     "tradeView": {
       "title": "{number} - Trade Details",
       "description": "View complete trade details"
+    },
+    "tradeEdit": {
+      "title": "{number} - Edit Trade",
+      "description": "Edit trade details"
     }
   },
   "trades": {
@@ -376,6 +380,10 @@
       "detailDiscount": "Discount",
       "detailNotes": "Notes",
       "detailNotesPlaceholder": "Notes..."
+    },
+    "validation": {
+      "itemRequired": "Item {row}: Item is required",
+      "typeRequired": "Item {row}: Type is required"
     },
     "delete": {
       "trigger": "Delete",
