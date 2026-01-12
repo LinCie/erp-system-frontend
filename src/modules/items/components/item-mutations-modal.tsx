@@ -433,13 +433,13 @@ export function ItemMutationsModal({
                   >
                     {t("mutations.openingBalance")}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-right tabular-nums">
+                  <TableCell className="px-3 py-2 tabular-nums">
                     {format.number(summary.initialDebit, { style: "decimal" })}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-right tabular-nums">
+                  <TableCell className="px-3 py-2 tabular-nums">
                     {format.number(summary.initialCredit, { style: "decimal" })}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-right font-semibold tabular-nums">
+                  <TableCell className="px-3 py-2 font-semibold tabular-nums">
                     {format.number(summary.initialBalance, {
                       style: "decimal",
                     })}
@@ -495,13 +495,13 @@ export function ItemMutationsModal({
                   >
                     {t("mutations.closingBalance")}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-right tabular-nums">
+                  <TableCell className="px-3 py-2 tabular-nums">
                     {format.number(summary.pageDebit, { style: "decimal" })}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-right tabular-nums">
+                  <TableCell className="px-3 py-2 tabular-nums">
                     {format.number(summary.pageCredit, { style: "decimal" })}
                   </TableCell>
-                  <TableCell className="px-3 py-2 text-right font-bold tabular-nums">
+                  <TableCell className="px-3 py-2 font-bold tabular-nums">
                     {format.number(closingBalance, { style: "decimal" })}
                   </TableCell>
                 </TableRow>
