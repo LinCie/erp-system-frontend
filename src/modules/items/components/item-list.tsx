@@ -355,6 +355,7 @@ export function ItemList({ spaceId }: ItemListProps) {
                   <Link
                     prefetch={false}
                     href={`/space/${spaceId}/items/${item.id}`}
+                    target="_blank"
                   >
                     {t("actions.view")}
                   </Link>

@@ -312,6 +312,7 @@ export function TradeList({ spaceId }: TradeListProps) {
                   <Link
                     href={`/space/${spaceId}/trades/${trade.id}`}
                     prefetch={false}
+                    target="_blank"
                   >
                     {t("actions.view")}
                   </Link>
