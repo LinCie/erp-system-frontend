@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { type Trade } from "../schemas";
@@ -30,7 +29,7 @@ import { DeleteTradeDialog } from "./delete-trade-dialog";
  */
 interface TradeViewProps {
   /** Trade data to display */
-  initialTrade: Trade;
+  trade: Trade;
   /** Space ID for navigation */
   spaceId: number;
 }
@@ -64,8 +63,7 @@ function getStatusVariant(
  * @param props.spaceId - Space ID for navigation
  * @returns TradeView component with trade details and actions
  */
-export function TradeView({ initialTrade, spaceId }: TradeViewProps) {
-  const [trade, setTrade] = useState(initialTrade);
+export function TradeView({ trade, spaceId }: TradeViewProps) {
   const router = useRouter();
   const t = useTranslations("trades");
 
@@ -285,63 +283,59 @@ export function TradeView({ initialTrade, spaceId }: TradeViewProps) {
           </Card>
         )}
 
-        {/* Description & Notes */}
-        {(trade.description ||
-          trade.sender_notes ||
-          trade.receiver_notes ||
-          trade.handler_notes) && (
-          <Card className="md:col-span-2">
+        {/* Child Trades */}
+        {trade.children && trade.children.length > 0 && (
+          <Card className="w-full min-w-0 overflow-hidden md:col-span-2">
             <CardHeader>
-              <CardTitle>{t("view.notes")}</CardTitle>
-              <CardDescription>{t("view.notesDescription")}</CardDescription>
+              <CardTitle>{t("view.childTrades")}</CardTitle>
+              <CardDescription>
+                {t("view.childTradesDescription")}
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {trade.description && (
-                <div className="space-y-1">
-                  <p className="text-muted-foreground text-sm">
-                    {t("view.description")}
-                  </p>
-                  <p className="whitespace-pre-wrap">{trade.description}</p>
-                </div>
-              )}
-
-              {trade.sender_notes && (
-                <>
-                  <Separator />
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground text-sm">
-                      {t("view.senderNotes")}
-                    </p>
-                    <p className="whitespace-pre-wrap">{trade.sender_notes}</p>
-                  </div>
-                </>
-              )}
-
-              {trade.receiver_notes && (
-                <>
-                  <Separator />
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground text-sm">
-                      {t("view.receiverNotes")}
-                    </p>
-                    <p className="whitespace-pre-wrap">
-                      {trade.receiver_notes}
-                    </p>
-                  </div>
-                </>
-              )}
-
-              {trade.handler_notes && (
-                <>
-                  <Separator />
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground text-sm">
-                      {t("view.handlerNotes")}
-                    </p>
-                    <p className="whitespace-pre-wrap">{trade.handler_notes}</p>
-                  </div>
-                </>
-              )}
+            <CardContent className="overflow-x-auto">
+              <div className="min-w-[500px] rounded-lg border sm:min-w-0">
+                <Table>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      <TableHead>{t("view.childNumber")}</TableHead>
+                      <TableHead>{t("view.childStatus")}</TableHead>
+                      <TableHead className="text-right">
+                        {t("view.childTotal")}
+                      </TableHead>
+                      <TableHead>{t("view.childCreatedAt")}</TableHead>
+                      <TableHead>{t("actions.action")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {trade.children.map((child) => (
+                      <TableRow key={child.id}>
+                        <TableCell className="font-medium">
+                          {child.number}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusVariant(child.status)}>
+                            {t(`status.${child.status}`)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatCurrency(child.total)}
+                        </TableCell>
+                        <TableCell>{formatDate(child.created_at)}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link
+                              href={`/space/${spaceId}/trades/${child.id}`}
+                              target="_blank"
+                            >
+                              {t("actions.view")}
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -410,6 +404,67 @@ export function TradeView({ initialTrade, spaceId }: TradeViewProps) {
           </CardContent>
         </Card>
 
+        {/* Description & Notes */}
+        {(trade.description ||
+          trade.sender_notes ||
+          trade.receiver_notes ||
+          trade.handler_notes) && (
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>{t("view.notes")}</CardTitle>
+              <CardDescription>{t("view.notesDescription")}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {trade.description && (
+                <div className="space-y-1">
+                  <p className="text-muted-foreground text-sm">
+                    {t("view.description")}
+                  </p>
+                  <p className="whitespace-pre-wrap">{trade.description}</p>
+                </div>
+              )}
+
+              {trade.sender_notes && (
+                <>
+                  <Separator />
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-sm">
+                      {t("view.senderNotes")}
+                    </p>
+                    <p className="whitespace-pre-wrap">{trade.sender_notes}</p>
+                  </div>
+                </>
+              )}
+
+              {trade.receiver_notes && (
+                <>
+                  <Separator />
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-sm">
+                      {t("view.receiverNotes")}
+                    </p>
+                    <p className="whitespace-pre-wrap">
+                      {trade.receiver_notes}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {trade.handler_notes && (
+                <>
+                  <Separator />
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-sm">
+                      {t("view.handlerNotes")}
+                    </p>
+                    <p className="whitespace-pre-wrap">{trade.handler_notes}</p>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Tags */}
         {trade.tags && trade.tags.length > 0 && (
           <Card className="md:col-span-2">
@@ -423,63 +478,6 @@ export function TradeView({ initialTrade, spaceId }: TradeViewProps) {
                     {tag}
                   </Badge>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Child Trades */}
-        {trade.children && trade.children.length > 0 && (
-          <Card className="w-full min-w-0 overflow-hidden md:col-span-2">
-            <CardHeader>
-              <CardTitle>{t("view.childTrades")}</CardTitle>
-              <CardDescription>
-                {t("view.childTradesDescription")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="overflow-x-auto">
-              <div className="min-w-[500px] rounded-lg border sm:min-w-0">
-                <Table>
-                  <TableHeader className="bg-muted/50">
-                    <TableRow>
-                      <TableHead>{t("view.childNumber")}</TableHead>
-                      <TableHead>{t("view.childStatus")}</TableHead>
-                      <TableHead className="text-right">
-                        {t("view.childTotal")}
-                      </TableHead>
-                      <TableHead>{t("view.childCreatedAt")}</TableHead>
-                      <TableHead>{t("actions.action")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {trade.children.map((child) => (
-                      <TableRow key={child.id}>
-                        <TableCell className="font-medium">
-                          {child.number}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getStatusVariant(child.status)}>
-                            {t(`status.${child.status}`)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatCurrency(child.total)}
-                        </TableCell>
-                        <TableCell>{formatDate(child.created_at)}</TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link
-                              href={`/space/${spaceId}/trades/${child.id}`}
-                              target="_blank"
-                            >
-                              {t("actions.view")}
-                            </Link>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
               </div>
             </CardContent>
           </Card>
