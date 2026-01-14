@@ -76,6 +76,20 @@ export const playerInfoSchema = z.object({
 });
 
 /**
+ * Schema for child trade (populated when withChildren=true).
+ */
+export const childTradeSchema = z.object({
+  id: z.number(),
+  number: z.string(),
+  status: tradeStatusSchema,
+  total: z.string(),
+  space_id: z.number(),
+  sent_time: z.string().nullable().optional(),
+  received_time: z.string().nullable().optional(),
+  created_at: z.string().nullable().optional(),
+});
+
+/**
  * Schema for trade entity.
  */
 export const tradeSchema = z.object({
@@ -99,6 +113,8 @@ export const tradeSchema = z.object({
   tags: z.array(z.string()).optional(),
   links: z.array(tradeLinkSchema).optional(),
   details: z.array(tradeDetailSchema).optional(),
+  // Child trades (populated when withChildren=true)
+  children: z.array(childTradeSchema).optional(),
   // Player info (populated when withPlayers=true)
   sender: playerInfoSchema.nullable().optional(),
   receiver: playerInfoSchema.nullable().optional(),
@@ -110,6 +126,7 @@ export const tradeSchema = z.object({
 });
 
 export type Trade = z.infer<typeof tradeSchema>;
+export type ChildTrade = z.infer<typeof childTradeSchema>;
 export type TradeFile = z.infer<typeof tradeFileSchema>;
 export type TradeLink = z.infer<typeof tradeLinkSchema>;
 export type TradeDetail = z.infer<typeof tradeDetailSchema>;

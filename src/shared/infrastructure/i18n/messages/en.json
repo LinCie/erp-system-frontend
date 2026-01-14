@@ -429,7 +429,14 @@
       "partiesDescription": "Sender, receiver, and handler information",
       "sender": "Sender",
       "receiver": "Receiver",
-      "handler": "Handler"
+      "handler": "Handler",
+      "childTrades": "Child Trades",
+      "childTradesDescription": "Related trades derived from this trade",
+      "noChildTrades": "No child trades",
+      "childNumber": "Trade Number",
+      "childStatus": "Status",
+      "childTotal": "Total",
+      "childCreatedAt": "Created At"
     }
   }
 }

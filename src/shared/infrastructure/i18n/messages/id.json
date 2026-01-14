@@ -429,7 +429,14 @@
       "partiesDescription": "Informasi pengirim, penerima, dan handler",
       "sender": "Pengirim",
       "receiver": "Penerima",
-      "handler": "Handler"
+      "handler": "Handler",
+      "childTrades": "Transaksi Anak",
+      "childTradesDescription": "Transaksi terkait yang berasal dari transaksi ini",
+      "noChildTrades": "Tidak ada transaksi anak",
+      "childNumber": "Nomor Transaksi",
+      "childStatus": "Status",
+      "childTotal": "Total",
+      "childCreatedAt": "Dibuat Pada"
     }
   }
 }

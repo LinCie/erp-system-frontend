@@ -1,0 +1,2741 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "API Documentation", "version": "1.0.0" },
+  "components": {
+    "schemas": {
+      "TokensResponse": {
+        "type": "object",
+        "properties": {
+          "access": { "type": "string", "example": "eyJhbGciOiJIUzI1..." },
+          "refresh": { "type": "string", "example": "eyJhbGciOiJIUzI1..." }
+        },
+        "required": ["access", "refresh"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "invalid body" },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [{ "type": "string" }, { "type": "number" }]
+                  }
+                }
+              },
+              "required": ["code", "message", "path"]
+            }
+          }
+        },
+        "required": ["message"]
+      },
+      "SignupBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "example": "John Doe" },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "password123"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "SigninBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "example": "password123"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "SignoutBody": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "example": "eyJhbGciOiJIUzI1..."
+          }
+        },
+        "required": ["refreshToken"]
+      },
+      "RefreshBody": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "example": "eyJhbGciOiJIUzI1..."
+          }
+        },
+        "required": ["refreshToken"]
+      },
+      "ValidateResponse": {
+        "type": "object",
+        "properties": { "valid": { "type": "boolean", "example": true } },
+        "required": ["valid"]
+      },
+      "ItemImage": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "product.jpg" },
+          "path": {
+            "type": "string",
+            "example": "items/1234567890-product.jpg"
+          },
+          "size": { "type": "number", "example": 102400 },
+          "isNew": { "type": "boolean", "example": true }
+        },
+        "required": ["name", "path", "size"]
+      },
+      "ItemFile": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "product.pdf" },
+          "path": {
+            "type": "string",
+            "example": "items/1234567890-product.pdf"
+          },
+          "size": { "type": "number", "example": 102400 }
+        },
+        "required": ["name", "path", "size"]
+      },
+      "InventoryItem": {
+        "type": "object",
+        "properties": {
+          "balance": { "type": "number", "nullable": true, "example": 1000 },
+          "cost_per_unit": {
+            "type": "number",
+            "nullable": true,
+            "example": 100
+          },
+          "notes": { "type": "string", "example": "Notes" },
+          "space_name": { "type": "string", "example": "Space 1" },
+          "status": { "type": "string", "example": "active" }
+        },
+        "required": ["balance", "cost_per_unit", "space_name", "status"]
+      },
+      "ItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "name": { "type": "string", "example": "My Item" },
+          "code": { "type": "string", "example": "ITEM-001" },
+          "description": { "type": "string", "example": "Item description" },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "cost": { "type": "string", "example": "10000" },
+          "price": { "type": "string", "example": "15000" },
+          "price_discount": { "type": "string", "example": "5000" },
+          "weight": { "type": "string", "example": "1.5" },
+          "notes": { "type": "string", "example": "Additional notes" },
+          "status": { "type": "string", "example": "active" },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ItemImage" },
+            "example": [
+              {
+                "name": "product.jpg",
+                "path": "items/1234567890-product.jpg",
+                "size": 102400,
+                "isNew": true
+              }
+            ]
+          },
+          "files": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ItemFile" },
+            "example": [
+              {
+                "name": "product.pdf",
+                "path": "items/1234567890-product.pdf",
+                "size": 102400
+              }
+            ]
+          },
+          "inventories": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/InventoryItem" },
+            "example": [
+              {
+                "balance": 100,
+                "cost_per_unit": 100,
+                "notes": "",
+                "space_name": "",
+                "status": "active"
+              }
+            ]
+          }
+        },
+        "required": ["id", "name", "cost", "price", "weight", "status"]
+      },
+      "GetManyMetadata": {
+        "type": "object",
+        "properties": {
+          "totalItems": { "type": "number", "example": 100 },
+          "totalPages": { "type": "number", "example": 10 },
+          "currentPage": { "type": "number", "example": 1 },
+          "itemsPerPage": { "type": "number", "example": 10 }
+        },
+        "required": ["totalItems", "totalPages", "currentPage", "itemsPerPage"]
+      },
+      "ItemErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "invalid body" },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [{ "type": "string" }, { "type": "number" }]
+                  }
+                }
+              },
+              "required": ["code", "message", "path"]
+            }
+          }
+        },
+        "required": ["message"]
+      },
+      "Images": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "example": "image.jpg" },
+            "path": { "type": "string", "example": "/items/image.webp" },
+            "size": { "type": "number", "example": 1024 },
+            "isNew": { "type": "boolean", "example": true }
+          },
+          "required": ["name", "path", "size"]
+        }
+      },
+      "Files": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "example": "product.pdf" },
+            "path": { "type": "string", "example": "/items/product.pdf" },
+            "size": { "type": "number", "example": 1024 }
+          },
+          "required": ["name", "path", "size"]
+        }
+      },
+      "CreateItemBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Item" },
+          "code": { "type": "string", "example": "ITEM-001" },
+          "description": { "type": "string", "example": "Item description" },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "cost": { "type": "string", "example": "10000" },
+          "price": { "type": "string", "example": "15000" },
+          "price_discount": { "type": "string", "example": "5000" },
+          "weight": { "type": "string", "example": "1.5" },
+          "notes": { "type": "string", "example": "Additional notes" },
+          "images": { "$ref": "#/components/schemas/Images" },
+          "files": { "$ref": "#/components/schemas/Files" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          },
+          "space_id": { "type": "number", "nullable": true, "example": 1 }
+        },
+        "required": ["name", "cost", "price", "weight", "status", "space_id"]
+      },
+      "ChatResponse": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "example": "Here are the active items..."
+          }
+        },
+        "required": ["response"]
+      },
+      "ItemChatBody": {
+        "type": "object",
+        "properties": {
+          "prompt": { "type": "string", "example": "List all active items" }
+        },
+        "required": ["prompt"]
+      },
+      "RequestUploadResponse": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string", "example": "https://upload.example.com" },
+          "key": { "type": "string", "example": "items/1234567890-product.jpg" }
+        },
+        "required": ["url", "key"]
+      },
+      "requestUploadBodySchema": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "description": "Content-Type of the file",
+            "example": "image/png"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size of the file in bytes",
+            "example": 1000000
+          }
+        },
+        "required": ["contentType", "size"]
+      },
+      "InventoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "name": { "type": "string", "example": "My Inventory" },
+          "status": { "type": "string", "example": "active" }
+        },
+        "required": ["id", "name", "status"]
+      },
+      "GetManyInventoriesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/InventoryResponse" }
+          },
+          "metadata": { "$ref": "#/components/schemas/GetManyMetadata" }
+        },
+        "required": ["data", "metadata"]
+      },
+      "InventoryErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "invalid body" },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [{ "type": "string" }, { "type": "number" }]
+                  }
+                }
+              },
+              "required": ["code", "message", "path"]
+            }
+          }
+        },
+        "required": ["message"]
+      },
+      "MutationItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "transaction_id": { "type": "number", "example": 100 },
+          "sent_time": { "type": "string", "example": "2024-01-15T10:30:00Z" },
+          "number": { "type": "string", "example": "INV-001" },
+          "sender_notes": { "type": "string", "example": "Purchase order" },
+          "handler_notes": { "type": "string", "example": "Received" },
+          "notes": { "type": "string", "example": "Item notes" },
+          "model_type": { "type": "string", "example": "JS" },
+          "cost_per_unit": { "type": "string", "example": "10000.00" },
+          "debit": { "type": "string", "example": "5.00" },
+          "credit": { "type": "string", "example": "0.00" }
+        },
+        "required": ["id", "transaction_id", "cost_per_unit", "debit", "credit"]
+      },
+      "MutationSummary": {
+        "type": "object",
+        "properties": {
+          "initialBalance": { "type": "number", "example": 50 },
+          "initialDebit": { "type": "number", "example": 100 },
+          "initialCredit": { "type": "number", "example": 50 },
+          "pageDebit": { "type": "number", "example": 20 },
+          "pageCredit": { "type": "number", "example": 10 }
+        },
+        "required": [
+          "initialBalance",
+          "initialDebit",
+          "initialCredit",
+          "pageDebit",
+          "pageCredit"
+        ]
+      },
+      "GetMutationsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MutationItem" }
+          },
+          "metadata": { "$ref": "#/components/schemas/GetManyMetadata" },
+          "summary": { "$ref": "#/components/schemas/MutationSummary" }
+        },
+        "required": ["data", "metadata", "summary"]
+      },
+      "CreateInventoryBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Inventory" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          }
+        },
+        "required": ["name", "status"]
+      },
+      "UpdateInventoryBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Inventory" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          }
+        }
+      },
+      "SpaceResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "name": { "type": "string", "example": "My Space" },
+          "code": { "type": "string", "example": "space-code" },
+          "status": { "type": "string", "example": "active" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          }
+        },
+        "required": ["id", "name", "code", "status"]
+      },
+      "SpaceListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SpaceResponse" }
+          },
+          "metadata": { "$ref": "#/components/schemas/GetManyMetadata" }
+        },
+        "required": ["data", "metadata"]
+      },
+      "SpaceErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "invalid body" },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [{ "type": "string" }, { "type": "number" }]
+                  }
+                }
+              },
+              "required": ["code", "message", "path"]
+            }
+          }
+        },
+        "required": ["message"]
+      },
+      "Address JSON Body": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "detail": {
+            "type": "string",
+            "nullable": true,
+            "example": "My Address"
+          }
+        },
+        "required": ["detail"]
+      },
+      "CreateSpaceBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Space" },
+          "code": { "type": "string", "example": "my-space" },
+          "address": { "$ref": "#/components/schemas/Address JSON Body" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          },
+          "notes": { "type": "string", "nullable": true, "example": "My Notes" }
+        },
+        "required": ["name", "code", "address", "status", "notes"]
+      },
+      "UpdateSpaceBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Space" },
+          "code": { "type": "string", "example": "my-space" },
+          "address": { "$ref": "#/components/schemas/Address JSON Body" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          },
+          "notes": { "type": "string", "nullable": true, "example": "My Notes" }
+        }
+      },
+      "TradeFile": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "invoice.pdf" },
+          "path": {
+            "type": "string",
+            "example": "trades/1234567890-invoice.pdf"
+          },
+          "size": { "type": "number", "example": 102400 }
+        },
+        "required": ["name", "path", "size"]
+      },
+      "TradeLink": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://example.com/order/123"
+          },
+          "title": { "type": "string", "example": "Order Reference" },
+          "description": {
+            "type": "string",
+            "example": "Link to original order"
+          }
+        },
+        "required": ["url"]
+      },
+      "ItemInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "name": { "type": "string", "example": "Product Name" },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "cost": { "type": "string", "example": "1000.00" },
+          "price": { "type": "string", "example": "1500.00" }
+        },
+        "required": ["id", "name", "cost", "price"],
+        "example": {
+          "id": 1,
+          "name": "Product Name",
+          "sku": "SKU-001",
+          "cost": "1000.00",
+          "price": "1500.00"
+        }
+      },
+      "TradeDetailResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "model_type": { "type": "string", "example": "SO" },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "name": { "type": "string", "example": "Product Name" },
+          "quantity": { "type": "number", "example": 10 },
+          "price": { "type": "number", "example": 1500 },
+          "discount": { "type": "number", "example": 0.1 },
+          "weight": { "type": "number", "example": 2.5 },
+          "debit": { "type": "number", "example": 10 },
+          "credit": { "type": "number", "example": 0 },
+          "notes": { "type": "string", "example": "Special handling required" },
+          "item": { "$ref": "#/components/schemas/ItemInfo" }
+        },
+        "required": [
+          "id",
+          "model_type",
+          "quantity",
+          "price",
+          "discount",
+          "weight",
+          "debit",
+          "credit"
+        ]
+      },
+      "PlayerInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "code": { "type": "string", "example": "CUST-001" },
+          "name": { "type": "string", "example": "John Doe" }
+        },
+        "required": ["id", "name"],
+        "example": { "id": 10, "code": "TEAM-001", "name": "Sales Team" }
+      },
+      "ChildTradeResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 5 },
+          "number": { "type": "string", "example": "TRD_5" },
+          "status": {
+            "anyOf": [
+              { "type": "string" },
+              {
+                "type": "string",
+                "enum": [
+                  "TX_DRAFT",
+                  "TX_READY",
+                  "TX_SENT",
+                  "TX_RECEIVED",
+                  "TX_COMPLETED",
+                  "TX_CANCELED",
+                  "TX_RETURN",
+                  "TX_CLOSED"
+                ]
+              }
+            ],
+            "example": "TX_DRAFT"
+          },
+          "total": { "type": "string", "example": "500.00" },
+          "space_id": { "type": "number", "example": 1 },
+          "sent_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "received_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-16T14:00:00Z"
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:00:00Z"
+          }
+        },
+        "required": ["id", "number", "status", "total", "space_id"]
+      },
+      "TradeResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "number": { "type": "string", "example": "TRD_1" },
+          "space_id": { "type": "number", "example": 1 },
+          "status": {
+            "anyOf": [
+              { "type": "string" },
+              {
+                "type": "string",
+                "enum": [
+                  "TX_DRAFT",
+                  "TX_READY",
+                  "TX_SENT",
+                  "TX_RECEIVED",
+                  "TX_COMPLETED",
+                  "TX_CANCELED",
+                  "TX_RETURN",
+                  "TX_CLOSED"
+                ]
+              }
+            ],
+            "example": "TX_DRAFT"
+          },
+          "total": { "type": "string", "example": "13500.00" },
+          "sent_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "received_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-16T14:00:00Z"
+          },
+          "sender_id": { "type": "number", "example": 10 },
+          "receiver_id": { "type": "number", "example": 20 },
+          "handler_id": { "type": "number", "example": 30 },
+          "parent_id": { "type": "number", "example": 5 },
+          "sender_notes": {
+            "type": "string",
+            "example": "Please handle with care"
+          },
+          "receiver_notes": {
+            "type": "string",
+            "example": "Received in good condition"
+          },
+          "handler_notes": {
+            "type": "string",
+            "example": "Processed on schedule"
+          },
+          "description": {
+            "type": "string",
+            "example": "Monthly supply order"
+          },
+          "fee": { "type": "string", "example": "50.00" },
+          "files": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TradeFile" },
+            "example": [
+              {
+                "name": "invoice.pdf",
+                "path": "trades/1234567890-invoice.pdf",
+                "size": 102400
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["urgent", "wholesale"]
+          },
+          "links": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TradeLink" },
+            "example": [
+              {
+                "url": "https://example.com/order/123",
+                "title": "Order Reference",
+                "description": "Link to original order"
+              }
+            ]
+          },
+          "children": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ChildTradeResponse" },
+            "example": [
+              {
+                "id": 5,
+                "number": "TRD_5_CHILD",
+                "status": "TX_DRAFT",
+                "total": "500.00",
+                "space_id": 1
+              }
+            ]
+          },
+          "details": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TradeDetailResponse" },
+            "example": [
+              {
+                "id": 1,
+                "item_id": 100,
+                "model_type": "SO",
+                "sku": "SKU-001",
+                "name": "Product Name",
+                "quantity": "10.00",
+                "price": "1500.00",
+                "discount": "0.10",
+                "weight": "2.50",
+                "debit": "10.00",
+                "credit": "0.00",
+                "notes": "Special handling required"
+              }
+            ]
+          },
+          "sender": { "$ref": "#/components/schemas/PlayerInfo" },
+          "receiver": {
+            "allOf": [
+              { "$ref": "#/components/schemas/PlayerInfo" },
+              {
+                "example": {
+                  "id": 20,
+                  "code": "CUST-001",
+                  "name": "Customer Name"
+                }
+              }
+            ]
+          },
+          "handler": {
+            "allOf": [
+              { "$ref": "#/components/schemas/PlayerInfo" },
+              {
+                "example": {
+                  "id": 30,
+                  "code": "TEAM-002",
+                  "name": "Handler Team"
+                }
+              }
+            ]
+          },
+          "all_notes": {
+            "type": "string",
+            "example": "Sender notes - Handler notes"
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        },
+        "required": ["id", "number", "space_id", "status", "total"]
+      },
+      "GetManyTradesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TradeResponse" }
+          },
+          "metadata": { "$ref": "#/components/schemas/GetManyMetadata" }
+        },
+        "required": ["data", "metadata"]
+      },
+      "TradeErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "VALIDATION_ERROR" },
+          "message": { "type": "string", "example": "Invalid request body" },
+          "details": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "example": {
+              "handler_id": ["Required field is missing"],
+              "details.0.quantity": ["Must be a valid decimal string"]
+            }
+          }
+        },
+        "required": ["error", "message"]
+      },
+      "TradeNotFoundError": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "TRADE_NOT_FOUND" },
+          "message": {
+            "type": "string",
+            "example": "Trade with ID 999 not found"
+          }
+        },
+        "required": ["error", "message"]
+      },
+      "CreateTradeBody": {
+        "type": "object",
+        "properties": {
+          "space_id": { "type": "number", "nullable": true, "example": 1 },
+          "sent_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "sender_notes": {
+            "type": "string",
+            "example": "Initial trade notes"
+          },
+          "number": { "type": "string", "example": "TRD_001" }
+        },
+        "required": ["space_id"]
+      },
+      "TradeDetailInput": {
+        "type": "object",
+        "properties": {
+          "item_id": { "type": "number", "nullable": true, "example": 1 },
+          "model_type": { "type": "string", "example": "SO" },
+          "quantity": { "type": "number", "example": 10 },
+          "price": { "type": "number", "example": 15000 },
+          "discount": { "type": "number", "example": 0 },
+          "weight": { "type": "number", "example": 1.5 },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "name": { "type": "string", "example": "Product Name" },
+          "notes": { "type": "string", "example": "Detail notes" }
+        },
+        "required": ["item_id", "model_type", "quantity", "price"]
+      },
+      "UpdateTradeBody": {
+        "type": "object",
+        "properties": {
+          "handler_id": { "type": "number", "nullable": true, "example": 1 },
+          "sent_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "received_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-16T14:00:00Z"
+          },
+          "receiver_id": { "type": "number", "nullable": true, "example": 2 },
+          "receiver_notes": { "type": "string", "example": "Receiver notes" },
+          "handler_notes": { "type": "string", "example": "Handler notes" },
+          "description": { "type": "string", "example": "Trade description" },
+          "status": {
+            "anyOf": [
+              { "type": "string" },
+              {
+                "type": "string",
+                "enum": [
+                  "TX_DRAFT",
+                  "TX_READY",
+                  "TX_SENT",
+                  "TX_RECEIVED",
+                  "TX_COMPLETED",
+                  "TX_CANCELED",
+                  "TX_RETURN",
+                  "TX_CLOSED"
+                ]
+              }
+            ],
+            "example": "TX_READY"
+          },
+          "parent_id": { "type": "number", "nullable": true, "example": 1 },
+          "files": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                { "$ref": "#/components/schemas/TradeFile" },
+                {
+                  "properties": {
+                    "name": { "type": "string", "example": "document.pdf" },
+                    "path": {
+                      "type": "string",
+                      "example": "/trades/document.pdf"
+                    },
+                    "size": { "type": "number", "example": 1024 }
+                  }
+                }
+              ]
+            },
+            "example": []
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["urgent", "vip"]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                { "$ref": "#/components/schemas/TradeLink" },
+                {
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "example": "https://example.com"
+                    },
+                    "title": { "type": "string", "example": "Reference Link" },
+                    "description": {
+                      "type": "string",
+                      "example": "Link description"
+                    }
+                  }
+                }
+              ]
+            },
+            "example": []
+          },
+          "details": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TradeDetailInput" },
+            "example": []
+          }
+        }
+      },
+      "UpdateTradeTransactionBody": {
+        "type": "object",
+        "properties": {
+          "handler_id": { "type": "number", "nullable": true, "example": 1 },
+          "sent_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "received_time": {
+            "type": "string",
+            "nullable": true,
+            "format": "date",
+            "example": "2024-01-16T14:00:00Z"
+          },
+          "receiver_id": { "type": "number", "nullable": true, "example": 2 },
+          "receiver_notes": { "type": "string", "example": "Receiver notes" },
+          "handler_notes": { "type": "string", "example": "Handler notes" },
+          "description": { "type": "string", "example": "Trade description" },
+          "status": {
+            "anyOf": [
+              { "type": "string" },
+              {
+                "type": "string",
+                "enum": [
+                  "TX_DRAFT",
+                  "TX_READY",
+                  "TX_SENT",
+                  "TX_RECEIVED",
+                  "TX_COMPLETED",
+                  "TX_CANCELED",
+                  "TX_RETURN",
+                  "TX_CLOSED"
+                ]
+              }
+            ],
+            "example": "TX_READY"
+          },
+          "parent_id": { "type": "number", "nullable": true, "example": 1 },
+          "files": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                { "$ref": "#/components/schemas/TradeFile" },
+                {
+                  "properties": {
+                    "name": { "type": "string", "example": "document.pdf" },
+                    "path": {
+                      "type": "string",
+                      "example": "/trades/document.pdf"
+                    },
+                    "size": { "type": "number", "example": 1024 }
+                  }
+                }
+              ]
+            },
+            "example": []
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["urgent", "vip"]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                { "$ref": "#/components/schemas/TradeLink" },
+                {
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "example": "https://example.com"
+                    },
+                    "title": { "type": "string", "example": "Reference Link" },
+                    "description": {
+                      "type": "string",
+                      "example": "Link description"
+                    }
+                  }
+                }
+              ]
+            },
+            "example": []
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateTradeDetailBody": {
+        "type": "object",
+        "properties": {
+          "item_id": { "type": "number", "nullable": true, "example": 1 },
+          "model_type": { "type": "string", "example": "SO" },
+          "quantity": { "type": "number", "example": 10 },
+          "price": { "type": "number", "example": 15000 },
+          "discount": { "type": "number", "example": 0 },
+          "weight": { "type": "number", "example": 1.5 },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "name": { "type": "string", "example": "Product Name" },
+          "notes": { "type": "string", "example": "Detail notes" }
+        },
+        "required": ["item_id", "model_type", "quantity", "price"],
+        "additionalProperties": false
+      },
+      "UpdateTradeDetailBody": {
+        "type": "object",
+        "properties": {
+          "model_type": { "type": "string", "example": "SO" },
+          "quantity": { "type": "number", "example": 10 },
+          "price": { "type": "number", "example": 15000 },
+          "discount": { "type": "number", "example": 0 },
+          "weight": { "type": "number", "example": 1.5 },
+          "sku": { "type": "string", "example": "SKU-001" },
+          "name": { "type": "string", "example": "Product Name" },
+          "notes": { "type": "string", "example": "Detail notes" }
+        },
+        "additionalProperties": false
+      },
+      "ContactResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "example": 1 },
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "john@example.com" }
+        },
+        "required": ["id", "name"]
+      },
+      "GetManyContactsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ContactResponse" }
+          },
+          "metadata": { "$ref": "#/components/schemas/GetManyMetadata" }
+        },
+        "required": ["data", "metadata"]
+      },
+      "ContactErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "invalid body" },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [{ "type": "string" }, { "type": "number" }]
+                  }
+                }
+              },
+              "required": ["code", "message", "path"]
+            }
+          }
+        },
+        "required": ["message"]
+      },
+      "CreateContactBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Contact" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          }
+        },
+        "required": ["name", "status"]
+      },
+      "UpdateContactBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Contact" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "example": "active"
+          }
+        }
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignupBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokensResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Sign in with email and password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SigninBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sign in successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokensResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Sign out and invalidate refresh token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignoutBody" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Sign out successful" },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Refresh access token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokensResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/validate": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Validate access token",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Token is valid",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidateResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is invalid or expired",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items": {
+      "get": {
+        "tags": ["Items"],
+        "summary": "Get many items",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "spaceId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["full", "partial"],
+              "example": "full"
+            },
+            "required": true,
+            "name": "type",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "keyword" },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 10
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "boolean", "nullable": true, "example": true },
+            "required": false,
+            "name": "withInventory",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "discounted", "all", "unknown"],
+              "example": "active"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ItemResponse" }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/GetManyMetadata"
+                    }
+                  },
+                  "required": ["data", "metadata"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Items"],
+        "summary": "Create a new item",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateItemBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "tags": ["Items"],
+        "summary": "Get item by ID",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "nullable": true,
+              "default": false,
+              "example": false
+            },
+            "required": false,
+            "name": "withInventory",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "example": 1,
+              "description": "Space ID to filter inventories by space and its children. If not provided, all inventories are returned."
+            },
+            "required": false,
+            "description": "Space ID to filter inventories by space and its children. If not provided, all inventories are returned.",
+            "name": "spaceId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Items"],
+        "summary": "Update an item",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "My Item" },
+                  "code": { "type": "string", "example": "ITEM-001" },
+                  "description": {
+                    "type": "string",
+                    "example": "Item description"
+                  },
+                  "sku": { "type": "string", "example": "SKU-001" },
+                  "cost": { "type": "string", "example": "10000" },
+                  "price": { "type": "string", "example": "15000" },
+                  "price_discount": { "type": "string", "example": "5000" },
+                  "weight": { "type": "string", "example": "1.5" },
+                  "notes": { "type": "string", "example": "Additional notes" },
+                  "images": { "$ref": "#/components/schemas/Images" },
+                  "files": { "$ref": "#/components/schemas/Files" },
+                  "status": {
+                    "type": "string",
+                    "enum": ["active", "inactive"],
+                    "example": "active"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Items"],
+        "summary": "Delete an item",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Item deleted successfully" },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/chat": {
+      "post": {
+        "tags": ["Items"],
+        "summary": "Chat with AI about items",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ItemChatBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/upload": {
+      "post": {
+        "tags": ["Upload", "Items"],
+        "summary": "Request item image upload",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestUploadBodySchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestUploadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventories": {
+      "get": {
+        "tags": ["Inventories"],
+        "summary": "Get many inventories",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "archived"],
+              "example": "active"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 10
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of inventories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetManyInventoriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Inventories"],
+        "summary": "Create a new inventory",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateInventoryBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Inventory created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InventoryResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventories/{id}": {
+      "get": {
+        "tags": ["Inventories"],
+        "summary": "Get inventory by ID",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InventoryResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Inventories"],
+        "summary": "Update a inventory",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateInventoryBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inventory updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InventoryResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Inventories"],
+        "summary": "Delete a inventory",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Inventory deleted successfully" },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventories/{id}/mutations": {
+      "get": {
+        "tags": ["Inventories"],
+        "summary": "Get inventory mutations (transaction history)",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": { "type": "string", "example": "2024-01-01" },
+            "required": false,
+            "name": "start_date",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "2024-12-31" },
+            "required": false,
+            "name": "end_date",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "INV" },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "number", "nullable": true, "example": 10 },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inventory mutations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMutationsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spaces": {
+      "get": {
+        "tags": ["Spaces"],
+        "summary": "Get many spaces",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "string", "example": "Test" },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "archived"],
+              "example": "active"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 10
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of spaces",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceListResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Spaces"],
+        "summary": "Create a new space",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateSpaceBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Space created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spaces/{id}": {
+      "get": {
+        "tags": ["Spaces"],
+        "summary": "Get space by ID",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Spaces"],
+        "summary": "Update a space",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateSpaceBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Space updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Spaces"],
+        "summary": "Delete a space",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Space deleted successfully" },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SpaceErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trades": {
+      "get": {
+        "tags": ["Trades"],
+        "summary": "Get many trades",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "spaceId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 10
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                { "type": "string" },
+                {
+                  "type": "string",
+                  "enum": [
+                    "TX_DRAFT",
+                    "TX_READY",
+                    "TX_SENT",
+                    "TX_RECEIVED",
+                    "TX_COMPLETED",
+                    "TX_CANCELED",
+                    "TX_RETURN",
+                    "TX_CLOSED"
+                  ]
+                }
+              ],
+              "example": "TX_DRAFT"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "SO" },
+            "required": false,
+            "name": "modelType",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "TRD_001" },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["id", "number", "total", "created_at", "sent_time"],
+              "example": "created_at"
+            },
+            "required": false,
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "example": "desc"
+            },
+            "required": false,
+            "name": "order",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "true" },
+            "required": false,
+            "name": "withDetails",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "true" },
+            "required": false,
+            "name": "withPlayers",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trades with pagination metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetManyTradesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Trades"],
+        "summary": "Create a new trade",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTradeBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Trade created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trades/{id}": {
+      "get": {
+        "tags": ["Trades"],
+        "summary": "Get trade by ID",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": { "type": "string", "example": "true" },
+            "required": false,
+            "name": "withDetails",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "true" },
+            "required": false,
+            "name": "withPlayers",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "example": "true" },
+            "required": false,
+            "name": "withChildren",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trade details with line items",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeNotFoundError" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Trades"],
+        "summary": "Update a trade transaction",
+        "description": "Update trade transaction fields only. Details must not be included and cannot be updated via this endpoint.",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTradeTransactionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trade transaction updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or details field included",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeNotFoundError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Trades"],
+        "summary": "Delete a trade",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Trade deleted successfully" },
+          "404": {
+            "description": "Trade not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeNotFoundError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trades/{id}/details": {
+      "post": {
+        "tags": ["Trade Details"],
+        "summary": "Create a trade detail",
+        "description": "Create a new detail line item for a trade. The detail will be linked to the trade with detail_type='ITM' and detail_id=item_id.",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTradeDetailBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Trade detail created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeDetailResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade or item not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeNotFoundError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trades/{id}/details/{detailId}": {
+      "patch": {
+        "tags": ["Trade Details"],
+        "summary": "Update a trade detail",
+        "description": "Update an existing trade detail. The transaction_id, detail_type, and detail_id fields are immutable and cannot be updated.",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "detailId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateTradeDetailBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trade detail updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeDetailResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade or detail not found, or detail does not belong to trade",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeNotFoundError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Trade Details"],
+        "summary": "Delete a trade detail",
+        "description": "Delete a trade detail. The detail must belong to the specified trade.",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "detailId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Trade detail deleted successfully" },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade or detail not found, or detail does not belong to trade",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TradeNotFoundError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts": {
+      "get": {
+        "tags": ["Contacts"],
+        "summary": "Get many contacts",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["active", "inactive", "archived"],
+              "example": "active"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 10
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "space_id",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "boolean", "nullable": true, "example": true },
+            "required": false,
+            "name": "with_full_details",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetManyContactsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Contacts"],
+        "summary": "Create a new contact",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateContactBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contact created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContactResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "tags": ["Contacts"],
+        "summary": "Get contact by ID",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContactResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Contacts"],
+        "summary": "Update a contact",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateContactBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContactResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Contacts"],
+        "summary": "Delete a contact",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "number", "nullable": true, "example": 1 },
+            "required": false,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Contact deleted successfully" },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

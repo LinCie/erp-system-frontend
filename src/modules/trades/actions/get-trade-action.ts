@@ -17,6 +17,7 @@ const getCachedTrade = cache(
       const data = await getOneTrade({
         token: accessToken,
         id,
+        withChildren: true,
       });
       return { success: true, data };
     } catch (error) {
