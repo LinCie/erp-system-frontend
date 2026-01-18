@@ -4,3 +4,4 @@ export * from "./create-trade.schema";
 export * from "./update-trade.schema";
 export * from "./trade-contact.schema";
 export * from "./trade-item.schema";
+export * from "./get-trade.schema";

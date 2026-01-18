@@ -69,8 +69,6 @@ export function ParentTradeInput({
         order: "desc",
       });
 
-      console.log(result);
-
       setTrades(
         result.data
           ? result.data.data

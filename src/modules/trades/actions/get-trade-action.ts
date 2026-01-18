@@ -3,7 +3,7 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { getOneTrade } from "../services";
-import { type Trade } from "../schemas";
+import { GetTradeQuery, type Trade } from "../schemas";
 import { type ActionResult } from "@/shared/types/action-result";
 import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
 
@@ -12,12 +12,16 @@ import { isHttpError, type ApiError } from "@/shared/infrastructure/http";
  * Uses React cache to dedupe calls within the same request.
  */
 const getCachedTrade = cache(
-  async (id: number, accessToken: string): Promise<ActionResult<Trade>> => {
+  async (
+    id: number,
+    accessToken: string,
+    searchParams?: GetTradeQuery
+  ): Promise<ActionResult<Trade>> => {
     try {
       const data = await getOneTrade({
         token: accessToken,
         id,
-        withChildren: true,
+        searchParams,
       });
       return { success: true, data };
     } catch (error) {
@@ -38,7 +42,10 @@ const getCachedTrade = cache(
  * @param id - Trade ID
  * @returns ActionResult with trade data or error message
  */
-export async function getTradeAction(id: number): Promise<ActionResult<Trade>> {
+export async function getTradeAction(
+  id: number,
+  searchParams?: GetTradeQuery
+): Promise<ActionResult<Trade>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
@@ -46,5 +53,5 @@ export async function getTradeAction(id: number): Promise<ActionResult<Trade>> {
     return { success: false, message: "Not authenticated" };
   }
 
-  return getCachedTrade(id, accessToken);
+  return getCachedTrade(id, accessToken, searchParams);
 }

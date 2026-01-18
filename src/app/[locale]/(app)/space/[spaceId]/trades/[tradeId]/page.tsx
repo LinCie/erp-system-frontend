@@ -34,7 +34,11 @@ export default async function TradeViewPage({ params }: Props) {
   const { spaceId, tradeId } = await params;
 
   // Fetch trade data
-  const result = await getTradeAction(Number(tradeId));
+  const result = await getTradeAction(Number(tradeId), {
+    withChildren: true,
+    withDetails: true,
+    withPlayers: true,
+  });
 
   // Handle error or not found
   if (!result.success || !result.data) {

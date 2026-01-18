@@ -20,7 +20,7 @@ import { cn } from "@/shared/lib";
 import { SEARCH_DEBOUNCE_DELAY } from "@/shared/constants";
 import { Check, ChevronsUpDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getTradeContactsAction } from "../actions/get-trade-contacts.action";
 import { type TradeContact } from "../schemas";
 
@@ -32,6 +32,7 @@ interface TradeContactInputProps {
   onChange?: (value: number | null) => void;
   /** Input name for form submission */
   name?: string;
+  receiver?: TradeContact | null;
 }
 
 /**
@@ -43,13 +44,21 @@ export function TradeContactInput({
   value,
   onChange,
   name,
+  receiver,
 }: TradeContactInputProps) {
   const t = useTranslations("trades");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [contacts, setContacts] = useState<TradeContact[]>([]);
+  const [fetchedContacts, setFetchedContacts] = useState<TradeContact[]>([]);
 
   const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
+
+  const contacts = useMemo(() => {
+    const data = fetchedContacts.filter(
+      (contact) => contact.id !== receiver?.id
+    );
+    return receiver ? data.concat(receiver) : data;
+  }, [fetchedContacts, receiver]);
 
   const selectedTrade = contacts.find((t) => t.id === value);
 
@@ -63,17 +72,7 @@ export function TradeContactInput({
         order: "desc",
       });
 
-      console.log(result);
-
-      setContacts(
-        result.data
-          ? result.data.data.map((contact) => ({
-              id: contact.id,
-              name: contact.name,
-              email: contact.email,
-            }))
-          : []
-      );
+      setFetchedContacts(result.data?.data || []);
     }
 
     fetchContacts();

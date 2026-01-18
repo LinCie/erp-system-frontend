@@ -322,6 +322,7 @@ export function TradeEdit({ tradeId, spaceId, initialData }: TradeEditProps) {
               value={form.watch("receiver_id") ?? null}
               onChange={handleContactChange}
               name="receiver_id"
+              receiver={initialData?.receiver}
             />
           </div>
 
