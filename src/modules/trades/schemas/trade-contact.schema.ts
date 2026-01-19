@@ -7,6 +7,7 @@ export const getTradeContactsQuerySchema = z.object({
   limit: z.number().int().positive().optional(),
   status: z.string().optional(),
   search: z.string().optional(),
+  type: z.string().optional(),
   order: z.enum(["asc", "desc"]).optional(),
   sort: z.enum(["id", "name"]).optional(),
   with_full_details: z.boolean().optional(),

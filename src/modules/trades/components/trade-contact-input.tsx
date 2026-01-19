@@ -70,6 +70,7 @@ export function TradeContactInput({
         status: "active",
         limit: 10,
         order: "desc",
+        type: "all",
       });
 
       setFetchedContacts(result.data?.data || []);
